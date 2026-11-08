@@ -1,0 +1,17 @@
+{
+  "name": "parish-os",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PARISH YETU - hosted multi-parish Catholic parish management (Firebase Auth + Firestore, Cloudflare Workers + R2)",
+  "scripts": {
+    "admin": "node scripts/admin.js",
+    "serve": "npx firebase-tools emulators:start --only hosting",
+    "deploy": "npx firebase-tools deploy",
+    "test": "npx firebase-tools emulators:exec --config firebase.test.json --only auth,firestore --project church-cms-4d735 \"node --test tests/platform.test.mjs\"",
+    "sync-slug": "node scripts/sync-slug.js",
+    "test:e2e": "npx firebase-tools emulators:exec --config firebase.test.json --only hosting,auth,firestore --project church-cms-4d735 \"node tests/e2e-browser.mjs\""
+  },
+  "dependencies": {
+    "firebase-admin": "^12.6.0"
+  }
+}

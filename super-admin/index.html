@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Platform · Parish Yetu</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='28' fill='%236E1725'/%3E%3Ctext x='64' y='86' text-anchor='middle' font-family='Quicksand,Segoe UI,system-ui,sans-serif' font-weight='900' font-size='64' letter-spacing='-2' fill='%23FFFFFF'%3EP%3Ctspan fill='%23C9A227'%3EY%3C/tspan%3E%3C/text%3E%3C/svg%3E">
+
+<style>
+:root{
+  --bur:#6E1725;--bur2:#5A111D;--bur3:#8A2434;--gold:#C9A227;--gold2:#A98A1B;--ivory:#F7F3E8;--obs:#111315;--navy:#182A3A;--white:#fff;--line:#E8E5DD;--grey:#8B8A84;--ink:#23262A;--green:#1E6B4F;--red:#B3261E;
+  --bur-t:#F3E6E8;--gold-t:#F6EFD3;--green-t:#E1EFE9;--navy-t:#E3E9EE;--red-t:#F8E3E1;--grey-t:#EFEDE6;
+  --r:10px;--sh:0 1px 2px rgba(17,19,21,.05),0 4px 14px rgba(17,19,21,.04);--sh2:0 12px 40px rgba(17,19,21,.18);
+  --sw:268px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Quicksand',system-ui,sans-serif;font-weight:500;color:var(--ink);background:var(--ivory);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,h4{font-weight:700;line-height:1.2;color:var(--obs)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#d6d2c6;border-radius:8px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* shell */
+.app{display:grid;grid-template-columns:var(--sw) 1fr;min-height:100vh;transition:grid-template-columns .25s}
+.app.collapsed{--sw:78px}
+.side{background:var(--bur);color:#F3E9E6;position:sticky;top:0;height:100vh;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;z-index:40}
+.brand{display:flex;gap:12px;align-items:center;padding:20px 18px 18px;border-bottom:1px solid rgba(255,255,255,.12)}
+.brand .mark{width:42px;height:42px;background:var(--gold);border-radius:10px;display:grid;place-items:center;flex:none}
+.brand b{display:block;font-size:17px;font-weight:800;letter-spacing:.04em;color:#fff}
+.brand span{display:block;font-size:12px;color:#E8CFC9;font-weight:600;white-space:nowrap}
+.nav{padding:10px 10px 24px;flex:1}
+.ng{margin-top:4px}
+.ng>button{width:100%;display:flex;align-items:center;gap:12px;background:none;border:0;color:#E8CFC9;font-weight:700;font-size:13px;padding:10px 10px;border-radius:8px;cursor:pointer;text-align:left;letter-spacing:.02em}
+.ng>button:hover{background:rgba(255,255,255,.07);color:#fff}
+.ng>button .chev{margin-left:auto;transition:transform .2s;width:14px;height:14px}
+.ng.open>button .chev{transform:rotate(90deg)}
+.ng.has-active>button{color:#fff}
+.ng .items{display:none;margin:2px 0 6px 21px;border-left:1px solid rgba(255,255,255,.16);padding-left:8px}
+.ng.open .items{display:block}
+.ng a{display:block;padding:7px 12px;border-radius:7px;color:#E5D3CF;font-weight:600;font-size:13.5px;position:relative}
+.ng a:hover{background:rgba(255,255,255,.08);color:#fff}
+.ng a.active{background:var(--ivory);color:var(--bur);font-weight:700}
+.ng a.active::before{content:"";position:absolute;left:-10px;top:8px;bottom:8px;width:3px;background:var(--gold);border-radius:3px}
+.app.collapsed .brand div,.app.collapsed .ng>button span,.app.collapsed .ng>button .chev,.app.collapsed .ng .items{display:none!important}
+.app.collapsed .ng>button{justify-content:center}
+.sidefoot{padding:14px 16px;border-top:1px solid rgba(255,255,255,.12);font-size:12px;color:#E0C9C4}
+.app.collapsed .sidefoot{display:none}
+.main{min-width:0;display:flex;flex-direction:column;min-height:100vh}
+.top{height:64px;background:var(--white);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 24px;position:sticky;top:0;z-index:30}
+.iconbtn{width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;cursor:pointer;position:relative;color:var(--navy)}
+.iconbtn:hover{border-color:var(--gold);background:var(--gold-t)}
+.iconbtn .dot{position:absolute;top:7px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--bur);border:2px solid #fff}
+.crumb{font-size:13px;color:var(--grey);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb b{color:var(--obs);font-weight:700}
+.gsearch{margin-left:auto;position:relative;width:min(300px,30vw)}
+.gsearch input{width:100%;height:38px;border:1px solid var(--line);border-radius:9px;padding:0 12px 0 36px;background:var(--ivory)}
+.gsearch svg{position:absolute;left:11px;top:10px;color:var(--grey)}
+.gres{position:absolute;top:44px;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh2);display:none;max-height:300px;overflow:auto;z-index:60}
+.gres a{display:block;padding:9px 14px;font-weight:600}.gres a:hover{background:var(--gold-t)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:99px;white-space:nowrap}
+.pill.org{background:var(--gold-t);color:#6b5610;border:1px solid #E5D48E}
+.pill.org i{width:7px;height:7px;border-radius:50%;background:var(--gold);display:inline-block}
+.pill.local{background:var(--navy-t);color:var(--navy)}
+.user{display:flex;align-items:center;gap:10px;cursor:pointer;border:0;background:none;padding:2px 4px 2px 2px;border-radius:99px}
+.av{width:36px;height:36px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
+.av.sm{width:30px;height:30px;font-size:11px}.av.lg{width:64px;height:64px;font-size:22px}
+.av.b{background:var(--bur)}.av.g{background:var(--green)}.av.y{background:var(--gold);color:var(--obs)}
+.user small{display:block;font-size:11.5px;color:var(--grey);font-weight:600;line-height:1.1}
+.user b{display:block;font-size:13px;line-height:1.2}
+.content{padding:28px 28px 40px;flex:1;max-width:1560px;width:100%;margin:0 auto;animation:pgin .35s ease both}
+@keyframes pgin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.phead{display:flex;gap:20px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:22px}
+.phead h1{font-size:28px;font-weight:800;letter-spacing:-.01em}
+.phead p{color:#5d6065;margin-top:4px;max-width:720px;font-weight:500}
+.pactions{display:flex;gap:10px;flex-wrap:wrap}
+.foot{border-top:1px solid var(--line);background:#fff;padding:12px 28px;font-size:12px;color:var(--grey);display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-weight:600}
+.foot .sp{margin-left:auto}
+.scrim{position:fixed;inset:0;background:rgba(17,19,21,.5);z-index:80;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.on{opacity:1;pointer-events:auto}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:9px;border:1px solid var(--line);background:#fff;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s,color .15s}
+.btn:hover{border-color:var(--bur);color:var(--bur)}
+.btn.p{background:var(--bur);border-color:var(--bur);color:#fff}.btn.p:hover{background:var(--bur2);color:#fff}
+.btn.g{background:var(--gold);border-color:var(--gold);color:var(--obs)}.btn.g:hover{background:var(--gold2);color:#fff}
+.btn.n{background:var(--navy);border-color:var(--navy);color:#fff}.btn.n:hover{background:var(--obs);color:#fff}
+.btn.d{background:#fff;border-color:#E6B8B4;color:var(--red)}.btn.d:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.btn.sm{height:30px;padding:0 11px;font-size:12.5px;border-radius:7px}
+.btn[disabled]{opacity:.5;pointer-events:none}
+
+/* cards */
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
+.card>.ch{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:16px 20px 0}
+.card>.ch h3{font-size:15.5px}
+.card>.ch small{color:var(--grey);font-weight:600;display:block;margin-top:2px}
+.card>.cb{padding:16px 20px 20px}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g6{grid-template-columns:repeat(6,1fr)}
+.g21{grid-template-columns:2fr 1fr}.g12{grid-template-columns:1fr 2fr}
+.mt{margin-top:18px}
+.kpi{border-radius:var(--r);padding:18px 18px 16px;border:1px solid var(--line);background:#fff;position:relative;overflow:hidden;box-shadow:var(--sh);min-height:122px;display:flex;flex-direction:column}
+.kpi .l{font-size:12.5px;font-weight:700;color:var(--grey);display:flex;align-items:center;gap:8px}
+.kpi .v{white-space:nowrap;font-size:clamp(22px,2.1vw,30px);font-weight:800;color:var(--obs);margin-top:8px;letter-spacing:-.02em;line-height:1.1}
+.kpi .s{margin-top:auto;padding-top:10px;font-size:12px;font-weight:700;color:var(--green)}
+.kpi .s.dn{color:var(--red)}.kpi .s.mu{color:var(--grey)}
+.kpi.k-bur{background:var(--bur);border-color:var(--bur)}.kpi.k-bur .l,.kpi.k-bur .s{color:#EBCFC9}.kpi.k-bur .v{color:#fff}
+.kpi.k-navy{background:var(--navy);border-color:var(--navy)}.kpi.k-navy .l,.kpi.k-navy .s{color:#B8C7D4}.kpi.k-navy .v{color:#fff}
+.kpi.k-gold{background:var(--gold-t);border-color:#E5D48E}.kpi.k-gold .s{color:#6b5610}
+.kpi.k-bar::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--gold)}
+.kpi.k-green::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--green)}
+.kpi.k-line{border:2px solid var(--bur)}
+.kpi svg.i{opacity:.9}
+.kpi .spark{position:absolute;right:14px;bottom:14px;width:64px;height:26px;opacity:.9}.kpi:has(.spark) .s{padding-right:76px}
+.kpi.k-bur .spark path{stroke:var(--gold)}.kpi.k-navy .spark path{stroke:var(--gold)}
+.spark path{fill:none;stroke:var(--bur);stroke-width:2}
+
+/* badges */
+.bd{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11.5px;font-weight:700;white-space:nowrap;background:var(--grey-t);color:#555}
+.bd::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.bd.g{background:var(--green-t);color:var(--green)}.bd.y{background:var(--gold-t);color:#7a6210}.bd.r{background:var(--red-t);color:var(--red)}.bd.b{background:var(--navy-t);color:var(--navy)}.bd.p{background:var(--bur-t);color:var(--bur)}
+
+/* tables */
+.tw{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse}
+table.t th{text-align:left;font-size:12px;font-weight:700;color:var(--grey);padding:11px 14px;border-bottom:1px solid var(--line);background:#FBF9F3;white-space:nowrap;user-select:none}
+table.t th.sort{cursor:pointer}table.t th.sort:hover{color:var(--bur)}
+table.t th .ar{opacity:.5;margin-left:4px}
+table.t td{padding:12px 14px;border-bottom:1px solid #F0EDE4;vertical-align:middle}
+table.t tr:last-child td{border-bottom:0}
+table.t tbody tr{transition:background .12s}
+table.t tbody tr:hover{background:#FCFAF4}
+table.t tr.click{cursor:pointer}
+.cell{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--obs)}
+.cell small{display:block;font-weight:600;color:var(--grey);font-size:12px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.tools .sp{margin-left:auto}
+.inp,.sel,.ta{height:38px;border:1px solid #D9D5C9;border-radius:9px;padding:0 12px;background:#fff;width:100%}
+.ta{height:auto;padding:10px 12px;min-height:80px;resize:vertical}
+.inp:focus,.sel:focus,.ta:focus{outline:2px solid var(--gold);outline-offset:0;border-color:var(--gold)}
+.tools .inp,.tools .sel{width:auto;min-width:150px}
+.tools .search{position:relative}.tools .search input{padding-left:34px;min-width:240px}.tools .search svg{position:absolute;left:10px;top:10px;color:var(--grey)}
+.pag{display:flex;align-items:center;gap:6px;padding:12px 16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--grey);font-weight:600;flex-wrap:wrap}
+.pag .sp{margin-left:auto;display:flex;gap:6px}
+.pag button{min-width:32px;height:30px;border:1px solid var(--line);background:#fff;border-radius:7px;cursor:pointer;font-weight:700}
+.pag button.on{background:var(--bur);color:#fff;border-color:var(--bur)}.pag button:disabled{opacity:.4;cursor:default}
+.empty{padding:44px 20px;text-align:center;color:var(--grey);font-weight:600}
+.empty b{display:block;color:var(--obs);font-size:15px;margin-bottom:4px}
+
+/* tabs */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto;scrollbar-width:thin}
+.tabs button{background:none;border:0;padding:11px 16px;font-weight:700;color:var(--grey);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;margin-bottom:-1px}
+.tabs button:hover{color:var(--bur)}.tabs button.on{color:var(--bur);border-bottom-color:var(--gold)}
+.subtabs{display:inline-flex;gap:4px;background:var(--grey-t);padding:4px;border-radius:10px;margin-bottom:14px;flex-wrap:wrap}
+.subtabs button{border:0;background:none;padding:6px 14px;border-radius:7px;font-weight:700;color:#666;cursor:pointer}
+.subtabs button.on{background:#fff;color:var(--bur);box-shadow:var(--sh)}
+.tabpane{animation:pgin .25s ease both}
+
+/* modal / drawer / toast */
+.modal{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:16px;background:rgba(17,19,21,.55);animation:fade .18s ease both}
+.mbox{background:#fff;border-radius:14px;width:min(560px,100%);max-height:92vh;display:flex;flex-direction:column;box-shadow:var(--sh2);animation:pop .22s ease both}
+.mbox.lg{width:min(860px,100%)}.mbox.sm{width:min(420px,100%)}
+.mh{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mh h3{font-size:18px}
+.mb{padding:20px 22px;overflow:auto}
+.mf{padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;background:#FBF9F3;border-radius:0 0 14px 14px;flex-wrap:wrap}
+@keyframes fade{from{opacity:0}to{opacity:1}}@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:#fff;z-index:95;box-shadow:var(--sh2);display:flex;flex-direction:column;animation:slide .28s cubic-bezier(.2,.8,.2,1) both}
+@keyframes slide{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+.dscrim{position:fixed;inset:0;background:rgba(17,19,21,.45);z-index:94;animation:fade .2s both}
+.drawer .mb{flex:1}
+.toasts{position:fixed;right:20px;bottom:20px;z-index:200;display:flex;flex-direction:column;gap:10px}
+.toast{background:var(--obs);color:#fff;border-radius:10px;padding:13px 18px;font-weight:700;box-shadow:var(--sh2);display:flex;gap:10px;align-items:center;max-width:380px;animation:tin .3s ease both;border-left:4px solid var(--gold)}
+.toast.ok{border-left-color:#3DAA80}.toast.err{border-left-color:#E5645B}
+@keyframes tin{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.menu{position:absolute;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh2);min-width:170px;z-index:120;padding:6px;animation:fade .12s both}
+.menu button,.menu a{display:block;width:100%;text-align:left;border:0;background:none;padding:8px 12px;border-radius:7px;cursor:pointer;font-weight:600}
+.menu button:hover,.menu a:hover{background:var(--gold-t)}.menu .dng{color:var(--red)}
+.menu hr{border:0;border-top:1px solid var(--line);margin:5px 0}
+
+/* forms */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg .f{display:flex;flex-direction:column;gap:5px}.fg .f.w{grid-column:1/-1}
+.fg label{font-weight:700;font-size:12.5px;color:#55585c}
+.fg .err{color:var(--red);font-size:12px;font-weight:600;display:none}.fg .f.bad .err{display:block}.fg .f.bad .inp,.fg .f.bad .sel{border-color:var(--red)}
+.chk{display:flex;gap:8px;align-items:center;font-weight:600}.chk input{accent-color:var(--bur);width:16px;height:16px}
+
+/* bits */
+.bar{height:8px;background:var(--grey-t);border-radius:8px;overflow:hidden}.bar i{display:block;height:100%;background:var(--bur);border-radius:8px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.bar.g i{background:var(--green)}.bar.y i{background:var(--gold)}.bar.n i{background:var(--navy)}
+.list{display:flex;flex-direction:column}
+.li{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #F0EDE4}.li:last-child{border-bottom:0}
+.li .tx{flex:1;min-width:0}.li .tx b{display:block;font-weight:700;color:var(--obs)}.li .tx small{color:var(--grey);font-weight:600;font-size:12.5px}
+.li .rt{font-weight:800;color:var(--obs);white-space:nowrap}
+.tl{position:relative;padding-left:22px}.tl::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl .e{position:relative;padding:0 0 16px}.tl .e::before{content:"";position:absolute;left:-21px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--gold);border:2px solid #fff;box-shadow:0 0 0 1px var(--gold)}
+.tl .e b{display:block;font-weight:700;color:var(--obs)}.tl .e small{color:var(--grey);font-weight:600}
+.dl{display:grid;grid-template-columns:140px 1fr;gap:8px 14px}.dl dt{color:var(--grey);font-weight:700;font-size:12.5px}.dl dd{font-weight:600;color:var(--obs)}
+.chip{display:inline-block;background:var(--grey-t);padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;margin:0 4px 4px 0;color:#555}
+.chip.b{background:var(--navy-t);color:var(--navy)}.chip.p{background:var(--bur-t);color:var(--bur)}.chip.y{background:var(--gold-t);color:#7a6210}
+.alert{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--gold-t);border:1px solid #E5D48E;font-weight:600}
+.alert.lock{background:var(--bur-t);border-color:#DDB6BC;color:var(--bur2)}
+.alert.red{background:var(--red-t);border-color:#E6B8B4}
+.sec{font-size:13px;font-weight:800;color:var(--bur);margin:0 0 10px}
+.mini{font-size:12px;color:var(--grey);font-weight:600}
+.flex{display:flex;gap:10px;align-items:center}.wrap{flex-wrap:wrap}.sp{flex:1}
+.acts li{list-style:none}
+
+/* charts */
+.ch-svg{width:100%;height:auto;display:block;overflow:visible}
+.ch-svg text{font-family:'Quicksand',sans-serif;font-size:11px;font-weight:600;fill:#8B8A84}
+.ch-svg .gl{stroke:#EFEBDF;stroke-width:1}
+.ch-svg .bar-r{transform-box:fill-box;transform-origin:bottom;animation:grow .8s cubic-bezier(.2,.8,.2,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:none}}
+.ch-svg .ln{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.2s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;font-weight:700;color:#666}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+
+/* hierarchy */
+.hier{display:flex;flex-direction:column;align-items:center;gap:0}
+.hier .nd{background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 22px;text-align:center;min-width:240px;font-weight:700}
+.hier .nd small{display:block;color:var(--grey);font-weight:600}
+.hier .nd.on{border-color:var(--bur);background:var(--bur-t)}
+.hier .ar{width:2px;height:22px;background:var(--gold);position:relative}.hier .ar::after{content:"";position:absolute;bottom:-1px;left:-5px;border:6px solid transparent;border-top:8px solid var(--gold);border-bottom:0}
+
+.skel{display:grid;place-items:center;min-height:60vh;text-align:center}
+
+/* responsive */
+@media (max-width:1600px){.g6{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:1280px){.g6{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:1024px){.g21,.g12,.g3{grid-template-columns:1fr}.g3.keep{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:900px){
+  .app,.app.collapsed{grid-template-columns:1fr;--sw:268px}
+  .side{position:fixed;left:0;top:0;transform:translateX(-100%);transition:transform .25s;width:268px}
+  .app.collapsed .brand div,.app.collapsed .ng>button span,.app.collapsed .ng>button .chev{display:revert!important}
+  .app.collapsed .ng.open .items{display:block!important}.app.collapsed .sidefoot{display:block}
+  .app.collapsed .ng>button{justify-content:flex-start}
+  .app.navopen .side{transform:none}
+  .app.navopen~.scrim{opacity:1;pointer-events:auto}
+  .top{padding:0 14px}.gsearch{display:none}.crumb{display:none}.top .sp2{margin-left:auto}
+  .content{padding:20px 14px 30px}.phead h1{font-size:23px}
+  .user div{display:none}
+}
+@media (max-width:760px){
+  .g2,.g3,.g4,.g6,.g3.keep{grid-template-columns:1fr 1fr}
+  .fg{grid-template-columns:1fr}
+  table.t thead{display:none}
+  table.t,table.t tbody,table.t tr,table.t td{display:block;width:100%}
+  table.t tr{border:1px solid var(--line);border-radius:10px;margin:10px 12px;width:auto;padding:6px 0;background:#fff}
+  table.t td{border:0;display:flex;justify-content:space-between;gap:14px;padding:7px 14px;text-align:right}
+  table.t td::before{content:attr(data-label);font-weight:700;color:var(--grey);font-size:12px;text-align:left}
+  .tools .search input{min-width:0;width:100%}.tools .search{flex:1 1 100%}
+  .dl{grid-template-columns:110px 1fr}
+  .pill.local{display:none}
+  .foot .sp{margin-left:0}
+}
+@media (max-width:520px){.g2,.g3,.g4,.g6,.g3.keep{grid-template-columns:1fr}.kpi .v{font-size:26px}.pill.org{display:none}}
+
+/* ===== page loader — bubbles ===== */
+#cms-load{position:fixed;inset:0;z-index:9999;background:var(--ivory);display:grid;place-items:center;transition:opacity .45s ease,visibility .45s ease}
+#cms-load.hide{opacity:0;visibility:hidden;pointer-events:none}
+#cms-load .orbit{position:relative;width:140px;height:140px;display:grid;place-items:center}
+#cms-load .orbit b{font-family:'Quicksand',system-ui,sans-serif;font-size:22px;font-weight:800;letter-spacing:.14em;color:var(--bur);animation:cmsbubbletext 2.4s ease-in-out infinite}
+#cms-load .orbit i{position:absolute;top:50%;left:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--bur);box-shadow:0 0 0 3px rgba(110,23,37,.08),0 4px 12px rgba(110,23,37,.25);transform-origin:0 0;animation:cmsorbit 2.4s linear infinite}
+#cms-load .orbit i:nth-child(1){background:var(--bur);animation-delay:0s}
+#cms-load .orbit i:nth-child(2){background:var(--gold);animation-delay:-.4s;width:11px;height:11px;margin:-5.5px 0 0 -5.5px}
+#cms-load .orbit i:nth-child(3){background:var(--navy);animation-delay:-.8s;width:9px;height:9px;margin:-4.5px 0 0 -4.5px}
+#cms-load .orbit i:nth-child(4){background:var(--green);animation-delay:-1.2s;width:12px;height:12px;margin:-6px 0 0 -6px}
+#cms-load .orbit i:nth-child(5){background:var(--bur3);animation-delay:-1.6s;width:10px;height:10px;margin:-5px 0 0 -5px}
+#cms-load .orbit i:nth-child(6){background:var(--gold2);animation-delay:-2s;width:13px;height:13px;margin:-6.5px 0 0 -6.5px}
+#cms-load .tag{position:absolute;bottom:36px;left:0;right:0;text-align:center;font-weight:700;font-size:12px;color:var(--grey);letter-spacing:.08em}
+@keyframes cmsorbit{
+  0%   {transform:rotate(0deg)   translateX(64px) rotate(0deg)   scale(1)}
+  50%  {transform:rotate(180deg) translateX(64px) rotate(-180deg) scale(1.25)}
+  100% {transform:rotate(360deg) translateX(64px) rotate(-360deg) scale(1)}
+}
+@keyframes cmsbubbletext{
+  0%,100%{transform:scale(1);opacity:.95}
+  50%{transform:scale(1.08);opacity:1}
+}
+@media (prefers-reduced-motion:reduce){
+  #cms-load .orbit i,#cms-load .orbit b{animation:none}
+}
+</style></head><body>
+
+<div id="cms-load" role="status" aria-live="polite" aria-label="Loading">
+  <div class="orbit">
+    <b>CMS</b>
+    <i></i><i></i><i></i><i></i><i></i><i></i>
+  </div>
+  <div class="tag">PARISH YETU</div>
+</div>
+
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script defer src="/js/firebase-config.js"></script>
+<script defer src="/js/firebase-init.js"></script>
+<script defer src="/js/core.js"></script>
+<script defer src="/js/slug.js"></script>
+<script defer>
+(function(){
+  var t = 0;
+  function ready(){
+    if (typeof Boot !== 'undefined' && Boot.guard) { run(); return; }
+    if (++t > 100) { if(window.PageLoader) PageLoader.done(); return; }
+    setTimeout(ready, 50);
+  }
+  function run(){ Boot.guard(function(){
+
+(function(){
+/* PARISH YETU platform administration. Every write here is authorised by the Security Rules for the
+   'super' role only, and every platform decision is recorded in platformAudit. */
+const u=Auth.user();
+const S=window.ParishSlug;
+const DB_=FB.db;
+let PS=[],DS=[],PROPS=[],AUD=[],currentHost=null;
+
+const dioById=id=>DS.find(d=>d.id===id);
+const dioceseName=id=>{const d=dioById(id);return d?d.name:'—'};
+const pStatus=p=>p.status&&p.status!=='active'?p.status:(p.verificationStatus==='pending'?'pending':'active');
+const STATUS_BD={active:'<span class="bd g">Active</span>',pending:'<span class="bd y">Pending verification</span>',suspended:'<span class="bd r">Suspended</span>',rejected:'<span class="bd r">Rejected</span>'};
+const siteOpen=p=>p.slug?Site.openHref(p.slug):'';
+const siteDisp=p=>p.slug?Site.display(p.slug):'—';
+const deaneryCount=()=>sum(DS,d=>(d.deaneries||[]).filter(x=>(x.status||'active')==='active').length);
+const ok=m=>{UI.toast(m);refresh()};
+const fail=e=>UI.toast((e&&e.code==='permission-denied')?'Permission denied by the database rules.':'Could not save: '+((e&&e.message)||e),'err');
+const audit=(action,data)=>Platform.audit(action,data).catch(()=>{});
+
+/* ---------- parish lifecycle ---------- */
+function setParishState(p,action,reason){
+ const b=DB_.batch(),pr=DB_.doc('parishes/'+p.id),dr=DB_.doc('churchDirectory/'+p.id);
+ const verified=p.verificationStatus!=='pending'&&p.verificationStatus!=='rejected';
+ let pp,dd;
+ if(action==='approve'){pp={verificationStatus:'verified',status:'active',verifiedAt:ts(),verifiedBy:u.id};dd={status:'active'}}
+ else if(action==='reject'){pp={verificationStatus:'rejected',status:'rejected',reviewNote:reason||''};dd={status:'rejected'}}
+ else if(action==='suspend'){pp={status:'suspended',suspendedReason:reason||''};dd={status:'suspended'}}
+ else if(action==='restore'){pp={status:'active',suspendedReason:''};dd={status:verified?'active':'pending'}}
+ pp.updatedAt=ts();dd.updatedAt=ts();
+ b.update(pr,pp);b.set(dr,dd,{merge:true});
+ return b.commit().then(()=>audit('parish.'+action,{parishId:p.id,name:p.name,reason:reason||''}));
+}
+function confirmAction(p,action){
+ const words={approve:['Approve parish','Approve '+p.name+'? It becomes visible in the public church directory, members can join it, and its published website goes live.','Approve',false],
+  reject:['Reject registration','Reject the registration of '+p.name+'? Its staff lose access. Give a reason the applicant can be told.','Reject',true],
+  suspend:['Suspend parish','Suspend '+p.name+'? All of its staff and members immediately lose access and its website goes offline. Nothing is deleted.','Suspend',true],
+  restore:['Restore parish','Restore '+p.name+'? Its staff and members regain access.','Restore',false]}[action];
+ if(action==='reject'||action==='suspend'){
+  UI.formModal({title:words[0],size:'sm',fields:[{k:'reason',label:'Reason (recorded in the audit trail)',type:'textarea',req:true}],submit:words[2],onSave:v=>{setParishState(p,action,v.reason).then(()=>ok(p.name+': '+action+'ed')).catch(fail)}});
+ }else UI.confirm({title:words[0],msg:words[1],ok:words[2],danger:words[3]},()=>setParishState(p,action).then(()=>ok(p.name+(action==='approve'?' approved':' restored'))).catch(fail));
+}
+function reassign(p){
+ const opts=DS.filter(d=>(d.status||'active')==='active').map(d=>({v:d.id,l:d.name}));
+ const fm=UI.formModal({title:'Reassign '+p.name,size:'sm',fields:[{k:'dioceseId',label:'Diocese',type:'select',options:[{v:'',l:'No diocese (not applicable)'},...opts],blank:false},{k:'deaneryId',label:'Deanery',type:'select',options:()=>[]},{k:'reason',label:'Reason (audit trail)',req:true}],values:{dioceseId:p.dioceseId||''},submit:'Reassign',
+  onSave:v=>{
+   const d=dioById(v.dioceseId),dn=d&&(d.deaneries||[]).find(x=>x.id===v.deaneryId);
+   const before={dioceseId:p.dioceseId||'',deanery:p.deanery||''},after={dioceseId:d?d.id:'',deanery:dn?dn.name:''};
+   const b=DB_.batch();
+   b.update(DB_.doc('parishes/'+p.id),{dioceseId:after.dioceseId,diocese:d?d.name:'',archdiocese:d?(d.kind==='Archdiocese'?d.name:d.archdiocese||''):'',deanery:after.deanery,deaneryId:dn?dn.id:'',pendingDeanery:'',updatedAt:ts()});
+   b.set(DB_.doc('churchDirectory/'+p.id),{dioceseId:after.dioceseId,dioceseName:d?d.name:'',deanery:after.deanery,updatedAt:ts()},{merge:true});
+   b.commit().then(()=>audit('parish.reassigned',{parishId:p.id,name:p.name,before,after,reason:v.reason})).then(()=>ok(p.name+' reassigned')).catch(fail);
+  }});
+ // filter deaneries by the selected diocese
+ setTimeout(()=>{const ds=document.querySelector('.modal #f_dioceseId'),dn=document.querySelector('.modal #f_deaneryId');if(!ds||!dn)return;
+  const fill=()=>{const d=dioById(ds.value);dn.innerHTML='<option value="">No deanery</option>'+((d&&d.deaneries)||[]).filter(x=>(x.status||'active')==='active').map(x=>`<option value="${esc(x.id)}" ${x.name===p.deanery&&ds.value===p.dioceseId?'selected':''}>${esc(x.name)}</option>`).join('')};
+  ds.onchange=fill;fill()},30);
+}
+function changeSlug(p){
+ UI.formModal({title:'Change web address',size:'sm',fields:[{k:'slug',label:'New address: parishyetu.church/…',req:true,hint:'Lowercase letters, numbers and hyphens. The old address keeps redirecting.'},{k:'reason',label:'Reason (audit trail)',req:true}],values:{slug:p.slug||''},submit:'Change address',
+  onSave:v=>{
+   const ns=S.slugify(v.slug);
+   if(!S.isValid(ns)){UI.toast('That address is not allowed (reserved, too short or invalid).','err');return false}
+   if(ns===p.slug){UI.toast('That is already the current address','err');return false}
+   DB_.runTransaction(async tx=>{
+    const n=await tx.get(DB_.doc('slugs/'+ns));
+    if(n.exists&&n.data().parishId!==p.id)throw new Error('That address belongs to another parish.');
+    tx.set(DB_.doc('slugs/'+ns),{parishId:p.id,status:'active',createdAt:ts()});
+    if(p.slug)tx.set(DB_.doc('slugs/'+p.slug),{parishId:p.id,status:'redirect',redirectTo:ns,updatedAt:ts()});
+    tx.update(DB_.doc('parishes/'+p.id),{slug:ns,previousSlugs:firebase.firestore.FieldValue.arrayUnion(p.slug||''),updatedAt:ts()});
+    tx.set(DB_.doc('churchDirectory/'+p.id),{slug:ns,updatedAt:ts()},{merge:true});
+   }).then(()=>audit('parish.slug-changed',{parishId:p.id,from:p.slug||'',to:ns,reason:v.reason})).then(()=>ok('Address changed to '+Site.display(ns))).catch(fail);
+  }});
+}
+function assignSlug(p){ // older parishes created before web addresses existed
+ const base=S.parishSlug(p.name,p.town)||'parish';
+ Platform.uniqueSlug(base).then(ns=>DB_.runTransaction(async tx=>{
+  const n=await tx.get(DB_.doc('slugs/'+ns));if(n.exists)throw new Error('Address taken, try again.');
+  tx.set(DB_.doc('slugs/'+ns),{parishId:p.id,status:'active',createdAt:ts()});
+  tx.update(DB_.doc('parishes/'+p.id),{slug:ns,nameKey:S.nameKey(p.name,p.town),townKey:S.placeKey(p.town),updatedAt:ts()});
+  tx.set(DB_.doc('churchDirectory/'+p.id),{slug:ns,updatedAt:ts()},{merge:true});
+ }).then(()=>audit('parish.slug-assigned',{parishId:p.id,to:ns})).then(()=>ok('Address assigned: '+Site.display(ns)))).catch(fail);
+}
+function parishActions(p){
+ const st=pStatus(p),a=[];
+ if(st==='pending'){a.push({label:'Approve parish',fn:()=>confirmAction(p,'approve')},{label:'Reject registration',danger:true,fn:()=>confirmAction(p,'reject')})}
+ if(st==='active')a.push({label:'Suspend parish',danger:true,fn:()=>confirmAction(p,'suspend')});
+ if(st==='suspended'||st==='rejected')a.push({label:'Restore parish',fn:()=>confirmAction(p,'restore')});
+ a.push('-',{label:'View details',fn:()=>churchDrawer(p)});
+ if(p.slug)a.push({label:'Open public website',fn:()=>window.open(siteOpen(p),'_blank','noopener')});
+ if(st==='active'||st==='pending')a.push({label:'Enter this church',fn:()=>Ctx.enterParish(p.id)});
+ a.push('-',{label:'Reassign diocese / deanery',fn:()=>reassign(p)},p.slug?{label:'Change web address',fn:()=>changeSlug(p)}:{label:'Assign web address',fn:()=>assignSlug(p)},{label:'Edit church details',fn:()=>editChurch(p)});
+ return a;
+}
+
+/* ---------- create ---------- */
+function dioceseForm(d){
+ const isNew=!d;d=d||{kind:'Diocese',country:'Kenya',status:'active'};
+ UI.formModal({title:isNew?'New diocese':'Edit '+d.name,size:'lg',fields:[
+  {k:'name',label:'Name',req:true,w:1,placeholder:'e.g. Catholic Diocese of Nakuru'},
+  {k:'kind',label:'Type',type:'select',options:['Diocese','Archdiocese'],blank:false},
+  {k:'archdiocese',label:'Metropolitan archdiocese',hint:'Leave blank for an archdiocese.'},
+  {k:'country',label:'Country',req:true},{k:'location',label:'See city / location'},
+  {k:'bishop',label:'Bishop / Archbishop'},{k:'website',label:'Official website'},
+  {k:'status',label:'Status',type:'select',options:[{v:'active',l:'Active'},{v:'inactive',l:'Inactive (hidden from registration)'}],blank:false}],
+  values:d,submit:isNew?'Create diocese':'Save changes',
+  onSave:v=>{
+   const id=isNew?S.slugify(v.name,50):d.id;
+   if(!id){UI.toast('Enter a valid name','err');return false}
+   const data={name:v.name.trim(),kind:v.kind,archdiocese:v.kind==='Archdiocese'?'':(v.archdiocese||'').trim(),country:(v.country||'').trim(),location:(v.location||'').trim(),bishop:(v.bishop||'').trim(),website:(v.website||'').trim(),status:v.status,updatedAt:ts()};
+   const run=isNew?DB_.runTransaction(async tx=>{const x=await tx.get(DB_.doc('dioceses/'+id));if(x.exists)throw new Error('A diocese with this name already exists.');tx.set(DB_.doc('dioceses/'+id),{...data,deaneries:[],createdAt:ts()})}):DB_.doc('dioceses/'+id).update(data);
+   run.then(()=>audit(isNew?'diocese.created':'diocese.updated',{dioceseId:id,name:data.name,status:data.status})).then(()=>ok(isNew?'Diocese created':'Diocese updated')).catch(fail);
+  }});
+}
+function deaneries(d){
+ const list=(d.deaneries||[]).map(x=>({...x}));
+ const draw=m=>{const b=$('.mb',m);b.innerHTML=`<p class="mini" style="margin-bottom:10px">Deaneries group parishes within ${esc(d.name)}. Inactive deaneries are hidden from registration but keep their parishes.</p><div class="list">${list.map((x,i)=>`<div class="li"><div class="tx"><b>${esc(x.name)}</b><small>${PS.filter(p=>p.dioceseId===d.id&&p.deanery===x.name).length} parishes</small></div>${(x.status||'active')==='active'?'<span class="bd g">Active</span>':'<span class="bd">Inactive</span>'}<button class="btn sm" data-t="${i}">${(x.status||'active')==='active'?'Deactivate':'Activate'}</button><button class="btn sm" data-rn="${i}">Rename</button></div>`).join('')||'<div class="empty">No deaneries yet.</div>'}</div><div class="flex mt" style="gap:8px"><input class="inp" id="dnn" placeholder="New deanery name"><button class="btn p" id="dna">${ic('plus')}Add</button></div>`;
+  $$('[data-t]',b).forEach(x=>x.onclick=()=>{const o=list[+x.dataset.t];o.status=(o.status||'active')==='active'?'inactive':'active';draw(m)});
+  $$('[data-rn]',b).forEach(x=>x.onclick=()=>{const o=list[+x.dataset.rn];const n=prompt('Rename deanery',o.name);if(n&&n.trim()){if(PS.some(p=>p.dioceseId===d.id&&p.deanery===o.name)&&!confirm('Parishes in this deanery will be updated to the new name. Continue?'))return;o.rename=o.rename||o.name;o.name=n.trim();draw(m)}});
+  $('#dna',b).onclick=()=>{const n=$('#dnn',b).value.trim();if(!n)return;if(list.some(x=>x.name.toLowerCase()===n.toLowerCase()))return UI.toast('That deanery already exists','err');let id=S.slugify(n,40)||uid('dn');while(list.some(x=>x.id===id))id+= '-'+Math.random().toString(36).slice(2,4);list.push({id,name:n,status:'active'});draw(m)}};
+ const m=UI.modal({title:'Deaneries · '+d.name,size:'lg',body:'',buttons:[{label:'Cancel'},{label:'Save deaneries',cls:'p',fn:()=>{
+  const b=DB_.batch(),renames=list.filter(x=>x.rename&&x.rename!==x.name);
+  b.update(DB_.doc('dioceses/'+d.id),{deaneries:list.map(x=>({id:x.id,name:x.name,status:x.status||'active'})),updatedAt:ts()});
+  renames.forEach(r=>PS.filter(p=>p.dioceseId===d.id&&p.deanery===r.rename).forEach(p=>{b.update(DB_.doc('parishes/'+p.id),{deanery:r.name,deaneryId:r.id,updatedAt:ts()});b.set(DB_.doc('churchDirectory/'+p.id),{deanery:r.name},{merge:true})}));
+  b.commit().then(()=>audit('diocese.deaneries',{dioceseId:d.id,count:list.length,renamed:renames.map(r=>r.rename+' -> '+r.name)})).then(()=>ok('Deaneries saved')).catch(fail);
+ }}]});draw(m);
+}
+function newChurch(){
+ const act=DS.filter(d=>(d.status||'active')==='active');
+ UI.formModal({title:'New church',size:'lg',fields:[
+   {k:'name',label:'Church / parish name',req:true,w:1},
+   {k:'dioceseId',label:'Diocese',type:'select',blank:false,options:()=>[{v:'',l:'No diocese (not applicable)'},...act.map(d=>({v:d.id,l:d.name}))]},
+   {k:'deanery',label:'Deanery',hint:'Must match a deanery of the diocese to link it.'},
+   {k:'town',label:'Town / location',req:true},{k:'county',label:'County / region'},{k:'country',label:'Country'},
+   {k:'address',label:'Address',w:1},{k:'phone',label:'Phone',type:'tel'},{k:'email',label:'Email',type:'email'},{k:'priest',label:'Parish priest',w:1}],
+  values:{dioceseId:act[0]?act[0].id:'',country:'Kenya'},submit:'Create church',
+  onSave:v=>{Platform.createParish(v,dioById(v.dioceseId)||null).then(r=>ok('Church created at '+Site.display(r.slug))).catch(fail)}});
+}
+
+/* ---------- views ---------- */
+function overview(host){
+ const cnt=s=>PS.filter(p=>pStatus(p)===s).length;
+ const pend=PS.filter(p=>pStatus(p)==='pending').sort((a,b)=>(b._t||0)-(a._t||0));
+ const pprops=PROPS.filter(x=>x.status==='Pending Verification'||x.status==='Clarification Requested');
+ const recent=[...PS].sort((a,b)=>(b._t||0)-(a._t||0)).slice(0,6);
+ host.innerHTML=`<div class="grid g4">${[
+   UI.kpi({label:'Registered parishes',icon:'admin',count:PS.length,sub:cnt('active')+' active · '+cnt('suspended')+' suspended',cls:'k-bur'}),
+   UI.kpi({label:'Pending registrations',icon:'shield',count:cnt('pending'),sub:'Awaiting verification',cls:'k-gold'}),
+   UI.kpi({label:'Diocese proposals',icon:'doc',count:pprops.length,sub:'Awaiting review',cls:'k-bar'}),
+   UI.kpi({label:'Dioceses / deaneries',icon:'report',value:DS.length+' / '+deaneryCount(),sub:'In the official directory',cls:'k-navy'})].join('')}</div>
+ <div class="grid g2 mt"><div class="card"><div class="ch"><div><h3>Waiting for verification</h3><small>Self-registered parishes</small></div><a class="btn sm" href="#Registrations">All</a></div><div class="cb"><div class="list">${pend.slice(0,6).map(p=>`<div class="li"><div class="tx"><b>${esc(p.name)}</b><small>${esc([p.town,p.country].filter(Boolean).join(', '))} · ${esc(p.dioceseId?dioceseName(p.dioceseId):p.proposedDiocese?'Proposed: '+p.proposedDiocese:'No diocese')}</small></div><button class="btn sm p" data-ap="${esc(p.id)}">Review</button></div>`).join('')||'<div class="empty">No parishes are waiting.</div>'}</div></div></div>
+ <div class="card"><div class="ch"><div><h3>Recent registrations</h3><small>Newest parishes on the platform</small></div></div><div class="cb"><div class="list">${recent.map(p=>`<div class="li"><div class="tx"><b>${esc(p.name)}</b><small>${esc(siteDisp(p))}</small></div>${STATUS_BD[pStatus(p)]||''}</div>`).join('')||'<div class="empty">No parishes yet.</div>'}</div></div></div></div>
+ <div class="grid g2 mt"><div class="card"><div class="ch"><div><h3>Parishes by diocese</h3></div></div><div class="cb">${DS.length?Ch.hbars(DS.map(d=>({label:d.name,value:PS.filter(p=>p.dioceseId===d.id).length})).sort((a,b)=>b.value-a.value).slice(0,10),{fmt:v=>fmt(v)}):'<div class="empty">No dioceses yet.</div>'}</div></div>
+ <div class="card"><div class="ch"><div><h3>Verification status</h3></div></div><div class="cb">${Ch.donut([{label:'Active',value:cnt('active'),color:'#1E6B4F'},{label:'Pending',value:cnt('pending'),color:'#C9A227'},{label:'Suspended',value:cnt('suspended'),color:'#B3261E'},{label:'Rejected',value:cnt('rejected'),color:'#8B8A84'}],{sub:'parishes'})}</div></div></div>`;
+ $$('[data-ap]',host).forEach(b=>b.onclick=()=>churchDrawer(PS.find(p=>p.id===b.dataset.ap)));
+}
+function parishTable(host,rowsFn,o={}){
+ UI.table(host,{rows:rowsFn,pageSize:12,sort:o.sort||'name',dir:o.dir||1,export:o.export,
+  search:p=>[p.name,p.town,p.county,p.country,p.priest,p.slug,dioceseName(p.dioceseId),p.deanery].join(' '),placeholder:'Search parish, town, diocese or web address…',
+  filters:o.filters!==false?[{key:'st',label:'All statuses',options:['active','pending','suspended','rejected'],get:pStatus},{key:'dioceseId',label:'All dioceses',options:()=>DS.map(d=>d.name),get:p=>dioceseName(p.dioceseId)}]:[],
+  cols:[{key:'name',label:'Parish',render:p=>`<div class="cell">${UI.av(p.name||'','')}<div>${esc(p.name||'')}<small>${esc([p.town,p.country].filter(Boolean).join(', '))}</small></div></div>`},
+   {key:'dioceseId',label:'Diocese / deanery',render:p=>`${esc(p.dioceseId?dioceseName(p.dioceseId):(p.proposedDiocese?'Proposed: '+p.proposedDiocese:'—'))}<br><small class="mini">${esc(p.deanery||(p.pendingDeanery?'Requested: '+p.pendingDeanery:''))}</small>`},
+   {key:'slug',label:'Website',render:p=>p.slug?`<a href="${esc(siteOpen(p))}" target="_blank" rel="noopener" style="color:var(--bur);font-weight:700">${esc(siteDisp(p))}</a><br><small class="mini">${p.websitePublished?'Published':'Not published'}</small>`:'<span class="mini">No address</span>'},
+   {key:'_st',label:'Status',val:pStatus,render:p=>STATUS_BD[pStatus(p)]||esc(pStatus(p))},
+   ...(o.extra||[])],
+  onRow:p=>churchDrawer(p),actions:p=>parishActions(p)});
+}
+function registrations(host){
+ const pend=()=>PS.filter(p=>pStatus(p)==='pending');
+ const aff=()=>PS.filter(p=>p.pendingDeanery&&p.dioceseId);
+ host.innerHTML=`<div class="card"><div class="ch"><div><h3>Parish registrations awaiting verification</h3><small>Approve to list the parish publicly and allow members to join</small></div></div><div class="cb" id="rt"></div></div>
+ <div class="card mt"><div class="ch"><div><h3>Deanery affiliation requests</h3><small>Parishes that named a deanery not yet in the directory</small></div></div><div class="cb"><div class="list" id="afl"></div></div></div>`;
+ parishTable($('#rt',host),pend,{filters:false,sort:'_st',extra:[{key:'admin',label:'Registered via',sort:false,render:p=>esc(p.registeredVia==='self-service'?'Self-service':'Platform')}]});
+ const L=$('#afl',host);
+ L.innerHTML=aff().map(p=>`<div class="li"><div class="tx"><b>${esc(p.name)}</b><small>Requests deanery “${esc(p.pendingDeanery)}” in ${esc(dioceseName(p.dioceseId))}</small></div><button class="btn sm p" data-aa="${esc(p.id)}">Approve</button><button class="btn sm" data-ar="${esc(p.id)}">Decline</button></div>`).join('')||'<div class="empty">No affiliation requests.</div>';
+ $$('[data-aa]',L).forEach(b=>b.onclick=()=>{const p=PS.find(x=>x.id===b.dataset.aa),d=dioById(p.dioceseId);if(!d)return;
+  let dn=(d.deaneries||[]).find(x=>x.name.toLowerCase()===p.pendingDeanery.toLowerCase());
+  const list=[...(d.deaneries||[])];if(!dn){dn={id:S.slugify(p.pendingDeanery,40)||uid('dn'),name:p.pendingDeanery,status:'active'};while(list.some(x=>x.id===dn.id))dn.id+='-'+Math.random().toString(36).slice(2,4);list.push(dn)}
+  UI.confirm({title:'Approve affiliation',msg:`Link ${p.name} to the ${dn.name} deanery of ${d.name}?${(d.deaneries||[]).includes(dn)?'':' The deanery will be added to the diocese.'}`,ok:'Approve'},()=>{
+   const bt=DB_.batch();bt.update(DB_.doc('dioceses/'+d.id),{deaneries:list,updatedAt:ts()});bt.update(DB_.doc('parishes/'+p.id),{deanery:dn.name,deaneryId:dn.id,pendingDeanery:'',updatedAt:ts()});bt.set(DB_.doc('churchDirectory/'+p.id),{deanery:dn.name},{merge:true});
+   bt.commit().then(()=>audit('parish.affiliation-approved',{parishId:p.id,dioceseId:d.id,deanery:dn.name})).then(()=>ok('Affiliation approved')).catch(fail)})});
+ $$('[data-ar]',L).forEach(b=>b.onclick=()=>{const p=PS.find(x=>x.id===b.dataset.ar);UI.confirm({title:'Decline affiliation',msg:'Clear the requested deanery for '+p.name+'?',ok:'Decline',danger:true},()=>DB_.doc('parishes/'+p.id).update({pendingDeanery:'',updatedAt:ts()}).then(()=>audit('parish.affiliation-declined',{parishId:p.id,requested:p.pendingDeanery})).then(()=>ok('Request declined')).catch(fail))});
+}
+function churches(host){
+ host.innerHTML=`<div class="card"><div class="ch"><div><h3>Every parish on the platform</h3><small>Click a parish for details, or use the row menu for actions.</small></div></div><div class="cb" id="ct"></div></div>`;
+ parishTable($('#ct',host),()=>PS,{export:'parishes'});
+}
+function dioceses(host){
+ host.innerHTML=`<div class="card"><div class="ch"><div><h3>Official diocesan directory</h3><small>Dioceses can exist before any parish joins them</small></div><button class="btn sm p" id="nd">${ic('plus')}New diocese</button></div><div class="cb" id="dt"></div></div>`;
+ $('#nd',host).onclick=()=>dioceseForm();
+ UI.table($('#dt',host),{rows:()=>DS,pageSize:12,sort:'name',dir:1,export:'dioceses',search:d=>[d.name,d.archdiocese,d.country,d.bishop].join(' '),placeholder:'Search diocese, province, country or bishop…',
+  filters:[{key:'status',label:'All statuses',options:['active','inactive'],get:d=>d.status||'active'}],
+  cols:[{key:'name',label:'Diocese',render:d=>`<div class="cell">${UI.av(d.name||'','')}<div>${esc(d.name||'')}<small>${esc(d.kind==='Archdiocese'?'Archdiocese':(d.archdiocese||''))}</small></div></div>`},
+   {key:'country',label:'Country',render:d=>esc([d.location,d.country].filter(Boolean).join(', ')||'—')},
+   {key:'bishop',label:'Bishop',render:d=>esc(d.bishop||'—')},
+   {key:'dn',label:'Deaneries',sort:false,render:d=>`<b>${(d.deaneries||[]).filter(x=>(x.status||'active')==='active').length}</b>`},
+   {key:'ps',label:'Parishes',sort:false,render:d=>`<b>${PS.filter(p=>p.dioceseId===d.id).length}</b>`},
+   {key:'status',label:'Status',render:d=>(d.status||'active')==='active'?'<span class="bd g">Active</span>':'<span class="bd">Inactive</span>'}],
+  onRow:d=>dioceseDrawer(d),
+  actions:d=>[{label:'View parishes by deanery',fn:()=>dioceseDrawer(d)},{label:'Manage deaneries',fn:()=>deaneries(d)},{label:'Edit diocese',fn:()=>dioceseForm(d)},'-',{label:'Assign diocesan administrator',fn:()=>assignDioc(d)}]});
+}
+function dioceseDrawer(d){
+ const ps=PS.filter(p=>p.dioceseId===d.id),groups={};ps.forEach(p=>{const k=p.deanery||'No deanery';(groups[k]=groups[k]||[]).push(p)});
+ const dr=UI.drawer({title:d.name,sub:[d.kind,d.country,d.bishop].filter(Boolean).join(' · '),html:`<dl class="dl"><dt>Province</dt><dd>${esc(d.kind==='Archdiocese'?'Metropolitan see':(d.archdiocese||'—'))}</dd><dt>Location</dt><dd>${esc([d.location,d.country].filter(Boolean).join(', ')||'—')}</dd><dt>Bishop</dt><dd>${esc(d.bishop||'—')}</dd><dt>Status</dt><dd>${esc(d.status||'active')}</dd></dl>
+  <div class="mt">${Object.keys(groups).sort().map(k=>`<div class="sec">${esc(k)} · ${groups[k].length}</div><div class="list">${groups[k].map(p=>`<div class="li"><div class="tx"><b>${esc(p.name)}</b><small>${esc(siteDisp(p))}</small></div>${STATUS_BD[pStatus(p)]||''}</div>`).join('')}</div>`).join('')||'<div class="empty">No parishes in this diocese yet.</div>'}</div>`,
+  footer:[{label:'Close',fn:c=>c()},{label:'Manage deaneries',fn:c=>{c();deaneries(d)}},{label:'Edit diocese',cls:'p',fn:c=>{c();dioceseForm(d)}}]});
+}
+function proposals(host){
+ host.innerHTML=`<div class="alert" style="margin-bottom:14px">${ic('shield')}<span>Proposed dioceses are never added to the official directory automatically. Verify each one before approving.</span></div><div class="card"><div class="cb" id="pt"></div></div>`;
+ UI.table($('#pt',host),{rows:()=>PROPS,pageSize:10,sort:'status',dir:-1,search:x=>[x.name,x.country,x.bishop,x.parishName,x.proposerEmail].join(' '),
+  filters:[{key:'status',label:'All statuses',options:['Pending Verification','Clarification Requested','Approved','Rejected']}],
+  cols:[{key:'name',label:'Proposed diocese',render:x=>`<b>${esc(x.name)}</b><br><small class="mini">${esc(x.kind||'Diocese')} · ${esc([x.location,x.country].filter(Boolean).join(', '))}</small>`},
+   {key:'bishop',label:'Bishop',render:x=>esc(x.bishop||'—')},
+   {key:'parishName',label:'Proposed by',render:x=>`${esc(x.parishName||'')}<br><small class="mini">${esc(x.proposerName||'')} · ${esc(x.proposerEmail||'')}</small>`},
+   {key:'status',label:'Status',render:x=>UI.bd(x.status==='Pending Verification'?'Pending':x.status==='Clarification Requested'?'In Review':x.status)}],
+  onRow:x=>proposalReview(x),actions:x=>[{label:'Review',fn:()=>proposalReview(x)}]});
+}
+function proposalReview(x){
+ const done=x.status==='Approved'||x.status==='Rejected';
+ const dr=UI.drawer({title:x.name,sub:'Diocese proposal · '+x.status,html:`<dl class="dl"><dt>Type</dt><dd>${esc(x.kind||'Diocese')}</dd><dt>Metropolitan</dt><dd>${esc(x.archdiocese||'—')}</dd><dt>Country</dt><dd>${esc(x.country||'—')}</dd><dt>Location</dt><dd>${esc(x.location||'—')}</dd><dt>Bishop</dt><dd>${esc(x.bishop||'—')}</dd><dt>Deanery</dt><dd>${esc(x.deanery||'—')}</dd><dt>Notes</dt><dd style="white-space:pre-line">${esc(x.notes||'—')}</dd><dt>Parish</dt><dd>${esc(x.parishName||'—')}</dd><dt>Contact</dt><dd>${esc(x.proposerName||'')} · ${esc(x.proposerEmail||'')}</dd>${x.reviewNote?`<dt>Review note</dt><dd>${esc(x.reviewNote)}</dd>`:''}</dl>`,
+  footer:done?[{label:'Close',fn:c=>c()}]:[{label:'Reject',fn:c=>{c();review(x,'Rejected')}},{label:'Request clarification',fn:c=>{c();review(x,'Clarification Requested')}},{label:'Approve',cls:'p',fn:c=>{c();approveProposal(x)}}]});
+}
+function review(x,status){
+ UI.formModal({title:status==='Rejected'?'Reject proposal':'Request clarification',size:'sm',fields:[{k:'note',label:status==='Rejected'?'Reason':'What needs clarifying?',type:'textarea',req:true}],submit:'Save',
+  onSave:v=>{DB_.doc('dioceseProposals/'+x.id).update({status,reviewNote:v.note,reviewedBy:u.id,updatedAt:ts()}).then(()=>audit('diocese-proposal.'+(status==='Rejected'?'rejected':'clarification'),{proposalId:x.id,name:x.name,note:v.note})).then(()=>ok('Proposal updated — contact '+(x.proposerEmail||'the proposer')+' with your note')).catch(fail)}});
+}
+function approveProposal(x){
+ const existing=DS.find(d=>S.nameKey(d.name)===S.nameKey(x.name));
+ UI.formModal({title:'Approve diocese',size:'lg',fields:[
+   {k:'mode',label:'Action',type:'select',blank:false,options:[{v:'new',l:'Create a new official diocese'},...DS.map(d=>({v:d.id,l:'Link to existing: '+d.name}))]},
+   {k:'name',label:'Official name',req:true,w:1},{k:'kind',label:'Type',type:'select',options:['Diocese','Archdiocese'],blank:false},{k:'archdiocese',label:'Metropolitan archdiocese'},
+   {k:'country',label:'Country',req:true},{k:'location',label:'Location'},{k:'bishop',label:'Bishop'},{k:'deanery',label:'First deanery (optional)'}],
+  values:{...x,mode:existing?existing.id:'new'},submit:'Approve',
+  onSave:async v=>{
+   try{
+    let did=v.mode,dio;
+    const b=DB_.batch();
+    if(v.mode==='new'){
+     did=S.slugify(v.name,50);if(!did)throw new Error('Enter a valid name');
+     if((await DB_.doc('dioceses/'+did).get()).exists)throw new Error('A diocese with this id already exists — link to it instead.');
+     const dn=v.deanery&&v.deanery.trim()?[{id:S.slugify(v.deanery,40)||'deanery',name:v.deanery.trim(),status:'active'}]:[];
+     dio={name:v.name.trim(),kind:v.kind,archdiocese:v.kind==='Archdiocese'?'':(v.archdiocese||''),country:v.country,location:v.location||'',bishop:v.bishop||'',status:'active',deaneries:dn};
+     b.set(DB_.doc('dioceses/'+did),{...dio,approvedFrom:x.id,createdAt:ts(),updatedAt:ts()});
+    }else dio=dioById(did);
+    b.update(DB_.doc('dioceseProposals/'+x.id),{status:'Approved',dioceseId:did,reviewedBy:u.id,updatedAt:ts()});
+    const p=PS.find(q=>q.id===x.parishId);
+    if(p&&!p.dioceseId){
+     const dn=(dio.deaneries||[]).find(z=>z.name.toLowerCase()===String(p.pendingDeanery||x.deanery||'').toLowerCase());
+     b.update(DB_.doc('parishes/'+p.id),{dioceseId:did,diocese:dio.name,archdiocese:dio.kind==='Archdiocese'?dio.name:(dio.archdiocese||''),proposedDiocese:'',deanery:dn?dn.name:'',deaneryId:dn?dn.id:'',pendingDeanery:dn?'':(p.pendingDeanery||''),updatedAt:ts()});
+     b.set(DB_.doc('churchDirectory/'+p.id),{dioceseId:did,dioceseName:dio.name,deanery:dn?dn.name:''},{merge:true});
+    }
+    await b.commit();await audit('diocese-proposal.approved',{proposalId:x.id,dioceseId:did,parishId:x.parishId||''});
+    ok('Diocese approved'+(p?' and '+p.name+' linked':''));
+   }catch(e){fail(e)}
+  }});
+}
+function assignDioc(d){
+ UI.formModal({title:'Assign diocesan administrator',size:'sm',fields:[{k:'email',label:'Email of an existing PARISH YETU account',type:'email',req:true},{k:'role',label:'Role',type:'select',blank:false,options:[{v:'diocese',l:'Diocesan Administrator'},{v:'deanery',l:'Deanery Administrator'}]},{k:'deanery',label:'Deanery (for deanery role)',type:'select',options:()=>(d.deaneries||[]).map(x=>x.name)}],submit:'Assign',
+  onSave:async v=>{
+   try{
+    const s=await DB_.collection('users').where('email','==',v.email.trim().toLowerCase()).limit(2).get();
+    if(s.empty)throw new Error('No account with that email. Ask the person to create an account first.');
+    const doc=s.docs[0],cur=doc.data();
+    if(cur.role==='super')throw new Error('Platform administrators cannot be reassigned here.');
+    if(v.role==='deanery'&&!v.deanery)throw new Error('Choose the deanery.');
+    // Diocesan roles see only reports and governance summaries of their parishes (Security Rules).
+    await doc.ref.update({role:v.role,title:v.role==='diocese'?'Diocesan Administrator':'Deanery Administrator',dioceseId:d.id,parishId:'',deanery:v.role==='deanery'?v.deanery:'',organization:v.role==='deanery'?v.deanery:d.name,status:'active',updatedAt:ts()});
+    await audit('diocese.admin-assigned',{uid:doc.id,email:v.email,role:v.role,dioceseId:d.id,deanery:v.deanery||'',previousRole:cur.role||'',previousParish:cur.parishId||''});
+    ok(v.email+' is now '+(v.role==='diocese'?'Diocesan':'Deanery')+' Administrator · they must sign in again');
+   }catch(e){fail(e)}
+  }});
+}
+function auditView(host){
+ host.innerHTML=`<div class="alert lock" style="margin-bottom:14px">${ic('lock')}<span>Platform decisions: approvals, suspensions, reassignments, web-address changes and diocesan appointments. Entries cannot be edited or deleted.</span></div><div class="card" id="at"></div>`;
+ UI.table($('#at',host),{rows:()=>AUD,pageSize:15,search:a=>JSON.stringify(a),cols:[{key:'_t',label:'When',render:a=>esc(a._t?new Date(a._t).toLocaleString('en-GB'):'—')},{key:'action',label:'Action',render:a=>`<b>${esc(a.action)}</b>`},{key:'name',label:'Subject',render:a=>esc(a.name||a.parishId||a.dioceseId||a.email||'—')},{key:'byName',label:'By',render:a=>esc(a.byName||a.by||'—')},{key:'reason',label:'Detail',sort:false,render:a=>esc(a.reason||a.note||(a.to?('→ '+a.to):'')||'')}]});
+}
+
+function churchDrawer(p){
+ const st=pStatus(p),url=siteOpen(p);
+ const dr=UI.drawer({title:p.name,sub:(dioceseName(p.dioceseId)||'')+(p.deanery?' · '+p.deanery:''),html:`
+  <div style="margin-bottom:14px">${STATUS_BD[st]||''} ${p.websitePublished?'<span class="bd b">Website published</span>':'<span class="bd">Website not published</span>'}</div>
+  <dl class="dl"><dt>Parish ID</dt><dd>${esc(p.id)}</dd><dt>Website</dt><dd>${p.slug?`<a href="${esc(url)}" target="_blank" rel="noopener" style="color:var(--bur);font-weight:800">${esc(siteDisp(p))}</a>`:'Not assigned'}</dd>
+  <dt>Type</dt><dd>${esc(p.parishType||'Parish')}</dd><dt>Diocese</dt><dd>${esc(p.dioceseId?dioceseName(p.dioceseId):(p.proposedDiocese?'Proposed: '+p.proposedDiocese+' (pending)':'—'))}</dd>
+  <dt>Deanery</dt><dd>${esc(p.deanery||(p.pendingDeanery?'Requested: '+p.pendingDeanery:'—'))}</dd><dt>Location</dt><dd>${esc([p.address,p.town,p.county,p.country].filter(Boolean).join(', ')||'—')}</dd>
+  <dt>Phone</dt><dd>${esc(p.phone||'—')}</dd><dt>Email</dt><dd>${esc(p.email||'—')}</dd><dt>Priest</dt><dd>${esc(p.priest||'—')}</dd>
+  <dt>Registered</dt><dd>${esc(p.registeredVia==='self-service'?'Self-service registration':'Platform administrator')}${p._t?' · '+new Date(p._t).toLocaleDateString('en-GB'):''}</dd>
+  <dt>Parishioners</dt><dd>${fmt((p.stats&&p.stats.parishioners)||0)}</dd>${p.reviewNote?`<dt>Review note</dt><dd>${esc(p.reviewNote)}</dd>`:''}${p.suspendedReason?`<dt>Suspension</dt><dd>${esc(p.suspendedReason)}</dd>`:''}</dl>
+  <div class="mt flex wrap" style="gap:8px" id="dact"></div>`,footer:[{label:'Close',fn:c=>c()}]});
+ const box=$('#dact',dr);
+ parishActions(p).filter(a=>a!=='-').forEach(a=>{const b=document.createElement('button');b.className='btn sm'+(a.danger?' d':/Approve|Restore/.test(a.label)?' p':'');b.textContent=a.label;b.onclick=()=>{dr.close();a.fn()};box.appendChild(b)});
+}
+function editChurch(p){
+ UI.formModal({title:'Edit '+p.name,size:'lg',fields:[{k:'name',label:'Church name',req:true,w:1},{k:'town',label:'Town'},{k:'county',label:'County'},{k:'country',label:'Country'},{k:'address',label:'Address',w:1},{k:'phone',label:'Phone',type:'tel'},{k:'email',label:'Email',type:'email'},{k:'priest',label:'Parish priest',w:1}],values:p,submit:'Save changes',
+  onSave:v=>{
+   const pub={name:v.name.trim(),town:v.town||'',county:v.county||'',country:v.country||'',address:v.address||'',phone:v.phone||'',email:v.email||''};
+   const b=DB_.batch();
+   // The web address is deliberately NOT changed when the name changes.
+   b.update(DB_.doc('parishes/'+p.id),{...pub,priest:v.priest||'',nameKey:S.nameKey(pub.name,pub.town),townKey:S.placeKey(pub.town),updatedAt:ts()});
+   b.set(DB_.doc('churchDirectory/'+p.id),{...pub,updatedAt:ts()},{merge:true});
+   b.commit().then(()=>audit('parish.edited',{parishId:p.id,name:pub.name})).then(()=>ok('Church updated')).catch(fail);
+  }});
+}
+
+/* ---------- data ---------- */
+const tms=x=>x&&x.toMillis?x.toMillis():0;
+function render(){
+ UI.tabs(currentHost,[{label:'Overview',render:overview},{label:'Registrations',render:registrations},{label:'Churches',render:churches},{label:'Dioceses',render:dioceses},{label:'Diocese Proposals',render:proposals},{label:'Platform Audit',render:auditView}]);
+}
+function refresh(){
+ return Promise.all([DB_.collection('parishes').limit(1000).get(),DB_.collection('dioceses').limit(500).get(),DB_.collection('dioceseProposals').limit(300).get(),DB_.collection('platformAudit').orderBy('at','desc').limit(300).get().catch(()=>({docs:[]}))])
+ .then(([ps,ds,pr,au])=>{
+  PS=ps.docs.map(x=>({...x.data(),id:x.id,_t:tms(x.data().createdAt)})).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  DS=ds.docs.map(x=>({...x.data(),id:x.id})).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  PROPS=pr.docs.map(x=>({...x.data(),id:x.id,_t:tms(x.data().createdAt)}));
+  AUD=au.docs.map(x=>({...x.data(),id:x.id,_t:tms(x.data().at)}));
+  Ctx._dioceses=DS;
+  Ctx.parishes=PS.filter(p=>pStatus(p)==='active'||pStatus(p)==='pending');
+  render();
+ }).catch(e=>{UI.toast('Could not load platform data: '+e.message,'err')});
+}
+
+App.start({file:'/super-admin',mod:'settings',crumb:'Platform',group:'System',title:'Platform Administration',
+ subtitle:'Parish registrations, verification, dioceses and deaneries across PARISH YETU.',
+ actions:u.role==='super'?[{label:'New diocese',icon:'plus',fn:()=>dioceseForm()},{label:'New church',icon:'plus',cls:'p',fn:newChurch}]:[],
+ render:host=>{
+  currentHost=host;
+  if(u.role!=='super'){host.innerHTML='<div class="card"><div class="skel"><div style="max-width:420px">'+ic('lock')+'<h3 style="margin:10px 0 6px">Super admin only</h3><p style="color:var(--grey)">This page is reserved for the PARISH YETU platform administrator.</p></div></div></div>';return}
+  host.innerHTML='<div class="card"><div class="cb">Loading platform data…</div></div>';
+  refresh();
+  setTimeout(function(){ if(window.PageLoader) PageLoader.done(); }, 80);
+ }});
+})();
+
+  }); }
+  ready();
+})();
+</script>
+</body></html>

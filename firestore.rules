@@ -1,0 +1,482 @@
+rules_version = '2';
+// PARISH YETU - Cloud Firestore Security Rules.
+// One hosted platform, many parishes. The parish (parishes/{parishId}) is the tenant boundary:
+// every private read/write is checked against the signed-in user's own /users profile, never a URL.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- auth helpers ----------
+    function signedIn() { return request.auth != null; }
+
+    function myProfile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function myRole()     { return signedIn() ? myProfile().get('role', 'none')     : 'none'; }
+    function myStatus()   { return signedIn() ? myProfile().get('status', 'none')   : 'none'; }
+    function myParish()   { return signedIn() ? myProfile().get('parishId', '')     : ''; }
+    function myDiocese()  { return signedIn() ? myProfile().get('dioceseId', '')    : ''; }
+    function myOrg()      { return signedIn() ? myProfile().get('organization', '') : ''; }
+    function myScc()      { return signedIn() ? myProfile().get('sccId', '')        : ''; }
+
+    function active()    { return signedIn() && myStatus() == 'active'; }
+    function isSuper()   { return active() && myRole() == 'super'; }
+    // A suspended or rejected parish loses access for all of its staff and members at once.
+    function parishLive(pid) { return get(/databases/$(database)/documents/parishes/$(pid)).data.get('status', 'active') == 'active'; }
+    function inParish(pid) { return active() && myParish() == pid && parishLive(pid); }
+    function staffOf(pid, roles) { return inParish(pid) && myRole() in roles; }
+    function isMember(pid) { return active() && myRole() == 'parishioner' && myParish() == pid && parishLive(pid); }
+    function directoryLive(pid) {
+      return get(/databases/$(database)/documents/churchDirectory/$(pid)).data.get('status', '') == 'active';
+    }
+    function httpsOrEmpty(v) { return v is string && (v == '' || (v.size() <= 600 && v.matches('https://[^ "<>]+'))); }
+
+    function dioceseScope(pid) {
+      return active() && (
+        (myRole() == 'diocese' && get(/databases/$(database)/documents/parishes/$(pid)).data.dioceseId == myDiocese()) ||
+        (myRole() == 'deanery' && get(/databases/$(database)/documents/parishes/$(pid)).data.dioceseId == myDiocese()
+                              && get(/databases/$(database)/documents/parishes/$(pid)).data.deanery == myOrg()));
+    }
+    function ownFamily(pid) {
+      return get(/databases/$(database)/documents/parishes/$(pid)/parishioners/$(request.auth.uid)).data.get('familyId', '');
+    }
+    function changed(keys) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys); }
+    function newProfile() { return getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function sameId(id) { return request.resource.data.id == id; }
+
+    // ---------- accounts ----------
+    match /users/{uid} {
+      allow get: if signedIn() && (request.auth.uid == uid || isSuper()
+                    || (active() && myRole() in ['priest', 'admin'] && resource.data.parishId == myParish()));
+      allow list: if isSuper()
+                    || (active() && myRole() in ['priest', 'admin'] && resource.data.parishId == myParish());
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name','email','phone','role','status','parishId','dioceseId','deanery','organization','title','personId','createdAt'])
+        && request.resource.data.role == 'parishioner'
+        && request.resource.data.status == 'active'
+        && request.resource.data.personId == uid
+        && request.resource.data.title == 'Parishioner'
+        && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 120
+        && request.resource.data.email == request.auth.token.email.lower()
+        && request.resource.data.createdAt == request.time
+        && exists(/databases/$(database)/documents/churchDirectory/$(request.resource.data.parishId))
+        && get(/databases/$(database)/documents/churchDirectory/$(request.resource.data.parishId)).data.status == 'active'
+        && get(/databases/$(database)/documents/churchDirectory/$(request.resource.data.parishId)).data.dioceseId == request.resource.data.dioceseId;
+      allow update: if isSuper()
+        || (active() && request.auth.uid == uid && changed(['name', 'phone', 'updatedAt']))
+        || (staffOf(resource.data.get('parishId', 'none'), ['priest', 'admin']) && request.auth.uid != uid
+            && changed(['status', 'role', 'title', 'sccId', 'updatedAt'])
+            && resource.data.role in ['priest', 'admin', 'secretary', 'finance', 'scc', 'parishioner']
+            && request.resource.data.role in ['priest', 'admin', 'secretary', 'finance', 'scc', 'parishioner']);
+      allow delete: if false;
+    }
+
+    // ---------- public church directory ----------
+    match /churchDirectory/{pid} {
+      allow read: if true;
+      allow create, delete: if isSuper();
+      allow update: if isSuper()
+        || (staffOf(pid, ['priest', 'admin']) && changed(['name', 'town', 'address', 'phone', 'email', 'motto', 'websitePublished', 'updatedAt'])
+            && request.resource.data.get('websitePublished', false) is bool);
+    }
+
+    // Official diocesan directory: public (needed by the church registration wizard). Platform admin writes.
+    // Proposed dioceses never land here directly; they wait in dioceseProposals until approved.
+    match /dioceses/{did} {
+      allow read: if true;
+      allow write: if isSuper();
+    }
+    match /dioceseProposals/{id} {
+      allow read, update: if isSuper();
+      allow create, delete: if false;          // created only by the registerParish Cloud Function
+    }
+
+    // Public web address -> parish id. Written by the backend / platform admin only, so a parish
+    // can never claim another parish's address.
+    match /slugs/{slug} {
+      allow read: if true;
+      allow write: if isSuper();
+    }
+    // Self-service registration tracking (written by the Cloud Function only).
+    match /registrations/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isSuper());
+      allow write: if false;
+    }
+    match /parishKeys/{key} {
+      allow read, write: if false;
+    }
+    // Platform-level audit trail (approvals, suspensions, reassignments, slug changes).
+    match /platformAudit/{id} {
+      allow read, create: if isSuper();
+      allow update, delete: if false;
+    }
+
+    // ---------- church requests ----------
+    match /churchRequests/{rid} {
+      allow create: if request.resource.data.keys().hasOnly(['name','town','diocese','contactName','contactEmail','notes','status','createdAt'])
+        && request.resource.data.status == 'open'
+        && request.resource.data.name is string && request.resource.data.name.size() > 1 && request.resource.data.name.size() <= 160
+        && request.resource.data.contactName is string && request.resource.data.contactName.size() > 1 && request.resource.data.contactName.size() <= 120
+        && request.resource.data.contactEmail is string && request.resource.data.contactEmail.size() > 3 && request.resource.data.contactEmail.size() <= 160
+        && request.resource.data.town is string && request.resource.data.town.size() <= 120
+        && request.resource.data.diocese is string && request.resource.data.diocese.size() <= 120
+        && request.resource.data.notes is string && request.resource.data.notes.size() <= 1000
+        && request.resource.data.createdAt == request.time;
+      allow read, update, delete: if isSuper();
+    }
+
+    // ---------- a church ----------
+    match /parishes/{pid} {
+      allow read: if isSuper()
+        || (active() && myRole() == 'diocese' && resource.data.dioceseId == myDiocese())
+        || (active() && myRole() == 'deanery' && resource.data.dioceseId == myDiocese() && resource.data.deanery == myOrg())
+        || inParish(pid) || isMember(pid);
+      allow create, delete: if isSuper();
+      allow update: if isSuper()
+        || (staffOf(pid, ['priest', 'admin'])
+            && changed(['name','patron','priest','phone','email','address','outstations','short','town','county','founded','motto','websitePublished','stats','reportStatus','reportRef','reportComment','updatedAt'])
+            && (!('reportStatus' in request.resource.data.diff(resource.data).affectedKeys())
+                || request.resource.data.reportStatus in ['Draft', 'Ready for Submission', 'Submitted']))
+        || (dioceseScope(pid) && changed(['reportStatus', 'reportComment', 'updatedAt'])
+            && request.resource.data.reportStatus in ['Under Review', 'Returned', 'Approved', 'Locked']);
+
+      // Public website content. 'site' is what visitors see once published (and the parish is verified
+      // and active); 'draft' is the working copy used for previews. Only explicitly public fields live here.
+      match /public/{docId} {
+        allow read: if (docId == 'site' && resource.data.get('published', false) == true && directoryLive(pid))
+          || isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'finance', 'scc']);
+        allow create, update: if (isSuper() || staffOf(pid, ['priest', 'admin']))
+          && docId in ['site', 'draft']
+          && request.resource.data.keys().hasOnly(['published','publishedAt','displayName','motto','welcome','about','patron','accent',
+               'logoUrl','bannerUrl','contact','social','priest','massSchedule','outstations','events','announcements','ministries',
+               'sermons','sections','updatedAt','updatedBy'])
+          && request.resource.data.get('published', false) is bool
+          && request.resource.data.get('accent', 'burgundy') in ['burgundy', 'navy', 'green', 'gold', 'purple', 'teal']
+          && httpsOrEmpty(request.resource.data.get('logoUrl', ''))
+          && httpsOrEmpty(request.resource.data.get('bannerUrl', ''))
+          && request.resource.data.get('massSchedule', []).size() <= 60
+          && request.resource.data.get('events', []).size() <= 40
+          && request.resource.data.get('announcements', []).size() <= 30
+          && request.resource.data.get('sermons', []).size() <= 30
+          && request.resource.data.get('ministries', []).size() <= 60
+          && request.resource.data.get('outstations', []).size() <= 60;
+        allow delete: if isSuper();
+      }
+
+      match /config/{docId} {
+        allow read: if isSuper() || inParish(pid) || dioceseScope(pid) || isMember(pid);
+        allow write: if isSuper() || staffOf(pid, ['priest', 'admin']);
+      }
+
+      match /ministries/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']) || isMember(pid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+      }
+      match /volunteers/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+      }
+      match /masses/{id} {
+        allow read: if isSuper() || inParish(pid) || isMember(pid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+      }
+      match /sermons/{id} {
+        allow read: if isSuper() || inParish(pid) || isMember(pid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+      }
+      match /liturgical/{id} {
+        allow read: if isSuper() || inParish(pid) || isMember(pid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+      }
+      match /pastoralCases/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest']));
+        allow update: if isSuper() || staffOf(pid, ['priest']);
+        allow delete: if isSuper() || staffOf(pid, ['priest']);
+      }
+      match /visits/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest']));
+        allow update: if isSuper() || staffOf(pid, ['priest']);
+        allow delete: if isSuper() || staffOf(pid, ['priest']);
+      }
+      match /events/{id} {
+        allow read: if isSuper() || inParish(pid) || isMember(pid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'scc']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'scc']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'scc']);
+      }
+      match /catechesis/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'finance']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+      }
+
+      match /funds/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'finance']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'finance']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'finance']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'finance']);
+      }
+      match /budgets/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'finance']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'finance']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'finance']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'finance']);
+      }
+      match /expenses/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'finance']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'finance']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'finance']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'finance']);
+      }
+      match /banks/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'finance']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'finance']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'finance']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'finance']);
+      }
+      match /reconciliation/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'finance']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'finance']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'finance']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'finance']);
+      }
+      match /accounts/{id} {
+        allow read: if isSuper() || staffOf(pid, ['finance']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['finance']));
+        allow update: if isSuper() || staffOf(pid, ['finance']);
+        allow delete: if isSuper() || staffOf(pid, ['finance']);
+      }
+      match /journals/{id} {
+        allow read: if isSuper() || staffOf(pid, ['finance']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['finance']));
+        allow update: if isSuper() || staffOf(pid, ['finance']);
+        allow delete: if isSuper() || staffOf(pid, ['finance']);
+      }
+      match /payables/{id} {
+        allow read: if isSuper() || staffOf(pid, ['finance']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['finance']));
+        allow update: if isSuper() || staffOf(pid, ['finance']);
+        allow delete: if isSuper() || staffOf(pid, ['finance']);
+      }
+      match /receivables/{id} {
+        allow read: if isSuper() || staffOf(pid, ['finance']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['finance']));
+        allow update: if isSuper() || staffOf(pid, ['finance']);
+        allow delete: if isSuper() || staffOf(pid, ['finance']);
+      }
+      match /assets/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'finance']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'finance']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'finance']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'finance']);
+      }
+      match /projects/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'finance']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'finance']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'finance']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'finance']);
+      }
+
+      /* DOCUMENTS — finance sees all. Finance may only write financial-flagged docs.
+         A document is "financial" when its `kind` field is 'financial'.
+         Priest/admin/secretary may write any document. */
+      match /documents/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'finance']);
+        allow create: if sameId(id) && (
+             isSuper()
+          || staffOf(pid, ['priest', 'admin', 'secretary'])
+          || (staffOf(pid, ['finance']) && request.resource.data.kind == 'financial'));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary'])
+          || (staffOf(pid, ['finance']) && resource.data.kind == 'financial');
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary'])
+          || (staffOf(pid, ['finance']) && resource.data.kind == 'financial');
+      }
+
+      match /segments/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'scc']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'scc']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'scc']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'scc']);
+      }
+      match /councils/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin']) || dioceseScope(pid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin']);
+      }
+      match /meetings/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin']) || dioceseScope(pid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin']);
+      }
+      match /decisions/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin']) || dioceseScope(pid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin']);
+      }
+      match /actions/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin']) || dioceseScope(pid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin']);
+      }
+      match /approvals/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'finance']) || dioceseScope(pid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'finance']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'finance']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'finance']);
+      }
+      match /staff/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin']) || dioceseScope(pid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin']);
+      }
+      match /submissions/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'finance']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'finance']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'finance']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'finance']);
+      }
+      match /transactions/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'finance', 'scc']);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'finance', 'scc']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'finance']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'finance']);
+      }
+      match /sccs/{id} {
+        allow read: if isSuper() || inParish(pid) || isMember(pid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']) || (staffOf(pid, ['scc']) && id == myScc());
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin']);
+      }
+      match /sccReports/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']) || (staffOf(pid, ['scc']) && resource.data.sccId == myScc());
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']) || (staffOf(pid, ['scc']) && request.resource.data.sccId == myScc()));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin']);
+      }
+
+      match /families/{id} {
+        allow read: if isSuper()
+          || staffOf(pid, ['priest', 'admin', 'secretary'])
+          || (staffOf(pid, ['scc']) && resource.data.sccId == myScc())
+          || (isMember(pid) && id == ownFamily(pid));
+        allow create: if (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary'])) && sameId(id)
+          || (isMember(pid)
+              && ownFamily(pid) == ''
+              && request.resource.data.headUid == request.auth.uid);
+        allow update: if isSuper()
+          || staffOf(pid, ['priest', 'admin', 'secretary'])
+          || (staffOf(pid, ['scc']) && resource.data.sccId == myScc())
+          || (isMember(pid) && resource.data.headUid == request.auth.uid);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin']);
+      }
+
+      match /parishioners/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary'])
+          || (staffOf(pid, ['scc']) && resource.data.sccId == myScc())
+          || (isMember(pid) && (id == request.auth.uid || (ownFamily(pid) != '' && resource.data.familyId == ownFamily(pid))));
+        allow create: if sameId(id) && (
+             isSuper()
+          || staffOf(pid, ['priest', 'admin', 'secretary'])
+          || (staffOf(pid, ['scc']) && request.resource.data.sccId == myScc())
+          || (signedIn() && request.auth.uid == id
+              && request.resource.data.accountUid == id
+              && request.resource.data.status == 'Active'
+              && request.resource.data.keys().hasOnly(['id','accountUid','memberNo','status','name','email','phone','gender','dob','familyId','sccId','outstation','role','ministries','occupation','lastActivity','registeredOn','source','history','_c','createdAt'])
+              && newProfile().parishId == pid && newProfile().status == 'active' && newProfile().role == 'parishioner')
+          || (isMember(pid) && ownFamily(pid) != '' && request.resource.data.familyId == ownFamily(pid))
+        );
+        allow update: if isSuper()
+          || staffOf(pid, ['priest', 'admin', 'secretary'])
+          || (staffOf(pid, ['scc']) && resource.data.sccId == myScc())
+          || (isMember(pid) && id == request.auth.uid
+              && changed(['phone', 'email', 'occupation', 'gender', 'dob', 'lastActivity', 'familyId', 'updatedAt']))
+          || (isMember(pid) && ownFamily(pid) != ''
+              && (resource.data.familyId == ownFamily(pid) || request.resource.data.familyId == ownFamily(pid))
+              && changed(['familyId', 'role', 'updatedAt']));
+        allow delete: if isSuper() || (staffOf(pid, ['priest', 'admin']) && resource.data.get('accountUid', '') == '');
+      }
+
+      match /sacraments/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']) || (isMember(pid) && resource.data.personId == request.auth.uid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin']);
+      }
+
+      match /registrations/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'finance', 'scc']) || (isMember(pid) && resource.data.personId == request.auth.uid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'scc']) || (isMember(pid) && request.resource.data.personId == request.auth.uid));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'scc']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'scc']);
+      }
+
+      match /intentions/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']) || (isMember(pid) && resource.data.personId == request.auth.uid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']) || (isMember(pid) && request.resource.data.personId == request.auth.uid && request.resource.data.status == 'Requested'));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+      }
+
+      match /messages/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'scc', 'finance']) || (isMember(pid) && resource.data.channel == 'Announcement');
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'scc']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'scc']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'scc']);
+      }
+
+      match /giving/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'finance']) || (isMember(pid) && resource.data.personId == request.auth.uid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'finance']));
+        allow update: if isSuper() || staffOf(pid, ['priest', 'finance']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'finance']);
+      }
+      match /requests/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest']) || (staffOf(pid, ['admin', 'secretary']) && resource.data.private == false) || (isMember(pid) && resource.data.personId == request.auth.uid);
+        allow create: if sameId(id) && (isMember(pid) && request.resource.data.personId == request.auth.uid && request.resource.data.status == 'Open' && request.resource.data.private is bool && request.resource.data.type is string && request.resource.data.type.size() <= 80 && request.resource.data.note is string && request.resource.data.note.size() <= 2000);
+        allow update: if isSuper() || staffOf(pid, ['priest']) || (staffOf(pid, ['admin', 'secretary']) && resource.data.private == false && changed(['status', 'response', 'updatedAt']));
+        allow delete: if isSuper() || staffOf(pid, ['priest']);
+      }
+
+      match /reports/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'finance']) || dioceseScope(pid);
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']));
+        allow update: if isSuper()
+          || staffOf(pid, ['priest', 'admin', 'secretary'])
+          || (staffOf(pid, ['finance']) && changed(['financial', 'financialSubmittedAt', 'updatedAt']))
+          || (dioceseScope(pid) && changed(['status', 'comment', 'history', 'updatedAt']) && request.resource.data.status in ['Under Review', 'Returned', 'Approved', 'Locked']);
+        allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary']);
+      }
+
+      match /notifications/{id} {
+        allow read: if isSuper() || staffOf(pid, ['priest']) || (staffOf(pid, ['admin']) && (resource.data.audience == 'all' || resource.data.audience == 'admins')) || (staffOf(pid, ['secretary', 'finance', 'scc']) && resource.data.audience == 'all');
+        allow create: if sameId(id) && (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'finance', 'scc']) || (isMember(pid) && request.resource.data.type == 'member-request' && request.resource.data.fromUid == request.auth.uid && request.resource.data.audience in ['admins', 'priest']) || (signedIn() && id == 'newmember_' + request.auth.uid && request.resource.data.type == 'new-member' && request.resource.data.memberUid == request.auth.uid && request.resource.data.audience == 'admins' && newProfile().parishId == pid && newProfile().status == 'active'));
+        allow update: if isSuper() || (staffOf(pid, ['priest', 'admin', 'secretary', 'finance', 'scc']) && changed(['read', 'updatedAt']));
+        allow delete: if isSuper();
+      }
+      match /auditLogs/{id} {
+        allow read: if isSuper() || staffOf(pid, ['admin']);
+        allow create: if sameId(id) && (isSuper() || inParish(pid) || dioceseScope(pid));
+        allow update: if false;
+        allow delete: if false;
+      }
+    }
+  }
+}

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Register your parish · PARISH YETU</title>
+<meta name="description" content="Register your Catholic parish on PARISH YETU in a few minutes and receive your own parish administration environment and public parish website.">
+<link rel="canonical" href="https://parishyetu.church/register-parish">
+<meta property="og:title" content="Register your parish · PARISH YETU">
+<meta property="og:description" content="Your own parish environment and public parish website on PARISH YETU.">
+<meta property="og:url" content="https://parishyetu.church/register-parish">
+<meta property="og:site_name" content="PARISH YETU">
+<meta name="theme-color" content="#6E1725">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bur:#6E1725;--bur2:#5A111D;--bur3:#8A2434;--gold:#C9A227;--gold2:#A98A1B;--ivory:#F7F3E8;--ivory2:#FBF9F3;--obs:#111315;--ink:#23262A;--grey:#8B8A84;--line:#E8E5DD;--green:#1E6B4F;--red:#B3261E;
+ --bur-t:#F3E6E8;--gold-t:#F6EFD3;--green-t:#E1EFE9;--red-t:#F8E3E1;--r:14px;--sh:0 1px 2px rgba(17,19,21,.05),0 10px 30px rgba(17,19,21,.07)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Quicksand',system-ui,sans-serif;font-weight:500;color:var(--ink);background:var(--ivory);line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:var(--bur);font-weight:700}
+button,input,select,textarea{font:inherit;color:inherit}
+.shell{display:grid;grid-template-columns:340px 1fr;min-height:100vh}
+/* side rail */
+.rail{background:linear-gradient(170deg,var(--bur) 0%,var(--bur2) 70%,#3D0D15 100%);color:#F3E9E6;padding:34px 30px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:30px}
+.brand{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none}
+.brand .mk{width:38px;height:38px;border-radius:10px;background:#fff;display:grid;place-items:center}
+.brand b{font-size:17px;letter-spacing:.06em}.brand small{display:block;font-size:11.5px;color:#E5C55A;font-weight:700;letter-spacing:.04em}
+.rail h1{font-size:25px;line-height:1.25;color:#fff}
+.rail p.lead{font-size:14.5px;color:#EBCFC9}
+.steps{list-style:none;display:flex;flex-direction:column;gap:4px}
+.steps li button{width:100%;display:flex;align-items:center;gap:12px;background:none;border:0;color:#EBCFC9;padding:9px 10px;border-radius:10px;cursor:pointer;text-align:left;font-weight:700;font-size:14.5px}
+.steps li button:disabled{cursor:default}
+.steps li button:not(:disabled):hover{background:rgba(255,255,255,.07)}
+.steps .n{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.35);display:grid;place-items:center;font-size:13px;flex:none;transition:all .25s}
+.steps .t small{display:block;font-size:11.5px;font-weight:600;opacity:.75}
+.steps li.on button{color:#fff;background:rgba(255,255,255,.1)}
+.steps li.on .n{background:var(--gold);border-color:var(--gold);color:var(--obs)}
+.steps li.done .n{background:#fff;border-color:#fff;color:var(--bur)}
+.rail .foot{margin-top:auto;font-size:13px;color:#D9B8B2}
+.rail .foot a{color:#fff}
+/* main */
+main{padding:46px 48px 60px;max-width:880px;width:100%}
+.topbar{display:none}
+.bar{height:6px;background:#E9E3D3;border-radius:99px;overflow:hidden;margin-bottom:28px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--bur),var(--bur3));border-radius:99px;transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.kicker{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2)}
+h2{font-size:28px;line-height:1.2;margin:4px 0 6px;color:var(--obs)}
+.sub{color:#5d6065;margin-bottom:26px;max-width:620px}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:26px}
+.card+.card{margin-top:18px}
+.card h3{font-size:15px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card h3 .opt{font-size:11.5px;font-weight:700;color:var(--grey);background:#F1EEE6;padding:2px 8px;border-radius:99px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px}
+.f{display:flex;flex-direction:column;gap:6px}.f.w{grid-column:1/-1}
+.f label{font-size:13.5px;font-weight:700;color:var(--obs)}
+.f label .rq{color:var(--bur)}
+.inp,.sel,.ta{width:100%;height:46px;border:1.5px solid var(--line);background:var(--ivory2);border-radius:10px;padding:0 14px;font-size:15px;transition:border-color .15s,box-shadow .15s,background .15s}
+.ta{height:auto;min-height:110px;padding:12px 14px;resize:vertical}
+.inp:focus,.sel:focus,.ta:focus{outline:none;border-color:var(--bur);background:#fff;box-shadow:0 0 0 4px rgba(110,23,37,.1)}
+.f .hint{font-size:12.5px;color:var(--grey)}
+.f .msg{font-size:12.5px;color:var(--red);font-weight:700;display:none}
+.f.bad .inp,.f.bad .sel,.f.bad .ta{border-color:var(--red);background:#FFF8F7}
+.f.bad .msg{display:block}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;cursor:pointer;font-weight:600}
+.chk input{width:18px;height:18px;margin-top:2px;accent-color:var(--bur);flex:none}
+.urlprev{margin-top:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--gold-t);border:1px dashed #E5D48E;border-radius:12px;padding:12px 14px;font-size:14px}
+.urlprev b{color:var(--bur);word-break:break-all}
+.urlprev small{color:#6b5610;width:100%}
+.reveal{display:none}.reveal.open{display:block;animation:fadeUp .35s ease}
+.linkbtn{background:none;border:0;color:var(--bur);font-weight:800;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px}
+.note{display:flex;gap:10px;background:var(--bur-t);color:#5A111D;border-radius:12px;padding:12px 14px;font-size:13.5px;margin-top:14px}
+.note.green{background:var(--green-t);color:var(--green)}
+.note.red{background:var(--red-t);color:var(--red)}
+.pw{height:6px;border-radius:99px;background:#EEE9DC;overflow:hidden;margin-top:2px}.pw i{display:block;height:100%;width:0;transition:width .3s,background .3s}
+.logo-drop{display:flex;align-items:center;gap:16px;border:1.5px dashed #D9D2C0;border-radius:12px;padding:14px;background:var(--ivory2)}
+.logo-drop .pv{width:72px;height:72px;border-radius:14px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;flex:none;color:var(--grey);font-size:11px;text-align:center}
+.logo-drop .pv img{width:100%;height:100%;object-fit:contain}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 22px;border-radius:11px;border:1.5px solid var(--line);background:#fff;font-weight:800;cursor:pointer;font-size:15px;transition:transform .15s,background .15s,border-color .15s,color .15s;text-decoration:none;color:var(--obs)}
+.btn:hover{border-color:var(--bur);color:var(--bur)}
+.btn.p{background:var(--bur);border-color:var(--bur);color:#fff}.btn.p:hover{background:var(--bur2);color:#fff}
+.btn.g{background:var(--gold);border-color:var(--gold);color:var(--obs)}
+.btn.sm{height:36px;padding:0 14px;font-size:13.5px}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn .spin{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:26px}
+.nav .sp{flex:1}
+.save{font-size:12.5px;color:var(--grey)}
+.pane{animation:fadeUp .4s cubic-bezier(.2,.8,.2,1)}
+.pane.back{animation:fadeDown .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* review */
+.rv{display:grid;gap:14px}
+.rv .sec{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:var(--ivory2)}
+.rv .sec header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.rv .sec header b{font-size:14.5px}
+.rv dl{display:grid;grid-template-columns:170px 1fr;gap:5px 14px;font-size:14px}
+.rv dt{color:var(--grey);font-weight:700}.rv dd{word-break:break-word}
+/* success */
+.done-hero{text-align:center;padding:10px 0 6px}
+.done-hero .ok{width:76px;height:76px;border-radius:50%;background:var(--green);display:grid;place-items:center;margin:0 auto 16px;animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+.status{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}
+.status div{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--ivory2)}
+.status small{display:block;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--grey)}
+.chip{display:inline-block;margin-top:6px;font-size:12.5px;font-weight:800;padding:3px 10px;border-radius:99px}
+.chip.g{background:var(--green-t);color:var(--green)}.chip.y{background:var(--gold-t);color:#7a6210}
+.next{list-style:none;counter-reset:n;display:grid;gap:10px;margin:8px 0 4px}
+.next li{counter-increment:n;display:flex;gap:12px;font-size:14.5px}
+.next li::before{content:counter(n);width:26px;height:26px;border-radius:50%;background:var(--bur-t);color:var(--bur);font-weight:800;display:grid;place-items:center;flex:none;font-size:13px}
+.hide{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+:focus-visible{outline:3px solid rgba(201,162,39,.7);outline-offset:2px}
+@media (max-width:980px){
+ .shell{grid-template-columns:1fr}
+ .rail{position:static;height:auto;padding:18px 16px;gap:12px}
+ .rail h1,.rail p.lead,.rail .foot,.steps .t small{display:none}
+ .steps{flex-direction:row;justify-content:space-between}
+ .steps li{flex:1}.steps li button{flex-direction:column;gap:4px;padding:6px 2px;font-size:11.5px;text-align:center}
+ main{padding:24px 16px 40px}
+ .grid{grid-template-columns:1fr}
+ .rv dl{grid-template-columns:1fr}.rv dt{margin-top:6px}
+ .status{grid-template-columns:1fr}
+ h2{font-size:23px}
+ .card{padding:20px 16px}
+}
+@media (max-width:520px){.steps .t{display:none}.nav{flex-wrap:wrap}.nav .btn{flex:1}.save{width:100%;order:3;text-align:center}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<div class="shell">
+<aside class="rail" aria-label="Registration progress">
+ <a class="brand" href="/platform"><span class="mk"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2h4v7h7v4h-7v9h-4v-9H3V9h7z" fill="#6E1725"/></svg></span><span><b>PARISH YETU</b><small>Church registration</small></span></a>
+ <div><h1>Bring your parish online.</h1><p class="lead">Five short steps. Your parish receives its own administration environment and its own public website.</p></div>
+ <ol class="steps" id="steps"></ol>
+ <div class="foot">Joining a parish as a member? <a href="/register">Create a member account</a><br>Already registered? <a href="/login">Sign in</a></div>
+</aside>
+<main id="main">
+ <div class="bar" aria-hidden="true"><i id="prog" style="width:20%"></i></div>
+ <div id="view" aria-live="polite"></div>
+</main>
+</div>
+
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>window.PARISHOS_PUBLIC=true</script>
+<script defer src="/js/firebase-config.js"></script>
+<script defer src="/js/firebase-init.js"></script>
+<script defer src="/js/slug.js"></script>
+<script defer src="/js/core.js"></script>
+<script defer>
+(function(){
+'use strict';
+var tries=0;(function wait(){if(typeof Boot!=='undefined'&&Boot.ready)return start();if(++tries>200)return;setTimeout(wait,50)})();
+
+function start(){
+const STEPS=[{t:'Parish identity',s:'Name and location'},{t:'Church hierarchy',s:'Diocese and deanery'},{t:'Administrator',s:'Your account'},{t:'Branding',s:'Optional'},{t:'Review',s:'Confirm and submit'}];
+const KENYA_COUNTIES=['Baringo','Bomet','Bungoma','Busia','Elgeyo-Marakwet','Embu','Garissa','Homa Bay','Isiolo','Kajiado','Kakamega','Kericho','Kiambu','Kilifi','Kirinyaga','Kisii','Kisumu','Kitui','Kwale','Laikipia','Lamu','Machakos','Makueni','Mandera','Marsabit','Meru','Migori','Mombasa',"Murang'a",'Nairobi','Nakuru','Nandi','Narok','Nyamira','Nyandarua','Nyeri','Samburu','Siaya','Taita-Taveta','Tana River','Tharaka-Nithi','Trans Nzoia','Turkana','Uasin Gishu','Vihiga','Wajir','West Pokot'];
+const COUNTRIES=['Kenya','Uganda','Tanzania','Rwanda','Burundi','South Sudan','Ethiopia','DR Congo','Zambia','Malawi','Nigeria','Ghana','South Africa','Zimbabwe','Other'];
+const TYPES=['Parish','Quasi-parish','Mission','Chaplaincy','Cathedral parish','Shrine'];
+const STORE='parishyetu.churchReg';
+const EMAIL=/^[^@\s]{1,64}@[^@\s]+\.[^@\s]{2,}$/,PHONE=/^\+?[0-9 ()-]{7,20}$/;
+
+let F={parishType:'Parish',country:'Kenya',pKind:'Diocese',pCountry:'Kenya',deaneryChoice:''};
+try{Object.assign(F,JSON.parse(localStorage.getItem(STORE)||'{}'))}catch(e){}
+delete F.pw;delete F.pw2;
+let step=0,maxStep=0,dioceses=[],logoFile=null,logoUrl='',busy=false,signedIn=null;
+const view=$('#view');
+
+const persist=()=>{try{const c={...F};delete c.pw;delete c.pw2;localStorage.setItem(STORE,JSON.stringify(c))}catch(e){}const s=$('#saved');if(s)s.textContent='Progress saved on this device'};
+
+/* ---------- field builders ---------- */
+const lab=(k,l,req)=>`<label for="f_${k}">${esc(l)}${req?' <span class="rq" aria-hidden="true">*</span>':''}</label>`;
+const msg=k=>`<span class="msg" id="m_${k}" role="alert"></span>`;
+const hint=h=>h?`<span class="hint">${h}</span>`:'';
+const inp=(k,l,o={})=>`<div class="f ${o.w?'w':''}" data-f="${k}">${lab(k,l,o.req)}<input class="inp" id="f_${k}" data-k="${k}" type="${o.type||'text'}" value="${esc(F[k]||'')}" ${o.ph?`placeholder="${esc(o.ph)}"`:''} ${o.list?`list="${o.list}"`:''} ${o.ac?`autocomplete="${o.ac}"`:''} ${o.req?'aria-required="true"':''} aria-describedby="m_${k}">${hint(o.hint)}${msg(k)}</div>`;
+const sel=(k,l,opts,o={})=>`<div class="f ${o.w?'w':''}" data-f="${k}">${lab(k,l,o.req)}<select class="sel" id="f_${k}" data-k="${k}" aria-describedby="m_${k}">${opts.map(x=>{const v=typeof x==='object'?x.v:x,t=typeof x==='object'?x.l:x;return `<option value="${esc(v)}" ${String(F[k]||'')===String(v)?'selected':''} ${x.dis?'disabled':''}>${esc(t)}</option>`}).join('')}</select>${hint(o.hint)}${msg(k)}</div>`;
+const ta=(k,l,o={})=>`<div class="f w" data-f="${k}">${lab(k,l,o.req)}<textarea class="ta" id="f_${k}" data-k="${k}" maxlength="${o.max||1500}" placeholder="${esc(o.ph||'')}" aria-describedby="m_${k}">${esc(F[k]||'')}</textarea>${hint(o.hint)}${msg(k)}</div>`;
+const chk=(k,l)=>`<label class="chk" data-f="${k}"><input type="checkbox" data-k="${k}" ${F[k]?'checked':''}><span>${l}</span></label>`;
+
+function bindFields(){
+ $$('[data-k]',view).forEach(el=>{
+  const k=el.dataset.k;
+  const upd=()=>{F[k]=el.type==='checkbox'?el.checked:el.value;persist();if(onChange[k])onChange[k]();const f=el.closest('[data-f]');if(f&&f.classList.contains('bad'))check([k])};
+  el.addEventListener(el.tagName==='SELECT'||el.type==='checkbox'?'change':'input',upd);
+  el.addEventListener('blur',()=>{if(String(F[k]||'').trim())check([k])});
+ });
+}
+const onChange={};
+
+/* ---------- validation ---------- */
+const V={
+ name:()=>!F.name||F.name.trim().length<3?'Enter the official parish name.':'',
+ country:()=>!F.country?'Choose the country.':'',
+ countryOther:()=>F.country==='Other'&&!(F.countryOther||'').trim()?'Enter the country.':'',
+ town:()=>!F.town||F.town.trim().length<2?'Enter the town or location.':'',
+ phone:()=>!PHONE.test((F.phone||'').trim())?'Enter a valid telephone number, e.g. +254 712 345 678.':'',
+ email:()=>F.email&&!EMAIL.test(F.email.trim())?'Enter a valid email address.':'',
+ dioceseId:()=>!F.propose&&!F.dioceseNA&&!F.dioceseId?'Choose your diocese, propose a new one, or mark it not applicable.':'',
+ deaneryOther:()=>!F.propose&&F.deaneryChoice==='__other'&&!(F.deaneryOther||'').trim()?'Enter the deanery name.':'',
+ pName:()=>F.propose&&(!F.pName||F.pName.trim().length<4)?'Enter the name of the diocese or archdiocese.':'',
+ pCountry:()=>F.propose&&!(F.pCountry||'').trim()?'Enter the country of the diocese.':'',
+ aName:()=>!F.aName||F.aName.trim().length<3?'Enter your full name.':'',
+ aEmail:()=>signedIn?'':!EMAIL.test((F.aEmail||'').trim())?'Enter a valid email address.':'',
+ aPhone:()=>!PHONE.test((F.aPhone||'').trim())?'Enter a valid telephone number.':'',
+ pw:()=>signedIn?'':(F.pw||'').length<8?'Use at least 8 characters.':'',
+ pw2:()=>signedIn?'':F.pw!==F.pw2?'The passwords do not match.':'',
+ website:()=>F.website&&!/^(https?:\/\/)?[^\s.]+\.[^\s]{2,}$/i.test(F.website.trim())?'Enter a valid web address, e.g. www.stmarys.org.':'',
+ publicEmail:()=>F.publicEmail&&!EMAIL.test(F.publicEmail.trim())?'Enter a valid email address.':'',
+ publicPhone:()=>F.publicPhone&&!PHONE.test(F.publicPhone.trim())?'Enter a valid telephone number.':'',
+ agree:()=>!F.agree?'Please confirm the declaration.':''
+};
+const STEP_FIELDS=[['name','country','countryOther','town','phone','email'],['dioceseId','deaneryOther','pName','pCountry'],['aName','aEmail','aPhone','pw','pw2'],['website','publicEmail','publicPhone'],['agree']];
+function setErr(k,m){const f=$('[data-f="'+k+'"]',view);if(!f)return;f.classList.toggle('bad',!!m);const e=$('#m_'+k,view);if(e)e.textContent=m||'';const i=$('#f_'+k,view);if(i)i.setAttribute('aria-invalid',m?'true':'false')}
+function check(keys){let first=null;keys.forEach(k=>{const m=V[k]?V[k]():'';setErr(k,m);if(m&&!first)first=k});return first}
+
+/* ---------- steps ---------- */
+function slugPreview(){const S=window.ParishSlug;return S&&F.name&&F.town?S.parishSlug(F.name,F.town):''}
+const R=[
+ function identity(){return `<div class="kicker">Step 1 of 5</div><h2>Tell us about your parish</h2><p class="sub">Use the official name of the parish as it appears in diocesan records. You can refine contact details later.</p>
+  <div class="card"><div class="grid">
+   ${inp('name','Official parish name',{req:true,w:1,ph:"e.g. St. Mary's Catholic Parish, Thika",hint:'This name appears on your parish website and certificates.'})}
+   ${sel('parishType','Type of community',TYPES,{hint:'Most communities are a Parish.'})}
+   ${sel('country','Country',COUNTRIES,{req:true})}
+   <div class="f ${F.country==='Other'?'':'hide'}" data-f="countryOther" id="co">${lab('countryOther','Country name',true)}<input class="inp" id="f_countryOther" data-k="countryOther" value="${esc(F.countryOther||'')}">${msg('countryOther')}</div>
+   ${inp('county','County / region',{list:F.country==='Kenya'?'kc':'',hint:F.country==='Kenya'?'Start typing to pick a county.':''})}
+   ${inp('town','Town or location',{req:true,ph:'e.g. Thika'})}
+   ${inp('address','Physical address',{w:1,ph:'Street, landmark or P.O. Box',hint:'Where visitors can find the church. Optional.'})}
+   ${inp('phone','Parish telephone',{req:true,type:'tel',ac:'tel',ph:'+254 7xx xxx xxx'})}
+   ${inp('email','Official parish email',{type:'email',ac:'email',ph:'office@parish.org',hint:'Optional, if the parish has one.'})}
+  </div>
+  <div class="urlprev" id="urlprev" ${slugPreview()?'':'hidden'}>Your parish website will be at <b id="urlv">parishyetu.church/${esc(slugPreview())}</b><small>Final address is confirmed when you submit. If it is already taken, a short code is added.</small></div>
+  <datalist id="kc">${KENYA_COUNTIES.map(c=>`<option value="${esc(c)}">`).join('')}</datalist></div>`},
+ function hierarchy(){
+  const country=F.country==='Other'?(F.countryOther||''):F.country;
+  const list=dioceses.filter(d=>!d.country||!country||d.country===country);
+  const groups={};list.forEach(d=>{const g=d.kind==='Archdiocese'?d.name:(d.archdiocese||'Other dioceses');(groups[g]=groups[g]||[]).push(d)});
+  const dOpts=`<option value="">${list.length?'Select your diocese…':'No dioceses listed for '+esc(country||'this country')+' yet'}</option>`+Object.keys(groups).sort().map(g=>`<optgroup label="${esc(g)}">${groups[g].sort((a,b)=>a.name.localeCompare(b.name)).map(d=>`<option value="${esc(d.id)}" ${F.dioceseId===d.id?'selected':''}>${esc(d.name)}</option>`).join('')}</optgroup>`).join('');
+  return `<div class="kicker">Step 2 of 5</div><h2>Where does your parish belong?</h2><p class="sub">Choose your diocese from the PARISH YETU directory. Deaneries are shown for the diocese you pick.</p>
+  <div class="card ${F.propose?'hide':''}" id="dcard"><div class="grid">
+   <div class="f w" data-f="dioceseId">${lab('dioceseId','Diocese / archdiocese',true)}<select class="sel" id="f_dioceseId" data-k="dioceseId" ${F.dioceseNA?'disabled':''} aria-describedby="m_dioceseId">${dOpts}</select><span class="hint" id="archhint"></span>${msg('dioceseId')}</div>
+   <div class="f w" data-f="deaneryChoice" id="deanbox">${lab('deaneryChoice','Deanery')}<select class="sel" id="f_deaneryChoice" data-k="deaneryChoice"></select><span class="hint">A deanery groups neighbouring parishes within a diocese.</span></div>
+   <div class="f w ${F.deaneryChoice==='__other'?'':'hide'}" data-f="deaneryOther" id="dob">${lab('deaneryOther','Deanery name',true)}<input class="inp" id="f_deaneryOther" data-k="deaneryOther" value="${esc(F.deaneryOther||'')}" aria-describedby="m_deaneryOther"><span class="hint">The platform administrator will confirm this affiliation.</span>${msg('deaneryOther')}</div>
+   <div class="f w">${chk('dioceseNA','My community is not under a diocese (for example a personal ordinariate or exempt chaplaincy).')}</div>
+  </div>
+  <p style="margin-top:16px;font-size:14px">Can't find your diocese? <button type="button" class="linkbtn" id="prop">Propose a new diocese</button></p></div>
+  <div class="card ${F.propose?'':'hide'}" id="pcard"><h3>Propose a diocese <span class="opt">Pending verification</span></h3>
+   <p class="hint" style="margin:-6px 0 16px;color:var(--grey);font-size:13.5px">Your proposal is reviewed by the PARISH YETU platform administrator before it appears in the official directory. Your parish can start setting up in the meantime.</p>
+   <div class="grid">
+    ${inp('pName','Diocese or archdiocese name',{req:true,w:1,ph:'e.g. Catholic Diocese of Lodwar'})}
+    ${sel('pKind','Type',['Diocese','Archdiocese'])}
+    ${inp('pArch','Metropolitan archdiocese',{ph:'If known'})}
+    ${inp('pCountry','Country',{req:true})}
+    ${inp('pLocation','Location / see city')}
+    ${inp('pBishop','Bishop',{ph:'If known'})}
+    ${inp('pDeanery','Your deanery',{ph:'If known'})}
+    ${ta('pNotes','Supporting notes',{max:1000,ph:'Anything that helps us verify the diocese, e.g. official website.'})}
+   </div>
+   <p style="margin-top:14px;font-size:14px"><button type="button" class="linkbtn" id="unprop">Back to the diocese list</button></p></div>`},
+ function admin(){const u=signedIn;return `<div class="kicker">Step 3 of 5</div><h2>Who will administer the parish?</h2><p class="sub">This person becomes the first Parish Administrator and can add the parish priest, secretary, finance officer and other staff afterwards.</p>
+  <div class="card"><div class="grid">
+   ${inp('aName','Full name',{req:true,ac:'name',w:1})}
+   ${u?`<div class="f w"><label>Email address</label><div class="note green" style="margin:0">Signed in as <b>&nbsp;${esc(u.email)}</b>. This account will become the administrator. <button type="button" class="linkbtn" id="so" style="margin-left:auto">Use another account</button></div></div>`:inp('aEmail','Email address',{req:true,type:'email',ac:'email',hint:'You will sign in with this email. Use a personal email that is not already a member account.'})}
+   ${inp('aPhone','Telephone number',{req:true,type:'tel',ac:'tel'})}
+   ${u?'':`<div></div>${inp('pw','Password',{req:true,type:'password',ac:'new-password',hint:'At least 8 characters. A mix of words, numbers and symbols is strongest.'})}${inp('pw2','Confirm password',{req:true,type:'password',ac:'new-password'})}<div class="f w"><div class="pw" aria-hidden="true"><i id="pwm"></i></div></div>`}
+  </div></div>`},
+ function branding(){return `<div class="kicker">Step 4 of 5 · Optional</div><h2>Give your parish website a face</h2><p class="sub">Everything here is optional and can be completed later from <b>Parish Website</b> in your dashboard.</p>
+  <div class="card"><h3>Logo <span class="opt">Optional</span></h3>
+   <div class="logo-drop"><div class="pv" id="lpv">${logoFile?'':'No logo'}</div><div style="flex:1"><input type="file" id="logo" accept="image/png,image/jpeg,image/webp" class="sr"><label for="logo" class="btn sm" style="cursor:pointer">Choose image</label> <button type="button" class="btn sm ${logoFile?'':'hide'}" id="lrm">Remove</button><div class="hint" style="font-size:12.5px;color:var(--grey);margin-top:6px">PNG, JPEG or WebP, up to 5 MB. Uploaded after your parish is created.</div><div class="msg" id="lerr" style="color:var(--red);font-size:12.5px;font-weight:700"></div></div></div></div>
+  <div class="card"><h3>About the parish <span class="opt">Optional</span></h3><div class="grid">
+   ${inp('motto','Parish motto',{w:1,ph:'e.g. Ut omnes unum sint'})}
+   ${inp('patron','Patron saint',{ph:'e.g. St. Joseph'})}
+   ${inp('website','Existing website',{ph:'www.yourparish.org'})}
+   ${ta('about','Short parish introduction',{ph:'A few sentences visitors will read on your homepage.'})}
+   ${inp('publicEmail','Public contact email',{type:'email',hint:'Shown publicly. Defaults to the parish email.'})}
+   ${inp('publicPhone','Public contact telephone',{type:'tel',hint:'Shown publicly. Defaults to the parish telephone.'})}
+  </div></div>`},
+ function review(){
+  const d=dioceses.find(x=>x.id===F.dioceseId),dn=d&&(d.deaneries||[]).find(x=>x.id===F.deaneryChoice);
+  const row=(k,v)=>v?`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`:'';
+  const country=F.country==='Other'?F.countryOther:F.country;
+  const hier=F.propose?[['Proposed diocese',F.pName+' ('+(F.pKind||'Diocese')+') — pending verification'],['Country',F.pCountry],['Bishop',F.pBishop],['Deanery',F.pDeanery]]
+   :F.dioceseNA?[['Diocese','Not applicable']]
+   :[['Diocese',d?d.name:'—'],['Province',d?(d.kind==='Archdiocese'?d.name:d.archdiocese):''],['Deanery',dn?dn.name:F.deaneryChoice==='__other'?F.deaneryOther+' (to be confirmed)':F.deaneryChoice==='__na'?'Not applicable':'Not specified']];
+  const sec=(i,t,rows)=>`<section class="sec"><header><b>${esc(t)}</b><button type="button" class="btn sm" data-go="${i}">Edit</button></header><dl>${rows.map(r=>row(r[0],r[1])).join('')||'<dd style="color:var(--grey)">Nothing added yet</dd>'}</dl></section>`;
+  return `<div class="kicker">Step 5 of 5</div><h2>Review and submit</h2><p class="sub">Check that everything is correct. Use <b>Edit</b> to change any section — nothing you have entered will be lost.</p>
+  <div class="rv">
+   ${sec(0,'Parish identity',[['Official name',F.name],['Type',F.parishType],['Location',[F.town,F.county,country].filter(Boolean).join(', ')],['Address',F.address],['Telephone',F.phone],['Email',F.email],['Web address','parishyetu.church/'+slugPreview()+' (confirmed on submission)']])}
+   ${sec(1,'Church hierarchy',hier)}
+   ${sec(2,'Parish administrator',[['Name',F.aName],['Email',signedIn?signedIn.email:F.aEmail],['Telephone',F.aPhone]])}
+   ${sec(3,'Branding',[['Logo',logoFile?logoFile.name:''],['Motto',F.motto],['Patron',F.patron],['Website',F.website],['Introduction',F.about&&F.about.length>140?F.about.slice(0,140)+'…':F.about]])}
+  </div>
+  <div class="card" style="margin-top:18px">${chk('agree','I confirm that I am authorised by this parish to register it on PARISH YETU, and that the information provided is accurate.')}<div class="f" data-f="agree" style="margin-top:6px">${msg('agree')}</div>
+   <div class="note" style="margin-top:14px">Your parish environment is created immediately. The PARISH YETU team verifies new parishes before they appear publicly in the church directory and before the public website goes live.</div></div>
+  <div class="note red hide" id="serr" role="alert"></div>`}
+];
+
+function render(dir){
+ const html=R[step]();
+ view.innerHTML=`<form id="form" novalidate><div class="pane ${dir<0?'back':''}">${html}</div>
+  <div class="nav">${step>0?'<button type="button" class="btn" id="back">← Back</button>':'<span></span>'}<span class="save" id="saved"></span><span class="sp"></span>
+  <button type="submit" class="btn p" id="next">${step===4?'Submit registration':'Continue →'}</button></div></form>`;
+ $('#prog').style.width=((step+1)/5*100)+'%';
+ drawSteps();bindFields();wire();
+ $('#form').onsubmit=e=>{e.preventDefault();next()};
+ const b=$('#back');if(b)b.onclick=()=>go(step-1);
+ const first=$('input:not([type=hidden]):not(.sr),select,textarea',view);if(first&&dir!==0)first.focus({preventScroll:true});
+ window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
+}
+function drawSteps(){
+ $('#steps').innerHTML=STEPS.map((s,i)=>`<li class="${i===step?'on':i<step||i<=maxStep&&i!==step?'done':''}"><button type="button" data-step="${i}" ${i>maxStep?'disabled':''} ${i===step?'aria-current="step"':''}><span class="n">${i<step?'✓':i+1}</span><span class="t">${esc(s.t)}<small>${esc(s.s)}</small></span></button></li>`).join('');
+ $$('[data-step]').forEach(b=>b.onclick=()=>go(+b.dataset.step));
+}
+function go(i){if(i===step||i<0||i>4)return;if(i>step){const bad=check(STEP_FIELDS[step]);if(bad){focusErr(bad);return}}const dir=i>step?1:-1;step=i;maxStep=Math.max(maxStep,i);render(dir)}
+function focusErr(k){const el=$('#f_'+k,view)||$('[data-f="'+k+'"] input',view);if(el){el.focus();el.scrollIntoView({block:'center',behavior:'smooth'})}}
+function next(){if(step<4)return go(step+1);submit()}
+
+/* ---------- per-step wiring ---------- */
+function wire(){
+ Object.keys(onChange).forEach(k=>delete onChange[k]);
+ if(step===0){
+  const upd=()=>{const s=slugPreview(),u=$('#urlprev');if(u){u.hidden=!s;$('#urlv').textContent='parishyetu.church/'+s}};
+  onChange.name=upd;onChange.town=upd;
+  onChange.country=()=>{$('#co').classList.toggle('hide',F.country!=='Other');const c=$('#f_county');c.setAttribute('list',F.country==='Kenya'?'kc':'');if(F.country!=='Other')setErr('countryOther','')};
+ }
+ if(step===1){
+  const fillDeaneries=()=>{
+   const d=dioceses.find(x=>x.id===F.dioceseId),list=d?(d.deaneries||[]).filter(x=>(x.status||'active')==='active'):[];
+   const s=$('#f_deaneryChoice');
+   s.innerHTML=`<option value="">${d?'Select deanery…':'Choose a diocese first'}</option>`+list.sort((a,b)=>a.name.localeCompare(b.name)).map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('')+(d?'<option value="__other">My deanery is not listed</option><option value="__na">Not applicable / no deanery</option>':'');
+   if(![...s.options].some(o=>o.value===F.deaneryChoice))F.deaneryChoice='';
+   s.value=F.deaneryChoice||'';s.disabled=!d||!!F.dioceseNA;
+   $('#dob').classList.toggle('hide',F.deaneryChoice!=='__other');
+   $('#archhint').textContent=d?(d.kind==='Archdiocese'?'Metropolitan see':(d.archdiocese?'Province: '+d.archdiocese:'')):'';
+  };
+  fillDeaneries();
+  onChange.dioceseId=()=>{F.deaneryChoice='';fillDeaneries()};
+  onChange.deaneryChoice=()=>{$('#dob').classList.toggle('hide',F.deaneryChoice!=='__other')};
+  onChange.dioceseNA=()=>{$('#f_dioceseId').disabled=!!F.dioceseNA;if(F.dioceseNA){F.dioceseId='';$('#f_dioceseId').value='';setErr('dioceseId','')}fillDeaneries()};
+  $('#prop').onclick=()=>{F.propose=true;if(!F.pCountry)F.pCountry=F.country==='Other'?F.countryOther:F.country;persist();render(0)};
+  $('#unprop').onclick=()=>{F.propose=false;persist();render(0)};
+ }
+ if(step===2){
+  const m=$('#pwm');if(m)onChange.pw=()=>{const p=F.pw||'';let s=0;if(p.length>=8)s++;if(p.length>=12)s++;if(/[A-Z]/.test(p)&&/[a-z]/.test(p))s++;if(/\d/.test(p))s++;if(/[^A-Za-z0-9]/.test(p))s++;m.style.width=(s*20)+'%';m.style.background=s<3?'#B3261E':s<4?'#C9A227':'#1E6B4F'};
+  const so=$('#so');if(so)so.onclick=async()=>{await FB.auth.signOut();signedIn=null;render(0)};
+ }
+ if(step===3){
+  const f=$('#logo'),pv=$('#lpv'),rm=$('#lrm'),er=$('#lerr');
+  const show=()=>{if(logoFile){const u=URL.createObjectURL(logoFile);pv.innerHTML=`<img src="${u}" alt="Logo preview">`}else pv.textContent='No logo';rm.classList.toggle('hide',!logoFile)};
+  show();
+  f.onchange=()=>{er.textContent='';const x=f.files[0];if(!x)return;if(!/^image\/(png|jpeg|webp)$/.test(x.type)){er.textContent='Use a PNG, JPEG or WebP image.';return}if(x.size>5*1024*1024){er.textContent='The image must be smaller than 5 MB.';return}logoFile=x;show()};
+  rm.onclick=()=>{logoFile=null;f.value='';show()};
+ }
+ if(step===4){$$('[data-go]',view).forEach(b=>b.onclick=()=>go(+b.dataset.go))}
+}
+
+/* ---------- submission ---------- */
+function payload(){
+ const country=F.country==='Other'?(F.countryOther||'').trim():F.country;
+ return {
+  parish:{name:F.name,parishType:F.parishType,country,county:F.county||'',town:F.town,address:F.address||'',phone:F.phone,email:F.email||''},
+  hierarchy:F.propose?{proposal:{name:F.pName,kind:F.pKind,archdiocese:F.pArch||'',country:F.pCountry,location:F.pLocation||'',bishop:F.pBishop||'',deanery:F.pDeanery||'',notes:F.pNotes||''}}
+   :{dioceseId:F.dioceseNA?'':F.dioceseId||'',dioceseNotApplicable:!!F.dioceseNA,
+     deaneryId:/^__/.test(F.deaneryChoice||'')?'':F.deaneryChoice||'',deaneryName:F.deaneryChoice==='__other'?F.deaneryOther||'':'',deaneryNotApplicable:F.deaneryChoice==='__na'},
+  admin:{name:F.aName,phone:F.aPhone},
+  branding:{motto:F.motto||'',about:F.about||'',patron:F.patron||'',website:F.website||'',publicEmail:F.publicEmail||'',publicPhone:F.publicPhone||''},
+  agree:!!F.agree
+ };
+}
+const FIELD_STEP={name:0,parishType:0,country:0,county:0,town:0,address:0,phone:0,email:0,dioceseId:1,deaneryId:1,deaneryOther:1,pName:1,pCountry:1,pArch:1,pLocation:1,pBishop:1,pDeanery:1,aName:2,aEmail:2,aPhone:2,pw:2,motto:3,about:3,patron:3,website:3,publicEmail:3,publicPhone:3,agree:4};
+
+async function ensureAccount(){
+ if(FB.auth.currentUser)return FB.auth.currentUser;
+ await FB.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+ const email=F.aEmail.trim();
+ try{const c=await FB.auth.createUserWithEmailAndPassword(email,F.pw);try{await c.user.updateProfile({displayName:F.aName})}catch(e){}return c.user}
+ catch(e){
+  if(e.code!=='auth/email-already-in-use')throw e;
+  // The same person retrying after an interruption: sign in with the password they chose.
+  try{return (await FB.auth.signInWithEmailAndPassword(email,F.pw)).user}
+  catch(x){const err=new Error('An account with this email already exists. Enter its correct password to continue, or use a different email.');err.field='aEmail';throw err}
+ }
+}
+
+async function submit(){
+ if(busy)return;
+ for(let i=0;i<5;i++){const bad=STEP_FIELDS[i].find(k=>V[k]&&V[k]());if(!bad)continue;if(i!==step){step=i;render(0)}check(STEP_FIELDS[i]);focusErr(bad);return}
+ busy=true;const btn=$('#next'),se=$('#serr');se.classList.add('hide');
+ btn.disabled=true;btn.innerHTML='<span class="spin" aria-hidden="true"></span> Creating your parish…';
+ try{
+  const user=await ensureAccount();
+  btn.innerHTML='<span class="spin" aria-hidden="true"></span> Setting up your parish environment…';
+  const tok=await user.getIdToken();
+  const r=await fetch(FB.api+'/api/register-parish',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},body:JSON.stringify(payload())});
+  const j=await r.json().catch(()=>({error:'The registration service did not respond correctly.'}));
+  if(!r.ok){const e=new Error(j.error||'Registration failed ('+r.status+')');e.field=j.field;throw e}
+  await user.getIdToken(true);
+  let logoNote='';
+  if(logoFile){btn.innerHTML='<span class="spin" aria-hidden="true"></span> Uploading your logo…';
+   try{const url=await Site.uploadImage(logoFile,'logo',j.parishId);const b=FB.db.batch();b.set(FB.db.doc('parishes/'+j.parishId+'/public/draft'),{logoUrl:url,updatedAt:ts()},{merge:true});b.set(FB.db.doc('parishes/'+j.parishId+'/public/site'),{logoUrl:url,updatedAt:ts()},{merge:true});await b.commit()}
+   catch(e){logoNote='Your logo could not be uploaded ('+e.message+'). You can add it from Parish Website in your dashboard.'}}
+  try{localStorage.removeItem(STORE)}catch(e){}
+  success(j,logoNote);
+ }catch(e){
+  busy=false;btn.disabled=false;btn.textContent='Submit registration';
+  const m=e.field?e.message:(e.code?authMsg(e):e.message);
+  if(e.field&&FIELD_STEP[e.field]!==undefined&&FIELD_STEP[e.field]!==4){step=FIELD_STEP[e.field];render(0);setErr(e.field,m);focusErr(e.field);return}
+  se.textContent=m+(e.field?'':' Your information is kept — you can submit again safely.');se.classList.remove('hide');se.scrollIntoView({block:'center',behavior:'smooth'});
+ }
+}
+
+function success(j,logoNote){
+ $('#prog').style.width='100%';
+ $$('#steps li').forEach(li=>{li.className='done';const b=$('button',li);b.disabled=true;$('.n',li).textContent='✓'});
+ const href=(/(^|\.)parishyetu\.church$/.test(location.hostname)?FB.siteBase:location.origin)+'/'+j.slug;
+ view.innerHTML=`<div class="pane"><div class="card"><div class="done-hero"><div class="ok"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></div>
+  <div class="kicker">Registration received</div><h2>${esc(j.parishName||F.name)} is on PARISH YETU</h2><p class="sub" style="margin:6px auto 0">Your parish environment is ready and you are its administrator.</p></div>
+  <div class="status"><div><small>Parish environment</small><span class="chip g">Ready</span></div><div><small>Verification</small><span class="chip y">Pending review</span></div><div><small>Public website</small><span class="chip y">Goes live after verification</span></div></div>
+  <div class="urlprev" style="margin-top:0">Your parish website address <b>parishyetu.church/${esc(j.slug)}</b><small>Share it once your website is published and the parish is verified.</small></div>
+  ${j.dioceseProposal?'<div class="note">Your proposed diocese has been sent for verification. It will appear in the official directory once approved, and your parish will be linked to it.</div>':''}
+  ${logoNote?`<div class="note red">${esc(logoNote)}</div>`:''}
+  <h3 style="margin:22px 0 8px">What happens next</h3><ol class="next"><li>Sign in any time at PARISH YETU with ${esc((FB.auth.currentUser&&FB.auth.currentUser.email)||'your email')} to open your parish dashboard.</li><li>Complete your public homepage under <b>Parish Website</b>: logo, welcome message, Mass times and contacts.</li><li>Invite your parish priest and staff to register, then assign their roles under <b>Settings → Users</b>.</li><li>The PARISH YETU team verifies the parish. Once verified, members can find and join it, and your published website becomes public.</li></ol>
+  <div class="nav" style="justify-content:flex-start;flex-wrap:wrap"><a class="btn p" href="/dashboard">Open my parish dashboard</a><a class="btn" href="/website">Set up my website</a><a class="btn" href="${esc(href)}?preview=1" target="_blank" rel="noopener">Preview website</a></div></div></div>`;
+ view.querySelector('h2').focus&&view.querySelector('h2').setAttribute('tabindex','-1');view.querySelector('h2').focus();
+}
+
+/* ---------- boot ---------- */
+(async()=>{
+ await Boot.ready;
+ if(!FB.ok){view.innerHTML='<div class="note red">PARISH YETU is not connected to its database yet. Please try again later.</div>';return}
+ view.innerHTML='<div class="card" aria-busy="true">Loading the diocesan directory…</div>';
+ try{const s=await FB.db.collection('dioceses').limit(500).get();dioceses=s.docs.map(d=>({...d.data(),id:d.id})).filter(d=>(d.status||'active')==='active')}
+ catch(e){dioceses=[];console.warn('Diocese directory unavailable',e)}
+ const fu=FB.auth.currentUser;
+ let regDoc=null;
+ if(fu){
+  let prof=null;
+  try{[prof,regDoc]=await Promise.all([FB.db.doc('users/'+fu.uid).get(),FB.db.doc('registrations/'+fu.uid).get()])}catch(e){}
+  if(regDoc&&regDoc.exists&&regDoc.data().state==='active'){const r=regDoc.data();success({slug:r.slug,parishId:r.parishId,parishName:r.parishName,dioceseProposal:!!r.dioceseProposalId},'');return}
+  if(prof&&prof.exists){view.innerHTML=`<div class="card"><h2 style="font-size:22px">You are signed in as ${esc(fu.email)}</h2><p class="sub" style="margin-top:8px">This account already belongs to a parish on PARISH YETU. To register a new parish, sign out and use a different email for its administrator.</p><div class="nav" style="justify-content:flex-start"><a class="btn" href="${esc(Auth.user()?Auth.user().landing:'/dashboard')}">Go to my dashboard</a><button class="btn p" id="so2">Sign out and register a parish</button></div></div>`;$('#so2').onclick=async()=>{await Auth.logout();location.reload()};return}
+  signedIn={email:fu.email};
+  if(!F.aName&&fu.displayName)F.aName=fu.displayName;
+  if(regDoc&&regDoc.exists){maxStep=4;step=4}
+ }
+ render(0);
+ if(step===4&&signedIn){const n=document.createElement('div');n.className='note';n.style.marginBottom='16px';n.textContent='We found an unfinished registration for this account. Review the details and submit again to finish — nothing will be duplicated.';view.prepend(n)}
+})();
+}
+})();
+</script>
+</body></html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>
+/* Old page addresses (e.g. /23-settings.html, /03-parish-dashboard) moved to short ones (/settings, /dashboard).
+   Hosting redirects handle this in production; this keeps old links, bookmarks and emails working everywhere. */
+(function(){var M={"00-join":"join","01-home":"home","02-login":"login","03-parish-dashboard":"dashboard","04-diocese-dashboard":"diocese","05-parishioners":"parishioners","06-families":"families","07-sacraments":"sacraments","08-masses":"masses","09-pastoral":"pastoral","10-scc":"scc","11-ministries":"ministries","12-events":"events","13-sermons":"sermons","14-catechesis":"catechesis","15-finance":"finance","16-accounting":"accounting","17-assets":"assets","18-projects":"projects","19-documents":"documents","20-communications":"communications","21-reports":"reports","22-governance":"governance","23-settings":"settings","24-register":"register","25-super-admin":"super-admin","26-website":"website","parish-register":"platform","register-parish":"register-parish","admin":"admin"};var k=location.pathname.replace(/^\/+|\/+$/g,'').replace(/\.html$/,'');if(M[k])location.replace('/'+M[k]+location.search+location.hash)})();
+</script>
+<title>Parish · PARISH YETU</title>
+<meta name="description" content="Catholic parish website on PARISH YETU.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PARISH YETU">
+<meta property="og:title" content="Parish · PARISH YETU">
+<meta name="theme-color" content="#6E1725">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ac:#6E1725;--ac2:#4A0E18;--ac-t:#F3E6E8;--gold:#C9A227;--ivory:#F7F3E8;--ivory2:#FBF9F3;--obs:#111315;--ink:#23262A;--grey:#7d7c76;--line:#E8E5DD;--r:16px;--max:1140px;--sh:0 1px 2px rgba(17,19,21,.05),0 10px 30px rgba(17,19,21,.07)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Quicksand',system-ui,sans-serif;font-weight:500;color:var(--ink);background:var(--ivory);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{max-width:100%;display:block}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 20px}
+/* header */
+.hd{position:sticky;top:0;z-index:20;background:rgba(251,249,243,.92);backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
+.hd .wrap{display:flex;align-items:center;gap:16px;height:72px}
+.id{display:flex;align-items:center;gap:12px;text-decoration:none;min-width:0}
+.logo{width:46px;height:46px;border-radius:12px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;flex:none}
+.logo img{width:100%;height:100%;object-fit:contain}
+.id b{display:block;font-size:16.5px;line-height:1.2;color:var(--obs);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.id small{display:block;font-size:12.5px;color:var(--ac);font-weight:700;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hd nav{margin-left:auto;display:flex;align-items:center;gap:4px}
+.hd nav a{text-decoration:none;font-weight:700;font-size:14px;padding:8px 10px;border-radius:8px;color:#4a4c50}
+.hd nav a:hover{color:var(--ac);background:var(--ac-t)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 20px;border-radius:11px;border:1.5px solid var(--line);background:#fff;font-weight:800;font-size:14.5px;text-decoration:none;color:var(--obs);cursor:pointer;transition:background .15s,border-color .15s,color .15s,transform .15s}
+.btn:hover{border-color:var(--ac);color:var(--ac)}
+.btn.p{background:var(--ac);border-color:var(--ac);color:#fff}.btn.p:hover{background:var(--ac2);color:#fff}
+.btn.w{background:#fff;border-color:#fff;color:var(--ac)}.btn.o{background:transparent;border-color:rgba(255,255,255,.6);color:#fff}.btn.o:hover{background:rgba(255,255,255,.12);color:#fff}
+.btn.sm{height:38px;padding:0 14px;font-size:13.5px}
+.burger{display:none;margin-left:auto;background:none;border:1px solid var(--line);border-radius:10px;width:42px;height:42px;cursor:pointer}
+/* hero */
+.hero{position:relative;color:#fff;background:linear-gradient(135deg,var(--ac) 0%,var(--ac2) 100%);overflow:hidden}
+.hero .bg{position:absolute;inset:0;background-size:cover;background-position:center}
+.hero .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,rgba(17,19,21,.78) 0%,rgba(17,19,21,.45) 55%,rgba(17,19,21,.2) 100%)}
+.hero .wrap{position:relative;padding:96px 20px 88px;max-width:var(--max)}
+.hero .kick{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.hero h1{font-size:clamp(32px,5vw,54px);line-height:1.1;margin:10px 0 12px;max-width:760px;letter-spacing:-.01em}
+.hero .motto{font-size:clamp(17px,2.2vw,21px);font-style:italic;opacity:.92;max-width:680px}
+.hero p.intro{margin-top:14px;max-width:640px;opacity:.9}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.hero .meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:26px;font-size:14px;opacity:.9}
+/* sections */
+section.s{padding:72px 0}
+section.s.alt{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sh{margin-bottom:28px}
+.sh .kick{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--ac)}
+.sh h2{font-size:clamp(25px,3vw,34px);line-height:1.2;color:var(--obs);margin-top:4px}
+.two{display:grid;grid-template-columns:1.4fr 1fr;gap:36px;align-items:start}
+.prose{white-space:pre-line;font-size:16.5px;color:#3a3d42}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:22px}
+.alt .card{background:var(--ivory2)}
+.facts{display:grid;gap:14px}
+.facts div small{display:block;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--grey)}
+.facts div b{font-size:16px;color:var(--obs)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.mass{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.mass .day{font-weight:800;color:var(--ac);margin-bottom:8px;font-size:15px}
+.mass ul{list-style:none;display:grid;gap:8px}
+.mass li{display:flex;gap:12px;font-size:14.5px}.mass li b{min-width:76px;color:var(--obs)}
+.mass li span{color:#5d6065}
+.ev .date{display:inline-block;background:var(--ac-t);color:var(--ac);font-weight:800;font-size:12.5px;padding:4px 10px;border-radius:99px}
+.ev h3,.an h3{font-size:17px;margin:10px 0 6px;color:var(--obs)}
+.ev p,.an p{font-size:14.5px;color:#5d6065;white-space:pre-line}
+.ev .where{font-size:13.5px;font-weight:700;color:var(--grey);margin-top:8px}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{background:#fff;border:1px solid var(--line);border-radius:99px;padding:8px 14px;font-weight:700;font-size:14px}
+.join{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-radius:22px;padding:44px;display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.join h2{font-size:clamp(23px,3vw,30px);line-height:1.2}.join p{opacity:.9;margin-top:6px;max-width:560px}
+.contact{display:grid;gap:12px;font-size:15px}
+.contact a{color:var(--ac);font-weight:700;word-break:break-word}
+.soc{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+/* footer */
+footer{background:var(--obs);color:#c9c6bd;padding:44px 0 30px;font-size:14px}
+footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr;gap:30px}
+footer b{color:#fff}
+footer a{color:#e5dccb;text-decoration:none}footer a:hover{color:#fff;text-decoration:underline}
+footer .pw{margin-top:30px;padding-top:18px;border-top:1px solid #2a2d31;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;color:#8f8c84}
+.preview{background:var(--gold);color:var(--obs);text-align:center;font-weight:800;font-size:13.5px;padding:8px 12px}
+/* states */
+.state{min-height:70vh;display:grid;place-items:center;text-align:center;padding:60px 20px}
+.state .box{max-width:560px}
+.state h1{font-size:30px;color:var(--obs);margin:14px 0 8px;line-height:1.2}
+.state p{color:#5d6065}
+.skel{min-height:100vh;display:grid;place-items:center}
+.skel i{width:42px;height:42px;border:3.5px solid var(--ac-t);border-top-color:var(--ac);border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.rv{opacity:0;transform:translateY(14px);transition:opacity .6s,transform .6s}.rv.in{opacity:1;transform:none}
+:focus-visible{outline:3px solid rgba(201,162,39,.8);outline-offset:2px}
+@media (max-width:900px){
+ .hd nav{display:none;position:absolute;top:72px;left:0;right:0;background:#fff;border-bottom:1px solid var(--line);flex-direction:column;align-items:stretch;padding:10px 16px 16px}
+ .hd nav.open{display:flex}.burger{display:grid;place-items:center}
+ .two,.grid,footer .cols{grid-template-columns:1fr}
+ .hero .wrap{padding:64px 16px 60px}
+ section.s{padding:52px 0}
+ .join{padding:30px 22px}
+ .wrap{padding:0 16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}html{scroll-behavior:auto}}
+</style></head><body>
+<div id="root"><div class="skel" role="status" aria-label="Loading parish website"><i></i></div></div>
+
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>window.PARISHOS_PUBLIC=true</script>
+<script defer src="/js/firebase-config.js"></script>
+<script defer src="/js/firebase-init.js"></script>
+<script defer src="/js/core.js"></script>
+<script defer>
+(function(){
+'use strict';
+/* One shell renders every parish website. The slug only selects WHICH public record to show;
+   Firestore Security Rules decide what is readable (published, verified, active parishes only). */
+var tries=0;(function wait(){if(typeof Boot!=='undefined'&&Boot.ready)return run();if(++tries>200)return;setTimeout(wait,50)})();
+
+const ACCENTS={burgundy:['#6E1725','#4A0E18','#F3E6E8'],navy:['#182A3A','#0E1A25','#E3E9EE'],green:['#1E6B4F','#123F2F','#E1EFE9'],gold:['#8A6D12','#5E4A0B','#F6EFD3'],purple:['#5B3A7A','#3A244F','#ECE5F3'],teal:['#0E7490','#0A4F62','#DDF0F4']};
+const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Weekdays','Holy days'];
+const safeUrl=u=>{try{const x=new URL(String(u||''));return /^https?:$/.test(x.protocol)?x.toString():''}catch(e){return ''}};
+const tel=s=>String(s||'').replace(/[^\d+]/g,'');
+const root=()=>document.getElementById('root');
+const setMeta=(name,val,prop)=>{let m=document.querySelector(`meta[${prop?'property':'name'}="${name}"]`);if(!m){m=document.createElement('meta');m.setAttribute(prop?'property':'name',name);document.head.appendChild(m)}m.setAttribute('content',val)};
+const fmtDate=s=>{if(!s)return '';const d=new Date(String(s).length<=10?s+'T00:00:00':s);return isNaN(d)?esc(s):d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long',year:'numeric'})};
+const fmtTime=t=>{if(!/^\d{1,2}:\d{2}$/.test(String(t||'')))return esc(t||'');const[h,m]=t.split(':').map(Number);return (h%12||12)+':'+String(m).padStart(2,'0')+' '+(h<12?'AM':'PM')};
+const CROSS='<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2h4v7h7v4h-7v9h-4v-9H3V9h7z" fill="currentColor"/></svg>';
+
+function slugFromUrl(){
+ const seg=location.pathname.replace(/^\/+|\/+$/g,'').split('/')[0]||'';
+ if(seg&&seg!=='parish-home'&&seg!=='/parish-home')return seg.toLowerCase();
+ return (new URLSearchParams(location.search).get('p')||'').toLowerCase();
+}
+
+function stateView(title,body,o={}){
+ document.title=title+' · PARISH YETU';
+ root().innerHTML=`<header class="hd"><div class="wrap"><a class="id" href="/platform"><span class="logo" style="color:var(--ac)">${CROSS}</span><span><b>PARISH YETU</b><small>Catholic parishes online</small></span></a></div></header>
+ <div class="state"><div class="box"><div style="color:var(--ac);display:flex;justify-content:center">${CROSS}</div><h1>${esc(title)}</h1><p>${body}</p>${o.dir?`<div class="card" style="margin-top:22px;text-align:left"><b style="font-size:17px">${esc(o.dir.name)}</b><div style="color:#5d6065;font-size:14.5px;margin-top:4px">${esc([o.dir.town,o.dir.county,o.dir.country].filter(Boolean).join(', '))}${o.dir.dioceseName?' · '+esc(o.dir.dioceseName):''}</div>${o.dir.phone?`<div style="margin-top:8px"><a href="tel:${esc(tel(o.dir.phone))}" style="color:var(--ac);font-weight:700">${esc(o.dir.phone)}</a></div>`:''}</div>`:''}
+ <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:24px">${o.join?`<a class="btn p" href="/register?parish=${encodeURIComponent(o.join)}">Join this parish</a>`:''}<a class="btn" href="/home">Find a parish</a></div></div></div>
+ <footer><div class="wrap"><div class="pw" style="margin-top:0;border-top:0;padding-top:0"><span>Powered by <a href="/platform">PARISH YETU</a></span></div></div></footer>`;
+}
+
+async function run(){
+ await Boot.ready;
+ if(!window.FB||!FB.ok)return stateView('This website is temporarily unavailable','Please try again shortly.');
+ let slug=slugFromUrl();
+ if(!/^[a-z0-9][a-z0-9-]{1,79}$/.test(slug))return stateView('Parish not found','This address does not belong to a parish on PARISH YETU. Check the link, or search for the parish in the directory.');
+ const preview=new URLSearchParams(location.search).get('preview')==='1';
+ try{
+  let s=await FB.db.doc('slugs/'+slug).get();
+  if(s.exists&&s.data().redirectTo){ // a parish address that was changed keeps working
+   slug=s.data().redirectTo;history.replaceState(null,'','/'+slug+location.search+location.hash);s=await FB.db.doc('slugs/'+slug).get();
+  }
+  if(!s.exists||!s.data().parishId)return stateView('Parish not found','This address does not belong to a parish on PARISH YETU. Check the link, or search for the parish in the directory.');
+  const pid=s.data().parishId;
+  const ds=await FB.db.doc('churchDirectory/'+pid).get();
+  if(!ds.exists)return stateView('Parish not found','This parish is not listed on PARISH YETU.');
+  const dir=ds.data();
+  if(preview){
+   const u=Auth.user();
+   if(!u||!(u.role==='super'||u.parishId===pid))return stateView('Preview not available','Sign in as staff of this parish to preview its website.',{});
+   const d=await FB.db.doc('parishes/'+pid+'/public/draft').get();
+   return render(pid,slug,dir,d.exists?d.data():{},true);
+  }
+  if(dir.status==='pending')return stateView(dir.name,'This parish has registered on PARISH YETU and its website will open once the parish has been verified.',{dir});
+  if(dir.status!=='active')return stateView('This parish website is unavailable','The website of this parish is not available at the moment.');
+  let site=null;
+  try{const x=await FB.db.doc('parishes/'+pid+'/public/site').get();site=x.exists?x.data():null}catch(e){site=null}
+  if(!site||!site.published)return stateView(dir.name,'The parish website is being prepared. In the meantime you can contact the parish or join it as a member.',{dir,join:slug});
+  render(pid,slug,dir,site,false);
+ }catch(e){
+  console.error(e);
+  stateView('This website could not be loaded','Check your internet connection and try again.');
+ }
+}
+
+function render(pid,slug,dir,site,preview){
+ const ac=ACCENTS[site.accent]||ACCENTS.burgundy;
+ const rs=document.documentElement.style;rs.setProperty('--ac',ac[0]);rs.setProperty('--ac2',ac[1]);rs.setProperty('--ac-t',ac[2]);
+ document.querySelector('meta[name="theme-color"]').setAttribute('content',ac[0]);
+ const name=site.displayName||dir.name;
+ const c=site.contact||{},soc=site.social||{},pr=site.priest||{};
+ const logo=safeUrl(site.logoUrl),banner=safeUrl(site.bannerUrl);
+ const place=c.location||[dir.town,dir.county,dir.country].filter(Boolean).join(', ');
+ const canonical=(FB.siteBase||'https://parishyetu.church')+'/'+slug;
+ document.title=name+(site.motto?' · '+site.motto:'');
+ const desc=(site.about||site.welcome||(name+' — Catholic parish in '+place)).replace(/\s+/g,' ').slice(0,160);
+ setMeta('description',desc);setMeta('og:title',name,1);setMeta('og:description',desc,1);setMeta('og:url',canonical,1);if(logo)setMeta('og:image',logo,1);
+ let cl=document.querySelector('link[rel=canonical]');if(!cl){cl=document.createElement('link');cl.rel='canonical';document.head.appendChild(cl)}cl.href=canonical;
+ if(logo){let fi=document.querySelector('link[rel=icon]');if(!fi){fi=document.createElement('link');fi.rel='icon';document.head.appendChild(fi)}fi.href=logo}
+ const sec=site.sections||{};const on=k=>sec[k]!==false;
+ const today=new Date().toISOString().slice(0,10);
+ const events=(site.events||[]).filter(e=>e&&e.title&&(!e.date||e.date>=today)).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+ const ann=(site.announcements||[]).filter(a=>a&&a.title);
+ const mass=(site.massSchedule||[]).filter(m=>m&&(m.time||m.day));
+ const byDay={};mass.forEach(m=>{const d=m.day||'Sunday';(byDay[d]=byDay[d]||[]).push(m)});
+ const di=d=>{const i=DAYS.indexOf(d);return i<0?99:i};const days=Object.keys(byDay).sort((a,b)=>di(a)-di(b));
+ const outs=(site.outstations||[]).filter(o=>o&&o.name);
+ const mins=(site.ministries||[]).filter(m=>m&&m.name);
+ const sermons=(site.sermons||[]).filter(s=>s&&s.title);
+ const navs=[['about','About',on('about')&&(site.about||pr.show)],['mass','Mass times',on('mass')&&mass.length],['events','Events',on('events')&&events.length],['news','Announcements',on('announcements')&&ann.length],['contact','Contact',true]].filter(n=>n[2]);
+ const socials=[['website','Website'],['facebook','Facebook'],['youtube','YouTube'],['instagram','Instagram'],['x','X'],['whatsapp','WhatsApp']].map(([k,l])=>{const u=safeUrl(soc[k]);return u?`<a class="btn sm" href="${esc(u)}" target="_blank" rel="noopener nofollow">${l}</a>`:''}).join('');
+ const join=`/register?parish=${encodeURIComponent(slug)}`;
+ root().innerHTML=`${preview?'<div class="preview" role="status">Preview — this is your unpublished draft. Visitors do not see it until you publish.</div>':''}
+ <header class="hd"><div class="wrap"><a class="id" href="/${esc(slug)}"><span class="logo" style="color:var(--ac)">${logo?`<img src="${esc(logo)}" alt="${esc(name)} logo">`:CROSS}</span><span><b>${esc(name)}</b>${site.motto?`<small>${esc(site.motto)}</small>`:''}</span></a>
+  <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <nav id="nav" aria-label="Parish">${navs.map(n=>`<a href="#${n[0]}">${n[1]}</a>`).join('')}<a class="btn sm" href="/login" style="margin-left:6px">Member login</a><a class="btn sm p" href="${join}">Join the parish</a></nav></div></header>
+ <section class="hero">${banner?`<div class="bg" style="background-image:url('${esc(banner).replace(/'/g,'%27')}')"></div>`:''}<div class="wrap">
+  <div class="kick">${esc(dir.dioceseName||'Catholic Church')}${dir.deanery?' · '+esc(dir.deanery)+' Deanery':''}</div>
+  <h1>${esc(site.welcome||'Welcome to '+name)}</h1>
+  ${site.motto?`<p class="motto">“${esc(site.motto)}”</p>`:''}
+  ${site.about?`<p class="intro">${esc(site.about.length>220?site.about.slice(0,220).replace(/\s+\S*$/,'')+'…':site.about)}</p>`:''}
+  <div class="cta">${mass.length&&on('mass')?'<a class="btn w" href="#mass">Mass times</a>':''}<a class="btn ${mass.length&&on('mass')?'o':'w'}" href="${join}">Join the parish</a><a class="btn o" href="#contact">Visit us</a></div>
+  <div class="meta">${place?`<span>📍 ${esc(place)}</span>`:''}${site.patron?`<span>✝ Patron: ${esc(site.patron)}</span>`:''}</div></div></section>
+ ${on('about')&&(site.about||pr.show||site.patron)?`<section class="s" id="about"><div class="wrap two rv"><div><div class="sh"><div class="kick">About us</div><h2>${esc(name)}</h2></div><div class="prose">${esc(site.about||'')}</div></div>
+  <div class="card facts">${pr.show&&pr.name?`<div><small>${esc(pr.title||'Parish Priest')}</small><b>${esc(pr.name)}</b></div>`:''}${site.patron?`<div><small>Patron</small><b>${esc(site.patron)}</b></div>`:''}${dir.dioceseName?`<div><small>Diocese</small><b>${esc(dir.dioceseName)}</b></div>`:''}${dir.deanery?`<div><small>Deanery</small><b>${esc(dir.deanery)}</b></div>`:''}${outs.length&&on('outstations')?`<div><small>Outstations</small><b>${outs.length}</b></div>`:''}</div></div></section>`:''}
+ ${on('mass')&&mass.length?`<section class="s alt" id="mass"><div class="wrap rv"><div class="sh"><div class="kick">Celebrate with us</div><h2>Mass times</h2></div><div class="mass">${days.map(d=>`<div class="card"><div class="day">${esc(d)}</div><ul>${byDay[d].sort((a,b)=>String(a.time).localeCompare(String(b.time))).map(m=>`<li><b>${fmtTime(m.time)}</b><span>${esc([m.language,m.place].filter(Boolean).join(' · '))}${m.note?' — '+esc(m.note):''}</span></li>`).join('')}</ul></div>`).join('')}</div></div></section>`:''}
+ ${on('events')&&events.length?`<section class="s" id="events"><div class="wrap rv"><div class="sh"><div class="kick">Parish life</div><h2>Upcoming events</h2></div><div class="grid">${events.slice(0,9).map(e=>`<article class="card ev">${e.date?`<span class="date">${fmtDate(e.date)}${e.time?' · '+fmtTime(e.time):''}</span>`:''}<h3>${esc(e.title)}</h3>${e.description?`<p>${esc(e.description)}</p>`:''}${e.venue?`<div class="where">📍 ${esc(e.venue)}</div>`:''}</article>`).join('')}</div></div></section>`:''}
+ ${on('announcements')&&ann.length?`<section class="s alt" id="news"><div class="wrap rv"><div class="sh"><div class="kick">Notices</div><h2>Announcements</h2></div><div class="grid">${ann.slice(0,9).map(a=>`<article class="card an">${a.date?`<span class="mini" style="font-size:12.5px;font-weight:800;color:var(--grey)">${fmtDate(a.date)}</span>`:''}<h3>${esc(a.title)}</h3>${a.body?`<p>${esc(a.body)}</p>`:''}</article>`).join('')}</div></div></section>`:''}
+ ${on('ministries')&&mins.length?`<section class="s"><div class="wrap rv"><div class="sh"><div class="kick">Get involved</div><h2>Ministries and groups</h2></div><div class="chips">${mins.map(m=>`<span class="chip" ${m.description?`title="${esc(m.description)}"`:''}>${esc(m.name)}</span>`).join('')}</div></div></section>`:''}
+ ${on('outstations')&&outs.length?`<section class="s ${mins.length?'alt':''}"><div class="wrap rv"><div class="sh"><div class="kick">Our communities</div><h2>Outstations</h2></div><div class="grid">${outs.map(o=>`<div class="card"><b>${esc(o.name)}</b>${o.location?`<div style="color:#5d6065;font-size:14px">${esc(o.location)}</div>`:''}</div>`).join('')}</div></div></section>`:''}
+ ${on('sermons')&&sermons.length?`<section class="s"><div class="wrap rv"><div class="sh"><div class="kick">Reflections</div><h2>Homilies and resources</h2></div><div class="grid">${sermons.slice(0,6).map(s=>{const u=safeUrl(s.url);return `<article class="card an"><span style="font-size:12.5px;font-weight:800;color:var(--grey)">${fmtDate(s.date)}${s.preacher?' · '+esc(s.preacher):''}</span><h3>${esc(s.title)}</h3>${s.scripture?`<p><i>${esc(s.scripture)}</i></p>`:''}${s.summary?`<p>${esc(s.summary)}</p>`:''}${u?`<a class="btn sm" style="margin-top:10px" href="${esc(u)}" target="_blank" rel="noopener nofollow">Open</a>`:''}</article>`}).join('')}</div></div></section>`:''}
+ <section class="s" id="join"><div class="wrap rv"><div class="join"><div><h2>Make ${esc(name)} your parish home</h2><p>Register as a member to stay connected with Mass schedules, announcements, your family record and parish requests.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn w" href="${join}">Join the parish</a><a class="btn o" href="/login">Member login</a></div></div></div></section>
+ <section class="s alt" id="contact"><div class="wrap two rv"><div><div class="sh"><div class="kick">Find us</div><h2>Contact the parish</h2></div><div class="contact">
+  ${place||c.address?`<div>📍 ${esc([c.address,place].filter(Boolean).join(', '))}</div>`:''}
+  ${c.phone?`<div>📞 <a href="tel:${esc(tel(c.phone))}">${esc(c.phone)}</a></div>`:''}
+  ${c.email?`<div>✉️ <a href="mailto:${esc(c.email)}">${esc(c.email)}</a></div>`:''}
+  ${c.officeHours?`<div>🕘 Office hours: ${esc(c.officeHours)}</div>`:''}
+  ${safeUrl(c.mapUrl)?`<div><a class="btn sm" href="${esc(safeUrl(c.mapUrl))}" target="_blank" rel="noopener nofollow">Open in maps</a></div>`:''}
+  ${socials?`<div class="soc">${socials}</div>`:''}</div></div>
+  <div class="card facts"><div><small>Parish</small><b>${esc(name)}</b></div>${dir.dioceseName?`<div><small>Diocese</small><b>${esc(dir.dioceseName)}</b></div>`:''}${mass.length?`<div><small>Next step</small><b>Join us for Mass this ${esc(days[0]||'Sunday')}</b></div>`:''}</div></div></section>
+ <footer><div class="wrap"><div class="cols"><div><b style="font-size:16px">${esc(name)}</b>${site.motto?`<div style="font-style:italic;margin-top:4px">${esc(site.motto)}</div>`:''}<div style="margin-top:10px">${esc([c.address,place].filter(Boolean).join(', '))}</div></div>
+  <div><b>Contact</b><div style="margin-top:8px;display:grid;gap:4px">${c.phone?`<a href="tel:${esc(tel(c.phone))}">${esc(c.phone)}</a>`:''}${c.email?`<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`:''}</div></div>
+  <div><b>Parish</b><div style="margin-top:8px;display:grid;gap:4px"><a href="${join}">Join the parish</a><a href="/login">Member login</a>${navs.filter(n=>n[0]!=='contact').map(n=>`<a href="#${n[0]}">${n[1]}</a>`).join('')}</div></div></div>
+  <div class="pw"><span>© ${new Date().getFullYear()} ${esc(name)}</span><span>Powered by <a href="/platform">PARISH YETU</a></span></div></div></footer>`;
+ const b=document.getElementById('burger'),n=document.getElementById('nav');
+ b.onclick=()=>{const o=n.classList.toggle('open');b.setAttribute('aria-expanded',o)};
+ n.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{n.classList.remove('open');b.setAttribute('aria-expanded','false')}));
+ const io='IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08}):null;
+ document.querySelectorAll('.rv').forEach(el=>io?io.observe(el):el.classList.add('in'));
+}
+})();
+</script>
+</body></html>

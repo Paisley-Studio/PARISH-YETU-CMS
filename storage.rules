@@ -1,0 +1,36 @@
+rules_version = '2';
+// PARISH YETU - Cloud Storage Security Rules.
+// The application does not require Storage for sign-in or membership. It is used for parish
+// documents (19-documents.html). File access follows the same church scope as Firestore.
+service firebase.storage {
+  match /b/{bucket}/o {
+    function profile() { return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data; }
+    function signedIn() { return request.auth != null; }
+    function active() { return signedIn() && firestore.exists(/databases/(default)/documents/users/$(request.auth.uid)) && profile().status == 'active'; }
+    function parishLive(pid) { return firestore.get(/databases/(default)/documents/parishes/$(pid)).data.get('status', 'active') == 'active'; }
+    function staffOf(pid, roles) { return active() && profile().get('parishId', '') == pid && profile().role in roles && parishLive(pid); }
+    function isSuper() { return active() && profile().role == 'super'; }
+    function small() { return request.resource.size < 15 * 1024 * 1024; }
+
+    // Parish documents: office staff of that church only.
+    match /parishes/{pid}/documents/{file} {
+      allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'finance']);
+      allow write: if (isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'finance'])) && small();
+      allow delete: if isSuper() || staffOf(pid, ['priest', 'admin']);
+    }
+    // Church logo and media: readable by that church's users, editable by priest / administrator.
+    match /parishes/{pid}/media/{file} {
+      allow read: if isSuper() || (active() && profile().get('parishId', '') == pid && parishLive(pid));
+      allow write: if (isSuper() || staffOf(pid, ['priest', 'admin'])) && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+    // Member profile photograph: the member and the parish priest / administrator.
+    match /parishes/{pid}/members/{uid}/{file} {
+      allow read: if isSuper() || staffOf(pid, ['priest', 'admin']) || (active() && request.auth.uid == uid && profile().get('parishId', '') == pid && parishLive(pid));
+      allow write: if active() && request.auth.uid == uid && profile().get('parishId', '') == pid && parishLive(pid)
+        && request.resource.size < 2 * 1024 * 1024 && request.resource.contentType.matches('image/.*');
+      allow delete: if active() && request.auth.uid == uid;
+    }
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}

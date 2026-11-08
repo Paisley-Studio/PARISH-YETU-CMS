@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Parish Overview · Parish Yetu</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bur:#6E1725;--bur2:#5A111D;--bur3:#8A2434;--gold:#C9A227;--gold2:#A98A1B;--ivory:#F7F3E8;--obs:#111315;--navy:#182A3A;--white:#fff;--line:#E8E5DD;--grey:#8B8A84;--ink:#23262A;--green:#1E6B4F;--red:#B3261E;
+  --bur-t:#F3E6E8;--gold-t:#F6EFD3;--green-t:#E1EFE9;--navy-t:#E3E9EE;--red-t:#F8E3E1;--grey-t:#EFEDE6;
+  --r:10px;--sh:0 1px 2px rgba(17,19,21,.05),0 4px 14px rgba(17,19,21,.04);--sh2:0 12px 40px rgba(17,19,21,.18);
+  --sw:268px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Quicksand',system-ui,sans-serif;font-weight:500;color:var(--ink);background:var(--ivory);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,h4{font-weight:700;line-height:1.2;color:var(--obs)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#d6d2c6;border-radius:8px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* shell */
+.app{display:grid;grid-template-columns:var(--sw) 1fr;min-height:100vh;transition:grid-template-columns .25s}
+.app.collapsed{--sw:78px}
+.side{background:var(--bur);color:#F3E9E6;position:sticky;top:0;height:100vh;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;z-index:40}
+.brand{display:flex;gap:12px;align-items:center;padding:20px 18px 18px;border-bottom:1px solid rgba(255,255,255,.12)}
+.brand .mark{width:42px;height:42px;background:var(--gold);border-radius:10px;display:grid;place-items:center;flex:none}
+.brand b{display:block;font-size:17px;font-weight:800;letter-spacing:.04em;color:#fff}
+.brand span{display:block;font-size:12px;color:#E8CFC9;font-weight:600;white-space:nowrap}
+.nav{padding:10px 10px 24px;flex:1}
+.ng{margin-top:4px}
+.ng>button{width:100%;display:flex;align-items:center;gap:12px;background:none;border:0;color:#E8CFC9;font-weight:700;font-size:13px;padding:10px 10px;border-radius:8px;cursor:pointer;text-align:left;letter-spacing:.02em}
+.ng>button:hover{background:rgba(255,255,255,.07);color:#fff}
+.ng>button .chev{margin-left:auto;transition:transform .2s;width:14px;height:14px}
+.ng.open>button .chev{transform:rotate(90deg)}
+.ng.has-active>button{color:#fff}
+.ng .items{display:none;margin:2px 0 6px 21px;border-left:1px solid rgba(255,255,255,.16);padding-left:8px}
+.ng.open .items{display:block}
+.ng a{display:block;padding:7px 12px;border-radius:7px;color:#E5D3CF;font-weight:600;font-size:13.5px;position:relative}
+.ng a:hover{background:rgba(255,255,255,.08);color:#fff}
+.ng a.active{background:var(--ivory);color:var(--bur);font-weight:700}
+.ng a.active::before{content:"";position:absolute;left:-10px;top:8px;bottom:8px;width:3px;background:var(--gold);border-radius:3px}
+.app.collapsed .brand div,.app.collapsed .ng>button span,.app.collapsed .ng>button .chev,.app.collapsed .ng .items{display:none!important}
+.app.collapsed .ng>button{justify-content:center}
+.sidefoot{padding:14px 16px;border-top:1px solid rgba(255,255,255,.12);font-size:12px;color:#E0C9C4}
+.app.collapsed .sidefoot{display:none}
+.main{min-width:0;display:flex;flex-direction:column;min-height:100vh}
+.top{height:64px;background:var(--white);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 24px;position:sticky;top:0;z-index:30}
+.iconbtn{width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;cursor:pointer;position:relative;color:var(--navy)}
+.iconbtn:hover{border-color:var(--gold);background:var(--gold-t)}
+.iconbtn .dot{position:absolute;top:7px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--bur);border:2px solid #fff}
+.crumb{font-size:13px;color:var(--grey);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb b{color:var(--obs);font-weight:700}
+.gsearch{margin-left:auto;position:relative;width:min(300px,30vw)}
+.gsearch input{width:100%;height:38px;border:1px solid var(--line);border-radius:9px;padding:0 12px 0 36px;background:var(--ivory)}
+.gsearch svg{position:absolute;left:11px;top:10px;color:var(--grey)}
+.gres{position:absolute;top:44px;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh2);display:none;max-height:300px;overflow:auto;z-index:60}
+.gres a{display:block;padding:9px 14px;font-weight:600}.gres a:hover{background:var(--gold-t)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:99px;white-space:nowrap}
+.pill.org{background:var(--gold-t);color:#6b5610;border:1px solid #E5D48E}
+.pill.org i{width:7px;height:7px;border-radius:50%;background:var(--gold);display:inline-block}
+.pill.local{background:var(--navy-t);color:var(--navy)}
+.user{display:flex;align-items:center;gap:10px;cursor:pointer;border:0;background:none;padding:2px 4px 2px 2px;border-radius:99px}
+.av{width:36px;height:36px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
+.av.sm{width:30px;height:30px;font-size:11px}.av.lg{width:64px;height:64px;font-size:22px}
+.av.b{background:var(--bur)}.av.g{background:var(--green)}.av.y{background:var(--gold);color:var(--obs)}
+.user small{display:block;font-size:11.5px;color:var(--grey);font-weight:600;line-height:1.1}
+.user b{display:block;font-size:13px;line-height:1.2}
+.content{padding:28px 28px 40px;flex:1;max-width:1560px;width:100%;margin:0 auto;animation:pgin .35s ease both}
+@keyframes pgin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.phead{display:flex;gap:20px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:22px}
+.phead h1{font-size:28px;font-weight:800;letter-spacing:-.01em}
+.phead p{color:#5d6065;margin-top:4px;max-width:720px;font-weight:500}
+.pactions{display:flex;gap:10px;flex-wrap:wrap}
+.foot{border-top:1px solid var(--line);background:#fff;padding:12px 28px;font-size:12px;color:var(--grey);display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-weight:600}
+.foot .sp{margin-left:auto}
+.scrim{position:fixed;inset:0;background:rgba(17,19,21,.5);z-index:80;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.on{opacity:1;pointer-events:auto}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:9px;border:1px solid var(--line);background:#fff;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s,color .15s}
+.btn:hover{border-color:var(--bur);color:var(--bur)}
+.btn.p{background:var(--bur);border-color:var(--bur);color:#fff}.btn.p:hover{background:var(--bur2);color:#fff}
+.btn.g{background:var(--gold);border-color:var(--gold);color:var(--obs)}.btn.g:hover{background:var(--gold2);color:#fff}
+.btn.n{background:var(--navy);border-color:var(--navy);color:#fff}.btn.n:hover{background:var(--obs);color:#fff}
+.btn.d{background:#fff;border-color:#E6B8B4;color:var(--red)}.btn.d:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.btn.sm{height:30px;padding:0 11px;font-size:12.5px;border-radius:7px}
+.btn[disabled]{opacity:.5;pointer-events:none}
+
+/* cards */
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
+.card>.ch{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:16px 20px 0}
+.card>.ch h3{font-size:15.5px}
+.card>.ch small{color:var(--grey);font-weight:600;display:block;margin-top:2px}
+.card>.cb{padding:16px 20px 20px}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g6{grid-template-columns:repeat(6,1fr)}
+.g21{grid-template-columns:2fr 1fr}.g12{grid-template-columns:1fr 2fr}
+.mt{margin-top:18px}
+.kpi{border-radius:var(--r);padding:18px 18px 16px;border:1px solid var(--line);background:#fff;position:relative;overflow:hidden;box-shadow:var(--sh);min-height:122px;display:flex;flex-direction:column}
+.kpi .l{font-size:12.5px;font-weight:700;color:var(--grey);display:flex;align-items:center;gap:8px}
+.kpi .v{white-space:nowrap;font-size:clamp(22px,2.1vw,30px);font-weight:800;color:var(--obs);margin-top:8px;letter-spacing:-.02em;line-height:1.1}
+.kpi .s{margin-top:auto;padding-top:10px;font-size:12px;font-weight:700;color:var(--green)}
+.kpi .s.dn{color:var(--red)}.kpi .s.mu{color:var(--grey)}
+.kpi.k-bur{background:var(--bur);border-color:var(--bur)}.kpi.k-bur .l,.kpi.k-bur .s{color:#EBCFC9}.kpi.k-bur .v{color:#fff}
+.kpi.k-navy{background:var(--navy);border-color:var(--navy)}.kpi.k-navy .l,.kpi.k-navy .s{color:#B8C7D4}.kpi.k-navy .v{color:#fff}
+.kpi.k-gold{background:var(--gold-t);border-color:#E5D48E}.kpi.k-gold .s{color:#6b5610}
+.kpi.k-bar::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--gold)}
+.kpi.k-green::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--green)}
+.kpi.k-line{border:2px solid var(--bur)}
+.kpi svg.i{opacity:.9}
+.kpi .spark{position:absolute;right:14px;bottom:14px;width:64px;height:26px;opacity:.9}.kpi:has(.spark) .s{padding-right:76px}
+.kpi.k-bur .spark path{stroke:var(--gold)}.kpi.k-navy .spark path{stroke:var(--gold)}
+.spark path{fill:none;stroke:var(--bur);stroke-width:2}
+
+/* badges */
+.bd{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11.5px;font-weight:700;white-space:nowrap;background:var(--grey-t);color:#555}
+.bd::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.bd.g{background:var(--green-t);color:var(--green)}.bd.y{background:var(--gold-t);color:#7a6210}.bd.r{background:var(--red-t);color:var(--red)}.bd.b{background:var(--navy-t);color:var(--navy)}.bd.p{background:var(--bur-t);color:var(--bur)}
+
+/* tables */
+.tw{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse}
+table.t th{text-align:left;font-size:12px;font-weight:700;color:var(--grey);padding:11px 14px;border-bottom:1px solid var(--line);background:#FBF9F3;white-space:nowrap;user-select:none}
+table.t th.sort{cursor:pointer}table.t th.sort:hover{color:var(--bur)}
+table.t th .ar{opacity:.5;margin-left:4px}
+table.t td{padding:12px 14px;border-bottom:1px solid #F0EDE4;vertical-align:middle}
+table.t tr:last-child td{border-bottom:0}
+table.t tbody tr{transition:background .12s}
+table.t tbody tr:hover{background:#FCFAF4}
+table.t tr.click{cursor:pointer}
+.cell{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--obs)}
+.cell small{display:block;font-weight:600;color:var(--grey);font-size:12px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.tools .sp{margin-left:auto}
+.inp,.sel,.ta{height:38px;border:1px solid #D9D5C9;border-radius:9px;padding:0 12px;background:#fff;width:100%}
+.ta{height:auto;padding:10px 12px;min-height:80px;resize:vertical}
+.inp:focus,.sel:focus,.ta:focus{outline:2px solid var(--gold);outline-offset:0;border-color:var(--gold)}
+.tools .inp,.tools .sel{width:auto;min-width:150px}
+.tools .search{position:relative}.tools .search input{padding-left:34px;min-width:240px}.tools .search svg{position:absolute;left:10px;top:10px;color:var(--grey)}
+.pag{display:flex;align-items:center;gap:6px;padding:12px 16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--grey);font-weight:600;flex-wrap:wrap}
+.pag .sp{margin-left:auto;display:flex;gap:6px}
+.pag button{min-width:32px;height:30px;border:1px solid var(--line);background:#fff;border-radius:7px;cursor:pointer;font-weight:700}
+.pag button.on{background:var(--bur);color:#fff;border-color:var(--bur)}.pag button:disabled{opacity:.4;cursor:default}
+.empty{padding:44px 20px;text-align:center;color:var(--grey);font-weight:600}
+.empty b{display:block;color:var(--obs);font-size:15px;margin-bottom:4px}
+
+/* tabs */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto;scrollbar-width:thin}
+.tabs button{background:none;border:0;padding:11px 16px;font-weight:700;color:var(--grey);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;margin-bottom:-1px}
+.tabs button:hover{color:var(--bur)}.tabs button.on{color:var(--bur);border-bottom-color:var(--gold)}
+.subtabs{display:inline-flex;gap:4px;background:var(--grey-t);padding:4px;border-radius:10px;margin-bottom:14px;flex-wrap:wrap}
+.subtabs button{border:0;background:none;padding:6px 14px;border-radius:7px;font-weight:700;color:#666;cursor:pointer}
+.subtabs button.on{background:#fff;color:var(--bur);box-shadow:var(--sh)}
+.tabpane{animation:pgin .25s ease both}
+
+/* modal / drawer / toast */
+.modal{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:16px;background:rgba(17,19,21,.55);animation:fade .18s ease both}
+.mbox{background:#fff;border-radius:14px;width:min(560px,100%);max-height:92vh;display:flex;flex-direction:column;box-shadow:var(--sh2);animation:pop .22s ease both}
+.mbox.lg{width:min(860px,100%)}.mbox.sm{width:min(420px,100%)}
+.mh{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mh h3{font-size:18px}
+.mb{padding:20px 22px;overflow:auto}
+.mf{padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;background:#FBF9F3;border-radius:0 0 14px 14px;flex-wrap:wrap}
+@keyframes fade{from{opacity:0}to{opacity:1}}@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:#fff;z-index:95;box-shadow:var(--sh2);display:flex;flex-direction:column;animation:slide .28s cubic-bezier(.2,.8,.2,1) both}
+@keyframes slide{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+.dscrim{position:fixed;inset:0;background:rgba(17,19,21,.45);z-index:94;animation:fade .2s both}
+.drawer .mb{flex:1}
+.toasts{position:fixed;right:20px;bottom:20px;z-index:200;display:flex;flex-direction:column;gap:10px}
+.toast{background:var(--obs);color:#fff;border-radius:10px;padding:13px 18px;font-weight:700;box-shadow:var(--sh2);display:flex;gap:10px;align-items:center;max-width:380px;animation:tin .3s ease both;border-left:4px solid var(--gold)}
+.toast.ok{border-left-color:#3DAA80}.toast.err{border-left-color:#E5645B}
+@keyframes tin{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.menu{position:absolute;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh2);min-width:170px;z-index:120;padding:6px;animation:fade .12s both}
+.menu button,.menu a{display:block;width:100%;text-align:left;border:0;background:none;padding:8px 12px;border-radius:7px;cursor:pointer;font-weight:600}
+.menu button:hover,.menu a:hover{background:var(--gold-t)}.menu .dng{color:var(--red)}
+.menu hr{border:0;border-top:1px solid var(--line);margin:5px 0}
+
+/* forms */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg .f{display:flex;flex-direction:column;gap:5px}.fg .f.w{grid-column:1/-1}
+.fg label{font-weight:700;font-size:12.5px;color:#55585c}
+.fg .err{color:var(--red);font-size:12px;font-weight:600;display:none}.fg .f.bad .err{display:block}.fg .f.bad .inp,.fg .f.bad .sel{border-color:var(--red)}
+.chk{display:flex;gap:8px;align-items:center;font-weight:600}.chk input{accent-color:var(--bur);width:16px;height:16px}
+
+/* bits */
+.bar{height:8px;background:var(--grey-t);border-radius:8px;overflow:hidden}.bar i{display:block;height:100%;background:var(--bur);border-radius:8px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.bar.g i{background:var(--green)}.bar.y i{background:var(--gold)}.bar.n i{background:var(--navy)}
+.list{display:flex;flex-direction:column}
+.li{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #F0EDE4}.li:last-child{border-bottom:0}
+.li .tx{flex:1;min-width:0}.li .tx b{display:block;font-weight:700;color:var(--obs)}.li .tx small{color:var(--grey);font-weight:600;font-size:12.5px}
+.li .rt{font-weight:800;color:var(--obs);white-space:nowrap}
+.tl{position:relative;padding-left:22px}.tl::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl .e{position:relative;padding:0 0 16px}.tl .e::before{content:"";position:absolute;left:-21px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--gold);border:2px solid #fff;box-shadow:0 0 0 1px var(--gold)}
+.tl .e b{display:block;font-weight:700;color:var(--obs)}.tl .e small{color:var(--grey);font-weight:600}
+.dl{display:grid;grid-template-columns:140px 1fr;gap:8px 14px}.dl dt{color:var(--grey);font-weight:700;font-size:12.5px}.dl dd{font-weight:600;color:var(--obs)}
+.chip{display:inline-block;background:var(--grey-t);padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;margin:0 4px 4px 0;color:#555}
+.chip.b{background:var(--navy-t);color:var(--navy)}.chip.p{background:var(--bur-t);color:var(--bur)}.chip.y{background:var(--gold-t);color:#7a6210}
+.alert{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--gold-t);border:1px solid #E5D48E;font-weight:600}
+.alert.lock{background:var(--bur-t);border-color:#DDB6BC;color:var(--bur2)}
+.alert.red{background:var(--red-t);border-color:#E6B8B4}
+.sec{font-size:13px;font-weight:800;color:var(--bur);margin:0 0 10px}
+.mini{font-size:12px;color:var(--grey);font-weight:600}
+.flex{display:flex;gap:10px;align-items:center}.wrap{flex-wrap:wrap}.sp{flex:1}
+.acts li{list-style:none}
+
+/* charts */
+.ch-svg{width:100%;height:auto;display:block;overflow:visible}
+.ch-svg text{font-family:'Quicksand',sans-serif;font-size:11px;font-weight:600;fill:#8B8A84}
+.ch-svg .gl{stroke:#EFEBDF;stroke-width:1}
+.ch-svg .bar-r{transform-box:fill-box;transform-origin:bottom;animation:grow .8s cubic-bezier(.2,.8,.2,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:none}}
+.ch-svg .ln{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.2s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;font-weight:700;color:#666}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+
+/* calendar */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+.cal .dh{padding:8px;font-size:12px;font-weight:700;color:var(--grey);background:#FBF9F3;text-align:center;border-bottom:1px solid var(--line)}
+.cal .dc{min-height:92px;padding:6px;border-right:1px solid #F0EDE4;border-bottom:1px solid #F0EDE4;font-size:12px}
+.cal .dc:nth-child(7n){border-right:0}
+.cal .dc.mut{background:#FBF9F3;color:#bbb}.cal .dc.today{background:var(--gold-t)}
+.cal .dc b{font-weight:800}
+.cal .ev{display:block;margin-top:3px;background:var(--bur);color:#fff;border-radius:4px;padding:1px 6px;font-weight:700;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;border:0;width:100%;text-align:left}
+.cal .ev.n{background:var(--navy)}.cal .ev.g{background:var(--green)}.cal .ev.y{background:var(--gold);color:var(--obs)}
+
+/* hierarchy */
+.hier{display:flex;flex-direction:column;align-items:center;gap:0}
+.hier .nd{background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 22px;text-align:center;min-width:240px;font-weight:700}
+.hier .nd small{display:block;color:var(--grey);font-weight:600}
+.hier .nd.on{border-color:var(--bur);background:var(--bur-t)}
+.hier .ar{width:2px;height:22px;background:var(--gold);position:relative}.hier .ar::after{content:"";position:absolute;bottom:-1px;left:-5px;border:6px solid transparent;border-top:8px solid var(--gold);border-bottom:0}
+
+.cert{background:#fff;border:3px double var(--bur);padding:34px 30px;text-align:center;position:relative;color:var(--obs)}
+.cert .wm{position:absolute;inset:0;display:grid;place-items:center;font-size:70px;font-weight:800;color:rgba(110,23,37,.06);transform:rotate(-24deg);pointer-events:none;letter-spacing:.1em}
+.cert h2{font-size:26px;color:var(--bur);letter-spacing:.06em;margin:10px 0 4px}
+.cert p{margin:8px 0}.cert .nm{font-size:28px;font-weight:800;border-bottom:1px solid var(--gold);display:inline-block;padding:0 24px 4px;margin:6px 0}
+.cert .sg{display:flex;justify-content:space-between;align-items:flex-end;margin-top:26px;gap:12px}
+.qr{width:84px;height:84px;display:grid;grid-template-columns:repeat(11,1fr);border:4px solid #fff;outline:1px solid var(--obs);flex:none}
+.qr i{background:var(--obs)}.qr i.o{background:#fff}
+
+.skel{display:grid;place-items:center;min-height:60vh;text-align:center}
+
+/* responsive */
+@media (max-width:1600px){.g6{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:1280px){.g6{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:1024px){.g21,.g12,.g3{grid-template-columns:1fr}.g3.keep{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:900px){
+  .app,.app.collapsed{grid-template-columns:1fr;--sw:268px}
+  .side{position:fixed;left:0;top:0;transform:translateX(-100%);transition:transform .25s;width:268px}
+  .app.collapsed .brand div,.app.collapsed .ng>button span,.app.collapsed .ng>button .chev{display:revert!important}
+  .app.collapsed .ng.open .items{display:block!important}.app.collapsed .sidefoot{display:block}
+  .app.collapsed .ng>button{justify-content:flex-start}
+  .app.navopen .side{transform:none}
+  .app.navopen~.scrim{opacity:1;pointer-events:auto}
+  .top{padding:0 14px}.gsearch{display:none}.crumb{display:none}.top .sp2{margin-left:auto}
+  .content{padding:20px 14px 30px}.phead h1{font-size:23px}
+  .user div{display:none}
+}
+@media (max-width:760px){
+  .g2,.g3,.g4,.g6,.g3.keep{grid-template-columns:1fr 1fr}
+  .fg{grid-template-columns:1fr}
+  table.t thead{display:none}
+  table.t,table.t tbody,table.t tr,table.t td{display:block;width:100%}
+  table.t tr{border:1px solid var(--line);border-radius:10px;margin:10px 12px;width:auto;padding:6px 0;background:#fff}
+  table.t td{border:0;display:flex;justify-content:space-between;gap:14px;padding:7px 14px;text-align:right}
+  table.t td::before{content:attr(data-label);font-weight:700;color:var(--grey);font-size:12px;text-align:left}
+  .tools .search input{min-width:0;width:100%}.tools .search{flex:1 1 100%}
+  .dl{grid-template-columns:110px 1fr}
+  .pill.local{display:none}
+  .foot .sp{margin-left:0}
+}
+@media (max-width:520px){.g2,.g3,.g4,.g6,.g3.keep{grid-template-columns:1fr}.kpi .v{font-size:26px}.pill.org{display:none}}
+
+/* ===== page loader — bubbles ===== */
+#cms-load{position:fixed;inset:0;z-index:9999;background:var(--ivory);display:grid;place-items:center;transition:opacity .45s ease,visibility .45s ease}
+#cms-load.hide{opacity:0;visibility:hidden;pointer-events:none}
+#cms-load .orbit{position:relative;width:140px;height:140px;display:grid;place-items:center}
+#cms-load .orbit b{font-family:'Quicksand',system-ui,sans-serif;font-size:22px;font-weight:800;letter-spacing:.14em;color:var(--bur);animation:cmsbubbletext 2.4s ease-in-out infinite}
+#cms-load .orbit i{position:absolute;top:50%;left:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--bur);box-shadow:0 0 0 3px rgba(110,23,37,.08),0 4px 12px rgba(110,23,37,.25);transform-origin:0 0;animation:cmsorbit 2.4s linear infinite}
+#cms-load .orbit i:nth-child(1){background:var(--bur);animation-delay:0s}
+#cms-load .orbit i:nth-child(2){background:var(--gold);animation-delay:-.4s;width:11px;height:11px;margin:-5.5px 0 0 -5.5px}
+#cms-load .orbit i:nth-child(3){background:var(--navy);animation-delay:-.8s;width:9px;height:9px;margin:-4.5px 0 0 -4.5px}
+#cms-load .orbit i:nth-child(4){background:var(--green);animation-delay:-1.2s;width:12px;height:12px;margin:-6px 0 0 -6px}
+#cms-load .orbit i:nth-child(5){background:var(--bur3);animation-delay:-1.6s;width:10px;height:10px;margin:-5px 0 0 -5px}
+#cms-load .orbit i:nth-child(6){background:var(--gold2);animation-delay:-2s;width:13px;height:13px;margin:-6.5px 0 0 -6.5px}
+#cms-load .tag{position:absolute;bottom:36px;left:0;right:0;text-align:center;font-weight:700;font-size:12px;color:var(--grey);letter-spacing:.08em}
+@keyframes cmsorbit{
+  0%   {transform:rotate(0deg)   translateX(64px) rotate(0deg)   scale(1)}
+  50%  {transform:rotate(180deg) translateX(64px) rotate(-180deg) scale(1.25)}
+  100% {transform:rotate(360deg) translateX(64px) rotate(-360deg) scale(1)}
+}
+@keyframes cmsbubbletext{
+  0%,100%{transform:scale(1);opacity:.95}
+  50%{transform:scale(1.08);opacity:1}
+}
+@media (prefers-reduced-motion:reduce){
+  #cms-load .orbit i,#cms-load .orbit b{animation:none}
+}
+</style></head><body>
+
+<div id="cms-load" role="status" aria-live="polite" aria-label="Loading">
+  <div class="orbit">
+    <b>CMS</b>
+    <i></i><i></i><i></i><i></i><i></i><i></i>
+  </div>
+  <div class="tag">PARISH YETU</div>
+</div>
+
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script defer src="/js/firebase-config.js"></script>
+<script defer src="/js/firebase-init.js"></script>
+<script defer src="/js/core.js"></script>
+
+<script defer>
+/* Wait for Boot to exist (deferred core.js), then run guard and render. */
+(function(){
+  var t = 0;
+  function ready(){
+    if (typeof Boot !== 'undefined' && Boot.guard) { run(); return; }
+    if (++t > 100) { if(window.PageLoader) PageLoader.done(); return; }
+    setTimeout(ready, 50);
+  }
+  function run(){ Boot.guard(function(){
+
+(function(){
+
+const FILE='/dashboard';
+const roleIs=(u,...r)=>r.includes(u.role);
+function massesToday(){return DB.c('masses').filter(m=>m.date===TODAY()).sort((a,b)=>a.time<b.time?-1:1)}
+function todayCard(){const ms=massesToday();return `<div class="card"><div class="ch"><div><h3>Today</h3><small>${new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}</small></div><a class="btn sm" href="/masses">Open Masses</a></div><div class="cb"><div class="list">${ms.map(m=>`<div class="li"><div class="av sm ${m.status==='Completed'?'g':'b'}" style="border-radius:8px;width:54px;font-size:11px">${ftime(m.time).replace(' ','<br>')}</div><div class="tx"><b>${esc(m.title)}</b><small>${esc(m.celebrant)} · ${esc(m.outstation)}</small></div>${UI.bd(m.status)}</div>`).join('')||'<div class="empty">No Masses scheduled today.</div>'}</div></div></div>`}
+function attentionCard(){const p=Stats.pending();return `<div class="card"><div class="ch"><div><h3>Attention required</h3><small>${p.total} items across the parish</small></div></div><div class="cb"><div class="list">${p.items.map(i=>`<a class="li" href="${i[2]}"><span class="av sm ${i[1]?'y':'g'}">${i[1]}</span><div class="tx"><b>${i[1]} ${esc(i[0])}</b></div>${ic('chev')}</a>`).join('')}</div></div></div>`}
+function activityCard(){const el=document.createElement('div');el.className='card';el.innerHTML=`<div class="ch"><div><h3>Parish activity</h3><small>Latest across modules</small></div></div><div class="cb"><div data-sub></div><div class="list" data-l></div></div>`;const L=$('[data-l]',el);const feeds={'Registrations':()=>DB.c('parishioners').slice(-0).sort((a,b)=>b.lastActivity>a.lastActivity?1:-1).slice(0,5).map(p=>[p.name,p.outstation+' · '+p.memberNo,ago(p.lastActivity)]),'Intentions':()=>DB.c('intentions').slice(0,5).map(i=>[i.requester,i.intention,i.status]),'Donations':()=>DB.c('transactions').filter(t=>t.category!=='Sunday Collection').sort((a,b)=>b.date>a.date?1:-1).slice(0,5).map(t=>[t.source,t.category+' · '+fdate(t.date),ksh(t.amount)]),'Events':()=>DB.c('registrations').slice(0,5).map(r=>[r.name,(DB.get('events',r.eventId)||{}).title,fdate(r.date)]),'Pastoral':()=>can('private')?DB.c('pastoralCases').slice(0,5).map(c=>[c.category,c.summary,c.status]):[['Confidential','Pastoral cases are visible to clergy only','Restricted']]};
+ UI.subtabs($('[data-sub]',el),Object.keys(feeds).filter(k=>k!=='Pastoral'||true),k=>{L.innerHTML=feeds[k]().map(r=>`<div class="li">${UI.av(r[0])}<div class="tx"><b>${esc(r[0])}</b><small>${esc(r[1])}</small></div><div class="rt" style="font-size:12.5px">${esc(r[2])}</div></div>`).join('')||'<div class="empty">Nothing yet.</div>'});return el}
+function charts(){const sac=DB.c('sacraments'),by=t=>sac.filter(s=>s.type===t).length;const mem=Stats.memberGrowth();
+ const wk=DB.c('masses').filter(m=>m.attendance>0).slice(-8).map(m=>m.attendance);
+ return `<div class="grid g2 mt"><div class="card"><div class="ch"><div><h3>Membership growth</h3><small>Active registered members, last 12 months</small></div></div><div class="cb">${Ch.line(Stats.months12(),[{name:'Parishioners',data:mem,color:'#6E1725'}],{zero:false})}</div></div>
+ <div class="card"><div class="ch"><div><h3>Monthly giving</h3><small>Income vs expenses (KSh)</small></div><a class="btn sm" href="/finance">Finance</a></div><div class="cb">${can('giving')?Ch.bars(Stats.months(),[{name:'Income',data:Stats.incomeSeries(),color:'#6E1725'},{name:'Expenses',data:Stats.expSeries(),color:'#C9A227'}]):'<div class="alert lock">'+ic('lock')+'<span>Financial charts are restricted for your role.</span></div>'}</div></div></div>
+ <div class="grid g3 mt"><div class="card"><div class="ch"><div><h3>Mass attendance</h3><small>Recent celebrations</small></div></div><div class="cb">${Ch.bars(wk.map((_,i)=>'M'+(i+1)),[{data:wk,color:'#182A3A'}],{h:190})}</div></div>
+ <div class="card"><div class="ch"><div><h3>Sacramental activity</h3><small>Records by type</small></div></div><div class="cb">${Ch.donut([{label:'Baptism',value:by('Baptism'),color:'#6E1725'},{label:'Confirmation',value:by('Confirmation'),color:'#C9A227'},{label:'First Communion',value:by('First Communion'),color:'#182A3A'},{label:'Marriage',value:by('Marriage'),color:'#1E6B4F'},{label:'Other',value:sac.length-by('Baptism')-by('Confirmation')-by('First Communion')-by('Marriage'),color:'#8B8A84'}],{sub:'records'})}</div></div>
+ <div class="card"><div class="ch"><div><h3>Parish engagement</h3><small>Active participation rate</small></div></div><div class="cb">${Ch.hbars(Stats.engagement(),{fmt:v=>v+'%'})}</div></div></div>`}
+
+function parishDash(host,u){const adm=!roleIs(u,'secretary');const p=Stats.pending();
+ const k=[UI.kpi({label:'Registered Parishioners',icon:'people',count:Stats.parishioners(),sub:'Active members · '+Stats.suspended()+' suspended',cls:'k-bur'}),UI.kpi({label:'Families',icon:'admin',count:Stats.families(),sub:'Registered households',cls:'k-bar'}),UI.kpi({label:'SCCs',icon:'comm',count:Stats.sccs(),sub:'Across '+Math.max(1,(DB.load().parish.outstations||[]).length)+' outstation(s)',cls:'k-gold'}),UI.kpi({label:'Mass Attendance',icon:'liturgy',count:Stats.attendance(),sub:'Recorded in the last 7 days',cls:'k-navy'}),can('giving')?UI.kpi({label:'Monthly Giving',icon:'steward',count:Stats.income(0),fmt:'ksh',sub:Stats.incomeChange(),cls:'k-green'}):UI.kpi({label:'Ministries',icon:'people',count:DB.c('ministries').length,sub:'Active ministries',cls:'k-green'}),UI.kpi({label:'Pending Actions',icon:'check',count:p.total,sub:'Needs attention today',cls:'k-line',dn:true})];
+ host.innerHTML=`<div class="grid g6">${k.join('')}</div><div class="grid g3 mt">${todayCard()}${attentionCard()}<div id="act"></div></div>${charts()}`;$('#act').replaceWith(activityCard())}
+
+function financeDash(host){const inc=Stats.income(0),exp=sum(DB.c('expenses').filter(e=>e.date.startsWith(Stats.mk(0))&&e.status!=='Rejected'),e=>e.amount),pend=DB.c('expenses').filter(e=>e.status==='Pending'),funds=DB.c('funds'),bud=DB.c('budgets');const totB=sum(bud,b=>b.budget),totA=sum(bud,b=>Stats.budgetActual(b.category));
+ host.innerHTML=`<div class="grid g6">${[UI.kpi({label:'Income this month',icon:'steward',count:inc,fmt:'ksh',sub:Stats.incomeChange(),cls:'k-bur',spark:Stats.incomeSeries()}),UI.kpi({label:'Expenses this month',icon:'report',count:exp,fmt:'ksh',sub:'Paid and approved',cls:'k-bar'}),UI.kpi({label:'Net position',icon:'check',count:inc-exp,fmt:'ksh',sub:inc-exp>=0?'Surplus':'Deficit',cls:'k-green'}),UI.kpi({label:'Budget used',icon:'report',value:(totB?Math.round(totA/totB*100):0)+'%',sub:ksh(totA)+' of '+ksh(totB),cls:'k-navy'}),UI.kpi({label:'Pending approvals',icon:'bell',count:pend.length,sub:ksh(sum(pend,e=>e.amount))+' awaiting',cls:'k-line',dn:true}),UI.kpi({label:'Fund balances',icon:'folder',count:sum(funds,Stats.fundBalance),fmt:'ksh',sub:funds.length+' funds',cls:'k-gold'})].join('')}</div>
+ <div class="grid g21 mt"><div class="card"><div class="ch"><div><h3>Income and expenses</h3><small>Last six months</small></div><a class="btn sm" href="/finance">Open finance</a></div><div class="cb">${Ch.bars(Stats.months(),[{name:'Income',data:Stats.incomeSeries(),color:'#6E1725'},{name:'Expenses',data:Stats.expSeries(),color:'#C9A227'}])}</div></div>
+ <div class="card"><div class="ch"><div><h3>Expenses awaiting approval</h3><small>${pend.length} pending</small></div></div><div class="cb"><div class="list">${pend.map(e=>`<div class="li"><div class="tx"><b>${esc(e.payee)}</b><small>${esc(e.category)} · ${fdate(e.date)}</small></div><div class="rt">${ksh(e.amount)}</div></div>`).join('')||'<div class="empty">All expenses are approved.</div>'}</div><a class="btn p mt" href="/finance#Expenses">Review expenses</a></div></div></div>
+ <div class="grid g3 mt"><div class="card"><div class="ch"><h3>Fund balances</h3></div><div class="cb">${Ch.hbars(funds.map(f=>({label:f.name,value:Stats.fundBalance(f)})),{fmt:ksh})}</div></div>
+ <div class="card"><div class="ch"><div><h3>Budget variance</h3><small>Actual vs budget</small></div></div><div class="cb">${Ch.hbars(bud.slice(0,6).map(b=>({label:b.category,value:Math.round(Stats.budgetActual(b.category)/b.budget*100),cls:Stats.budgetActual(b.category)>b.budget?'':'g'})),{fmt:v=>v+'%'})}</div></div>
+ <div class="card"><div class="ch"><h3>Projects</h3><a class="btn sm" href="/projects">View</a></div><div class="cb"><div class="list">${DB.c('projects').map(p=>`<div class="li" style="display:block"><div class="flex" style="justify-content:space-between"><b>${esc(p.name)}</b><span class="mini">${p.progress}%</span></div>${UI.bar(p.progress,'n')}<small class="mini">Raised ${ksh(p.raised)} of ${ksh(p.budget)}</small></div>`).join('')}</div></div></div></div>
+ <div class="card mt"><div class="ch"><h3>Bank and cash accounts</h3></div><div class="cb"><div class="grid g4">${DB.c('banks').map(b=>`<div class="kpi" style="min-height:96px"><div class="l">${esc(b.type)}</div><div class="v" style="font-size:22px">${ksh(b.balance)}</div><div class="s mu">${esc(b.name)}</div></div>`).join('')}</div></div></div>`}
+
+function sccDash(host,u){const s=DB.get('sccs',u.sccId)||DB.c('sccs')[0];const mem=DB.c('parishioners').filter(p=>p.sccId===s.id),fams=new Set(mem.map(m=>m.familyId));
+ host.innerHTML=`<div class="grid g4">${[UI.kpi({label:'Members',icon:'people',count:mem.length,sub:'In '+s.name,cls:'k-bur'}),UI.kpi({label:'Families',icon:'admin',count:fams.size,sub:'Households',cls:'k-bar'}),UI.kpi({label:'Attendance',icon:'check',value:s.attendance+'%',sub:'Average per meeting',cls:'k-navy'}),UI.kpi({label:'Next meeting',icon:'cal',value:s.meetingDay,sub:'Venue: '+s.venue,cls:'k-gold'})].join('')}</div>
+ <div class="grid g21 mt"><div class="card"><div class="ch"><div><h3>Members of ${esc(s.name)}</h3><small>${mem.length} registered</small></div><a class="btn sm p" href="/scc">Manage SCC</a></div><div class="cb"><div class="list">${mem.slice(0,8).map(m=>`<div class="li">${UI.av(m.name)}<div class="tx"><b>${esc(m.name)}</b><small>${esc(Stats.famName(m.familyId))} · ${esc(m.role||'Member')}</small></div>${UI.bd(m.status)}</div>`).join('')}</div></div></div>
+ <div class="grid" style="gap:18px"><div class="card"><div class="ch"><h3>Quick actions</h3></div><div class="cb flex wrap"><a class="btn p" href="/scc#Meetings">Record meeting</a><a class="btn" href="/scc#Reports">Submit SCC report</a><a class="btn" href="/communications">Announcements</a></div></div>${todayCard()}</div></div>`}
+
+/* ---- parishioner portal ---- */
+function portal(host,u){const me=DB.get('parishioners',u.personId);if(!me){host.innerHTML='<div class="alert">Your member record could not be found. Please contact your parish office.</div>';return}const fam=DB.get('families',me.familyId),kin=DB.c('parishioners').filter(p=>p.familyId===me.familyId);
+ const tabs=[
+ {label:'Home',render:p=>{const next=DB.c('masses').filter(m=>m.date>=TODAY()&&m.status==='Scheduled').slice(0,3);p.innerHTML=`<div class="grid g4">${[UI.kpi({label:'Member ID',value:me.memberNo,sub:UI.bd(me.status),cls:'k-bur'}),UI.kpi({label:'My family',value:fam?fam.name:'—',sub:kin.length+' members',cls:'k-bar'}),UI.kpi({label:'My SCC',value:Stats.sccName(me.sccId).replace(' SCC',''),sub:'Meets '+((DB.get('sccs',me.sccId)||{}).meetingDay||'—'),cls:'k-gold'}),UI.kpi({label:'Given this year',count:Stats.personGiving(me.id),fmt:'ksh',sub:'Thank you for your generosity',cls:'k-green'})].join('')}</div><div class="grid g2 mt"><div class="card"><div class="ch"><h3>Next Masses</h3></div><div class="cb"><div class="list">${next.map(m=>`<div class="li"><div class="tx"><b>${esc(m.title)}</b><small>${fdate(m.date)} · ${ftime(m.time)} · ${esc(m.outstation)}</small></div></div>`).join('')}</div></div></div><div class="card"><div class="ch"><h3>My profile</h3></div><div class="cb"><dl class="dl"><dt>Name</dt><dd>${esc(me.name)}</dd><dt>Phone</dt><dd>${esc(me.phone)}</dd><dt>Email</dt><dd>${esc(me.email)}</dd><dt>Outstation</dt><dd>${esc(me.outstation)}</dd><dt>Ministries</dt><dd>${me.ministries.join(', ')||'None yet'}</dd></dl><button class="btn mt" id="ep">Update my details</button></div></div></div>`;$('#ep',p).onclick=()=>UI.formModal({title:'Update my details',fields:[{k:'phone',label:'Phone',type:'tel',req:true},{k:'email',label:'Email',type:'email'},{k:'occupation',label:'Occupation'}],values:me,onSave:v=>{DB.upd('parishioners',me.id,v,'Portal','Updated own contact details');UI.toast('Details updated');tabs[0].render(p)}})}},
+ {label:'My Family',render:p=>{p.innerHTML=`<div class="card"><div class="ch"><div><h3>${esc(fam?fam.name:'Family')}</h3><small>${esc(fam?fam.address:'')}</small></div></div><div class="cb"><div class="grid g3 keep">${kin.map(k=>`<div class="kpi" style="min-height:90px"><div class="flex">${UI.av(k.name,'b')}<div><b>${esc(k.name)}</b><div class="mini">${esc(k.role||'Member')}</div></div></div></div>`).join('')}</div></div></div>`}},
+ {label:'Mass Schedule',render:p=>{p.innerHTML=`<div class="card"><div class="tw"><table class="t"><thead><tr><th>Date</th><th>Time</th><th>Mass</th><th>Venue</th><th>Celebrant</th></tr></thead><tbody>${DB.c('masses').filter(m=>m.date>=TODAY()).slice(0,12).map(m=>`<tr><td data-label="Date">${fdate(m.date)}</td><td data-label="Time">${ftime(m.time)}</td><td data-label="Mass"><b>${esc(m.title)}</b></td><td data-label="Venue">${esc(m.outstation)}</td><td data-label="Celebrant">${esc(m.celebrant)}</td></tr>`).join('')}</tbody></table></div></div><div class="card mt"><div class="ch"><div><h3>My Mass intentions</h3></div><button class="btn p" id="ni">Request a Mass intention</button></div><div class="cb"><div class="list" id="il"></div></div></div>`;const draw=()=>{$('#il',p).innerHTML=DB.c('intentions').filter(i=>i.personId===me.id).map(i=>`<div class="li"><div class="tx"><b>${esc(i.intention)}</b><small>Requested ${fdate(i.date)}${i.massId?' · '+fdate((DB.get('masses',i.massId)||{}).date):''}</small></div>${UI.bd(i.status)}</div>`).join('')||'<div class="empty">You have not requested any Mass intentions yet.</div>'};draw();$('#ni',p).onclick=()=>UI.formModal({title:'Request a Mass intention',fields:[{k:'intention',label:'Intention',type:'textarea',req:true,w:1,placeholder:'e.g. Thanksgiving for our family'},{k:'stipend',label:'Offering (KSh)',type:'number',def:500}],onSave:v=>{DB.add('intentions',{personId:me.id,requester:me.name,phone:me.phone,intention:v.intention,type:'Thanksgiving',stipend:v.stipend,massId:'',celebrant:'',status:'Requested',date:TODAY()},'Mass Intentions','Intention requested');UI.toast('Request sent to the parish office');draw()}})}},
+ {label:'Giving',render:p=>{p.innerHTML=`<div class="grid g3"><div class="card"><div class="cb"><div class="mini">Given this year</div><div style="font-size:30px;font-weight:800">${ksh(Stats.personGiving(me.id))}</div></div></div><div class="card" style="grid-column:span 2"><div class="cb"><b>Giving to your parish</b><div class="mini" style="margin-top:4px">Online payment is not enabled for this church. Gifts recorded by the parish finance office appear below. Please ask the parish office how to give.</div></div></div></div><div class="card mt"><div class="ch"><h3>My giving history</h3></div><div class="cb"><div class="list">${DB.c('giving').filter(g=>g.personId===me.id).map(g=>`<div class="li"><div class="tx"><b>${esc(g.category)}</b><small>${fdate(g.date)} · ${esc(g.method)}</small></div><div class="rt">${ksh(g.amount)}</div></div>`).join('')||'<div class="empty">No gifts recorded yet.</div>'}</div></div></div>`}},
+ {label:'Events',render:p=>{const draw=()=>{p.innerHTML=`<div class="grid g3 keep">${DB.c('events').filter(e=>e.date>=TODAY()).slice(0,6).map(e=>{const mine=DB.c('registrations').some(r=>r.eventId===e.id&&r.personId===me.id);return `<div class="card"><div class="cb"><span class="chip y">${esc(e.type)}</span><h3 style="margin:8px 0 4px">${esc(e.title)}</h3><div class="mini">${fdate(e.date)} · ${esc(e.venue)}</div><div class="flex mt"><b>${e.fee?ksh(e.fee):'Free'}</b><span class="sp"></span>${mine?'<span class="bd g">Registered</span>':`<button class="btn sm p" data-e="${e.id}">Register</button>`}</div></div></div>`}).join('')}</div>`;$$('[data-e]',p).forEach(b=>b.onclick=()=>{const e=DB.get('events',b.dataset.e);DB.add('registrations',{eventId:e.id,personId:me.id,name:me.name,phone:me.phone,paid:0,attended:false,date:TODAY()},'Events','Portal registration');UI.toast('Registered for '+e.title);draw()})};draw()}},
+ {label:'Sermons',render:p=>{p.innerHTML=`<div class="card"><div class="cb"><div class="list">${DB.c('sermons').map(s=>`<div class="li" data-s="${s.id}" style="cursor:pointer"><div class="tx"><b>${esc(s.title)}</b><small>${fdate(s.date)} · ${esc(s.priest)} · ${esc(s.scripture)}</small></div><span class="chip y">${esc(s.season)}</span></div>`).join('')||'<div class="empty">No sermons have been published yet.</div>'}</div></div></div>`;$$('[data-s]',p).forEach(r=>r.onclick=()=>{const s=DB.get('sermons',r.dataset.s);UI.modal({title:s.title,size:'lg',body:`<div class="mini" style="margin-bottom:10px">${esc(s.priest)} · ${fdate(s.date)} · <b>${esc(s.scripture)}</b></div>${/^https?:/i.test(s.audioUrl||'')?`<audio controls preload="none" style="width:100%;margin-bottom:12px" src="${esc(s.audioUrl)}"></audio>`:''}${/^https?:/i.test(s.videoUrl||'')?`<p style="margin-bottom:12px"><a class="btn" href="${esc(s.videoUrl)}" target="_blank" rel="noopener">Watch the video</a></p>`:''}<p style="line-height:1.7">${esc(s.transcript||'No written text has been added for this sermon.')}</p>`,buttons:[{label:'Close'}]})})}},
+ {label:'Announcements',render:p=>{p.innerHTML=`<div class="card"><div class="cb"><div class="list">${DB.c('messages').filter(m=>m.channel==='Announcement').map(m=>`<div class="li"><div class="tx"><b>${esc(m.subject)}</b><small>${fdate(m.date)} · to ${esc(m.segment)}</small></div></div>`).join('')}</div></div></div>`}},
+ {label:'Sacraments',render:p=>{const s=DB.c('sacraments').filter(x=>x.personId===me.id||(x.spouse&&x.spouse===me.name));p.innerHTML=`<div class="card"><div class="cb">${s.length?s.map(x=>`<div class="li"><div class="tx"><b>${esc(x.type)}</b><small>${fdate(x.date)} · ${esc(x.parish)} · ${esc(x.regNo)}</small></div>${UI.bd(x.status)}<button class="btn sm" data-c="${x.id}">View certificate</button></div>`).join(''):'<div class="empty"><b>No sacramental records linked to you yet</b>Request a certificate or record from the parish office in Requests.</div>'}</div></div>`;$$('[data-c]',p).forEach(b=>b.onclick=()=>Cert.preview(DB.get('sacraments',b.dataset.c)))}},
+ {label:'Requests',render:p=>{p.innerHTML=`<div class="card"><div class="ch"><h3>My requests</h3><button class="btn p" id="rq">New request</button></div><div class="cb"><div class="list" id="rl"></div></div></div>`;const draw=()=>{$('#rl',p).innerHTML=DB.c('requests').filter(r=>r.personId===me.id).map(r=>`<div class="li"><div class="tx"><b>${esc(r.type)}</b><small>${esc(r.note)} · ${fdate(r.date)}</small></div>${UI.bd(r.status)}</div>`).join('')||'<div class="empty">No requests yet.</div>'};draw();$('#rq',p).onclick=()=>UI.formModal({title:'New request',fields:[{k:'type',label:'Request type',type:'select',req:true,options:['Prayer intention','Prayer request','Pastoral assistance','Home visit','Baptism certificate','Marriage preparation','Letter of recommendation','Update family details']},{k:'note',label:'Details',type:'textarea',w:1}],submit:'Send request',onSave:v=>{const priv=PRIVATE_REQUEST_TYPES.includes(v.type);DB.add('requests',{personId:me.id,name:me.name,type:v.type,note:v.note||'—',status:'Open',private:priv,date:TODAY()},'Requests','Portal request');DB.add('notifications',{text:'New member request: '+v.type+' — '+me.name,link:'/communications#Member Requests',date:TODAY(),read:false,audience:priv?'priest':'admins',type:'member-request',fromUid:me.id});UI.toast('Request submitted');draw()}})}}];
+ UI.tabs(host,tabs)}
+
+App.start({file:FILE,mod:['dash','portal'],crumb:'Dashboard',group:'Overview',
+ title:u=>u.role==='parishioner'?'Welcome, '+u.name.split(' ')[0]:u.role==='finance'?'Stewardship Overview':u.role==='scc'?'My Community':'Parish Overview',
+ subtitle:u=>u.role==='parishioner'?'Your parish, your family and your giving in one place.':u.role==='finance'?'A live view of collections, expenses, budgets and fund balances.':u.role==='scc'?'Members, meetings and attendance for your Small Christian Community.':'A live operational view of parish life, people, ministry and stewardship.',
+ actions:u=>u.role==='parishioner'?[]:[{label:'Quick registration',icon:'plus',cls:'p',fn:()=>location.href='/parishioners#new'},{label:'Reports',fn:()=>location.href='/reports'}].filter(()=>u.role!=='finance'&&u.role!=='scc').concat(u.role==='finance'?[{label:'Record collection',cls:'p',icon:'plus',fn:()=>location.href='/finance#Collections&new'}]:[]),
+ render:(host,u)=>{try{if(u.role==='parishioner')portal(host,u);else if(u.role==='finance')financeDash(host);else if(u.role==='scc')sccDash(host,u);else parishDash(host,u);
+  /* The parish's own public website link, from the signed-in user's parish record. */
+  const card=Site.card({title:u.role==='parishioner'?'My Parish Website':'Parish Website',manage:true});
+  if(card){host.insertAdjacentHTML('afterbegin','<div style="margin-bottom:18px">'+card+'</div>');Site.bind(host)}
+ }finally{setTimeout(function(){ if(window.PageLoader) PageLoader.done(); }, 50)}}});
+
+})();
+
+  }); }
+  ready();
+})();
+</script>
+</body></html>

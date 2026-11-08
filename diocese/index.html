@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Diocesan Overview · Parish Yetu</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='28' fill='%236E1725'/%3E%3Ctext x='64' y='86' text-anchor='middle' font-family='Quicksand,Segoe UI,system-ui,sans-serif' font-weight='900' font-size='64' letter-spacing='-2' fill='%23FFFFFF'%3EP%3Ctspan fill='%23C9A227'%3EY%3C/tspan%3E%3C/text%3E%3C/svg%3E">
+
+<style>
+:root{
+  --bur:#6E1725;--bur2:#5A111D;--bur3:#8A2434;--gold:#C9A227;--gold2:#A98A1B;--ivory:#F7F3E8;--obs:#111315;--navy:#182A3A;--white:#fff;--line:#E8E5DD;--grey:#8B8A84;--ink:#23262A;--green:#1E6B4F;--red:#B3261E;
+  --bur-t:#F3E6E8;--gold-t:#F6EFD3;--green-t:#E1EFE9;--navy-t:#E3E9EE;--red-t:#F8E3E1;--grey-t:#EFEDE6;
+  --r:10px;--sh:0 1px 2px rgba(17,19,21,.05),0 4px 14px rgba(17,19,21,.04);--sh2:0 12px 40px rgba(17,19,21,.18);
+  --sw:268px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Quicksand',system-ui,sans-serif;font-weight:500;color:var(--ink);background:var(--ivory);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,h4{font-weight:700;line-height:1.2;color:var(--obs)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#d6d2c6;border-radius:8px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* shell */
+.app{display:grid;grid-template-columns:var(--sw) 1fr;min-height:100vh;transition:grid-template-columns .25s}
+.app.collapsed{--sw:78px}
+.side{background:var(--bur);color:#F3E9E6;position:sticky;top:0;height:100vh;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;z-index:40}
+.brand{display:flex;gap:12px;align-items:center;padding:20px 18px 18px;border-bottom:1px solid rgba(255,255,255,.12)}
+.brand .mark{width:42px;height:42px;background:var(--gold);border-radius:10px;display:grid;place-items:center;flex:none}
+.brand b{display:block;font-size:17px;font-weight:800;letter-spacing:.04em;color:#fff}
+.brand span{display:block;font-size:12px;color:#E8CFC9;font-weight:600;white-space:nowrap}
+.nav{padding:10px 10px 24px;flex:1}
+.ng{margin-top:4px}
+.ng>button{width:100%;display:flex;align-items:center;gap:12px;background:none;border:0;color:#E8CFC9;font-weight:700;font-size:13px;padding:10px 10px;border-radius:8px;cursor:pointer;text-align:left;letter-spacing:.02em}
+.ng>button:hover{background:rgba(255,255,255,.07);color:#fff}
+.ng>button .chev{margin-left:auto;transition:transform .2s;width:14px;height:14px}
+.ng.open>button .chev{transform:rotate(90deg)}
+.ng.has-active>button{color:#fff}
+.ng .items{display:none;margin:2px 0 6px 21px;border-left:1px solid rgba(255,255,255,.16);padding-left:8px}
+.ng.open .items{display:block}
+.ng a{display:block;padding:7px 12px;border-radius:7px;color:#E5D3CF;font-weight:600;font-size:13.5px;position:relative}
+.ng a:hover{background:rgba(255,255,255,.08);color:#fff}
+.ng a.active{background:var(--ivory);color:var(--bur);font-weight:700}
+.ng a.active::before{content:"";position:absolute;left:-10px;top:8px;bottom:8px;width:3px;background:var(--gold);border-radius:3px}
+.app.collapsed .brand div,.app.collapsed .ng>button span,.app.collapsed .ng>button .chev,.app.collapsed .ng .items{display:none!important}
+.app.collapsed .ng>button{justify-content:center}
+.sidefoot{padding:14px 16px;border-top:1px solid rgba(255,255,255,.12);font-size:12px;color:#E0C9C4}
+.app.collapsed .sidefoot{display:none}
+.main{min-width:0;display:flex;flex-direction:column;min-height:100vh}
+.top{height:64px;background:var(--white);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 24px;position:sticky;top:0;z-index:30}
+.iconbtn{width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;cursor:pointer;position:relative;color:var(--navy)}
+.iconbtn:hover{border-color:var(--gold);background:var(--gold-t)}
+.iconbtn .dot{position:absolute;top:7px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--bur);border:2px solid #fff}
+.crumb{font-size:13px;color:var(--grey);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb b{color:var(--obs);font-weight:700}
+.gsearch{margin-left:auto;position:relative;width:min(300px,30vw)}
+.gsearch input{width:100%;height:38px;border:1px solid var(--line);border-radius:9px;padding:0 12px 0 36px;background:var(--ivory)}
+.gsearch svg{position:absolute;left:11px;top:10px;color:var(--grey)}
+.gres{position:absolute;top:44px;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh2);display:none;max-height:300px;overflow:auto;z-index:60}
+.gres a{display:block;padding:9px 14px;font-weight:600}.gres a:hover{background:var(--gold-t)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:99px;white-space:nowrap}
+.pill.org{background:var(--gold-t);color:#6b5610;border:1px solid #E5D48E}
+.pill.org i{width:7px;height:7px;border-radius:50%;background:var(--gold);display:inline-block}
+.pill.local{background:var(--navy-t);color:var(--navy)}
+.user{display:flex;align-items:center;gap:10px;cursor:pointer;border:0;background:none;padding:2px 4px 2px 2px;border-radius:99px}
+.av{width:36px;height:36px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
+.av.sm{width:30px;height:30px;font-size:11px}.av.lg{width:64px;height:64px;font-size:22px}
+.av.b{background:var(--bur)}.av.g{background:var(--green)}.av.y{background:var(--gold);color:var(--obs)}
+.user small{display:block;font-size:11.5px;color:var(--grey);font-weight:600;line-height:1.1}
+.user b{display:block;font-size:13px;line-height:1.2}
+.content{padding:28px 28px 40px;flex:1;max-width:1560px;width:100%;margin:0 auto;animation:pgin .35s ease both}
+@keyframes pgin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.phead{display:flex;gap:20px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:22px}
+.phead h1{font-size:28px;font-weight:800;letter-spacing:-.01em}
+.phead p{color:#5d6065;margin-top:4px;max-width:720px;font-weight:500}
+.pactions{display:flex;gap:10px;flex-wrap:wrap}
+.foot{border-top:1px solid var(--line);background:#fff;padding:12px 28px;font-size:12px;color:var(--grey);display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-weight:600}
+.foot .sp{margin-left:auto}
+.scrim{position:fixed;inset:0;background:rgba(17,19,21,.5);z-index:80;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.on{opacity:1;pointer-events:auto}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:9px;border:1px solid var(--line);background:#fff;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s,color .15s}
+.btn:hover{border-color:var(--bur);color:var(--bur)}
+.btn.p{background:var(--bur);border-color:var(--bur);color:#fff}.btn.p:hover{background:var(--bur2);color:#fff}
+.btn.g{background:var(--gold);border-color:var(--gold);color:var(--obs)}.btn.g:hover{background:var(--gold2);color:#fff}
+.btn.n{background:var(--navy);border-color:var(--navy);color:#fff}.btn.n:hover{background:var(--obs);color:#fff}
+.btn.d{background:#fff;border-color:#E6B8B4;color:var(--red)}.btn.d:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.btn.sm{height:30px;padding:0 11px;font-size:12.5px;border-radius:7px}
+.btn[disabled]{opacity:.5;pointer-events:none}
+
+/* cards */
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
+.card>.ch{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:16px 20px 0}
+.card>.ch h3{font-size:15.5px}
+.card>.ch small{color:var(--grey);font-weight:600;display:block;margin-top:2px}
+.card>.cb{padding:16px 20px 20px}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g6{grid-template-columns:repeat(6,1fr)}
+.g21{grid-template-columns:2fr 1fr}.g12{grid-template-columns:1fr 2fr}
+.mt{margin-top:18px}
+.kpi{border-radius:var(--r);padding:18px 18px 16px;border:1px solid var(--line);background:#fff;position:relative;overflow:hidden;box-shadow:var(--sh);min-height:122px;display:flex;flex-direction:column}
+.kpi .l{font-size:12.5px;font-weight:700;color:var(--grey);display:flex;align-items:center;gap:8px}
+.kpi .v{white-space:nowrap;font-size:clamp(22px,2.1vw,30px);font-weight:800;color:var(--obs);margin-top:8px;letter-spacing:-.02em;line-height:1.1}
+.kpi .s{margin-top:auto;padding-top:10px;font-size:12px;font-weight:700;color:var(--green)}
+.kpi .s.dn{color:var(--red)}.kpi .s.mu{color:var(--grey)}
+.kpi.k-bur{background:var(--bur);border-color:var(--bur)}.kpi.k-bur .l,.kpi.k-bur .s{color:#EBCFC9}.kpi.k-bur .v{color:#fff}
+.kpi.k-navy{background:var(--navy);border-color:var(--navy)}.kpi.k-navy .l,.kpi.k-navy .s{color:#B8C7D4}.kpi.k-navy .v{color:#fff}
+.kpi.k-gold{background:var(--gold-t);border-color:#E5D48E}.kpi.k-gold .s{color:#6b5610}
+.kpi.k-bar::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--gold)}
+.kpi.k-green::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--green)}
+.kpi.k-line{border:2px solid var(--bur)}
+.kpi svg.i{opacity:.9}
+.kpi .spark{position:absolute;right:14px;bottom:14px;width:64px;height:26px;opacity:.9}.kpi:has(.spark) .s{padding-right:76px}
+.kpi.k-bur .spark path{stroke:var(--gold)}.kpi.k-navy .spark path{stroke:var(--gold)}
+.spark path{fill:none;stroke:var(--bur);stroke-width:2}
+
+/* badges */
+.bd{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11.5px;font-weight:700;white-space:nowrap;background:var(--grey-t);color:#555}
+.bd::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.bd.g{background:var(--green-t);color:var(--green)}.bd.y{background:var(--gold-t);color:#7a6210}.bd.r{background:var(--red-t);color:var(--red)}.bd.b{background:var(--navy-t);color:var(--navy)}.bd.p{background:var(--bur-t);color:var(--bur)}
+
+/* tables */
+.tw{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse}
+table.t th{text-align:left;font-size:12px;font-weight:700;color:var(--grey);padding:11px 14px;border-bottom:1px solid var(--line);background:#FBF9F3;white-space:nowrap;user-select:none}
+table.t th.sort{cursor:pointer}table.t th.sort:hover{color:var(--bur)}
+table.t th .ar{opacity:.5;margin-left:4px}
+table.t td{padding:12px 14px;border-bottom:1px solid #F0EDE4;vertical-align:middle}
+table.t tr:last-child td{border-bottom:0}
+table.t tbody tr{transition:background .12s}
+table.t tbody tr:hover{background:#FCFAF4}
+table.t tr.click{cursor:pointer}
+.cell{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--obs)}
+.cell small{display:block;font-weight:600;color:var(--grey);font-size:12px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.tools .sp{margin-left:auto}
+.inp,.sel,.ta{height:38px;border:1px solid #D9D5C9;border-radius:9px;padding:0 12px;background:#fff;width:100%}
+.ta{height:auto;padding:10px 12px;min-height:80px;resize:vertical}
+.inp:focus,.sel:focus,.ta:focus{outline:2px solid var(--gold);outline-offset:0;border-color:var(--gold)}
+.tools .inp,.tools .sel{width:auto;min-width:150px}
+.tools .search{position:relative}.tools .search input{padding-left:34px;min-width:240px}.tools .search svg{position:absolute;left:10px;top:10px;color:var(--grey)}
+.pag{display:flex;align-items:center;gap:6px;padding:12px 16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--grey);font-weight:600;flex-wrap:wrap}
+.pag .sp{margin-left:auto;display:flex;gap:6px}
+.pag button{min-width:32px;height:30px;border:1px solid var(--line);background:#fff;border-radius:7px;cursor:pointer;font-weight:700}
+.pag button.on{background:var(--bur);color:#fff;border-color:var(--bur)}.pag button:disabled{opacity:.4;cursor:default}
+.empty{padding:44px 20px;text-align:center;color:var(--grey);font-weight:600}
+.empty b{display:block;color:var(--obs);font-size:15px;margin-bottom:4px}
+
+/* tabs */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto;scrollbar-width:thin}
+.tabs button{background:none;border:0;padding:11px 16px;font-weight:700;color:var(--grey);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;margin-bottom:-1px}
+.tabs button:hover{color:var(--bur)}.tabs button.on{color:var(--bur);border-bottom-color:var(--gold)}
+.subtabs{display:inline-flex;gap:4px;background:var(--grey-t);padding:4px;border-radius:10px;margin-bottom:14px;flex-wrap:wrap}
+.subtabs button{border:0;background:none;padding:6px 14px;border-radius:7px;font-weight:700;color:#666;cursor:pointer}
+.subtabs button.on{background:#fff;color:var(--bur);box-shadow:var(--sh)}
+.tabpane{animation:pgin .25s ease both}
+
+/* modal / drawer / toast */
+.modal{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:16px;background:rgba(17,19,21,.55);animation:fade .18s ease both}
+.mbox{background:#fff;border-radius:14px;width:min(560px,100%);max-height:92vh;display:flex;flex-direction:column;box-shadow:var(--sh2);animation:pop .22s ease both}
+.mbox.lg{width:min(860px,100%)}.mbox.sm{width:min(420px,100%)}
+.mh{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mh h3{font-size:18px}
+.mb{padding:20px 22px;overflow:auto}
+.mf{padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;background:#FBF9F3;border-radius:0 0 14px 14px;flex-wrap:wrap}
+@keyframes fade{from{opacity:0}to{opacity:1}}@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:#fff;z-index:95;box-shadow:var(--sh2);display:flex;flex-direction:column;animation:slide .28s cubic-bezier(.2,.8,.2,1) both}
+@keyframes slide{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+.dscrim{position:fixed;inset:0;background:rgba(17,19,21,.45);z-index:94;animation:fade .2s both}
+.drawer .mb{flex:1}
+.toasts{position:fixed;right:20px;bottom:20px;z-index:200;display:flex;flex-direction:column;gap:10px}
+.toast{background:var(--obs);color:#fff;border-radius:10px;padding:13px 18px;font-weight:700;box-shadow:var(--sh2);display:flex;gap:10px;align-items:center;max-width:380px;animation:tin .3s ease both;border-left:4px solid var(--gold)}
+.toast.ok{border-left-color:#3DAA80}.toast.err{border-left-color:#E5645B}
+@keyframes tin{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.menu{position:absolute;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh2);min-width:170px;z-index:120;padding:6px;animation:fade .12s both}
+.menu button,.menu a{display:block;width:100%;text-align:left;border:0;background:none;padding:8px 12px;border-radius:7px;cursor:pointer;font-weight:600}
+.menu button:hover,.menu a:hover{background:var(--gold-t)}.menu .dng{color:var(--red)}
+.menu hr{border:0;border-top:1px solid var(--line);margin:5px 0}
+
+/* forms */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg .f{display:flex;flex-direction:column;gap:5px}.fg .f.w{grid-column:1/-1}
+.fg label{font-weight:700;font-size:12.5px;color:#55585c}
+.fg .err{color:var(--red);font-size:12px;font-weight:600;display:none}.fg .f.bad .err{display:block}.fg .f.bad .inp,.fg .f.bad .sel{border-color:var(--red)}
+.chk{display:flex;gap:8px;align-items:center;font-weight:600}.chk input{accent-color:var(--bur);width:16px;height:16px}
+
+/* bits */
+.bar{height:8px;background:var(--grey-t);border-radius:8px;overflow:hidden}.bar i{display:block;height:100%;background:var(--bur);border-radius:8px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.bar.g i{background:var(--green)}.bar.y i{background:var(--gold)}.bar.n i{background:var(--navy)}
+.list{display:flex;flex-direction:column}
+.li{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #F0EDE4}.li:last-child{border-bottom:0}
+.li .tx{flex:1;min-width:0}.li .tx b{display:block;font-weight:700;color:var(--obs)}.li .tx small{color:var(--grey);font-weight:600;font-size:12.5px}
+.li .rt{font-weight:800;color:var(--obs);white-space:nowrap}
+.tl{position:relative;padding-left:22px}.tl::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl .e{position:relative;padding:0 0 16px}.tl .e::before{content:"";position:absolute;left:-21px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--gold);border:2px solid #fff;box-shadow:0 0 0 1px var(--gold)}
+.tl .e b{display:block;font-weight:700;color:var(--obs)}.tl .e small{color:var(--grey);font-weight:600}
+.dl{display:grid;grid-template-columns:140px 1fr;gap:8px 14px}.dl dt{color:var(--grey);font-weight:700;font-size:12.5px}.dl dd{font-weight:600;color:var(--obs)}
+.chip{display:inline-block;background:var(--grey-t);padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;margin:0 4px 4px 0;color:#555}
+.chip.b{background:var(--navy-t);color:var(--navy)}.chip.p{background:var(--bur-t);color:var(--bur)}.chip.y{background:var(--gold-t);color:#7a6210}
+.alert{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--gold-t);border:1px solid #E5D48E;font-weight:600}
+.alert.lock{background:var(--bur-t);border-color:#DDB6BC;color:var(--bur2)}
+.alert.red{background:var(--red-t);border-color:#E6B8B4}
+.sec{font-size:13px;font-weight:800;color:var(--bur);margin:0 0 10px}
+.mini{font-size:12px;color:var(--grey);font-weight:600}
+.flex{display:flex;gap:10px;align-items:center}.wrap{flex-wrap:wrap}.sp{flex:1}
+.acts li{list-style:none}
+
+/* charts */
+.ch-svg{width:100%;height:auto;display:block;overflow:visible}
+.ch-svg text{font-family:'Quicksand',sans-serif;font-size:11px;font-weight:600;fill:#8B8A84}
+.ch-svg .gl{stroke:#EFEBDF;stroke-width:1}
+.ch-svg .bar-r{transform-box:fill-box;transform-origin:bottom;animation:grow .8s cubic-bezier(.2,.8,.2,1) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:none}}
+.ch-svg .ln{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.2s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;font-weight:700;color:#666}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+
+/* hierarchy */
+.hier{display:flex;flex-direction:column;align-items:center;gap:0}
+.hier .nd{background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 22px;text-align:center;min-width:240px;font-weight:700}
+.hier .nd small{display:block;color:var(--grey);font-weight:600}
+.hier .nd.on{border-color:var(--bur);background:var(--bur-t)}
+.hier .ar{width:2px;height:22px;background:var(--gold);position:relative}.hier .ar::after{content:"";position:absolute;bottom:-1px;left:-5px;border:6px solid transparent;border-top:8px solid var(--gold);border-bottom:0}
+
+.skel{display:grid;place-items:center;min-height:60vh;text-align:center}
+
+/* responsive */
+@media (max-width:1600px){.g6{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:1280px){.g6{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:1024px){.g21,.g12,.g3{grid-template-columns:1fr}.g3.keep{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:900px){
+  .app,.app.collapsed{grid-template-columns:1fr;--sw:268px}
+  .side{position:fixed;left:0;top:0;transform:translateX(-100%);transition:transform .25s;width:268px}
+  .app.collapsed .brand div,.app.collapsed .ng>button span,.app.collapsed .ng>button .chev{display:revert!important}
+  .app.collapsed .ng.open .items{display:block!important}.app.collapsed .sidefoot{display:block}
+  .app.collapsed .ng>button{justify-content:flex-start}
+  .app.navopen .side{transform:none}
+  .app.navopen~.scrim{opacity:1;pointer-events:auto}
+  .top{padding:0 14px}.gsearch{display:none}.crumb{display:none}.top .sp2{margin-left:auto}
+  .content{padding:20px 14px 30px}.phead h1{font-size:23px}
+  .user div{display:none}
+}
+@media (max-width:760px){
+  .g2,.g3,.g4,.g6,.g3.keep{grid-template-columns:1fr 1fr}
+  .fg{grid-template-columns:1fr}
+  table.t thead{display:none}
+  table.t,table.t tbody,table.t tr,table.t td{display:block;width:100%}
+  table.t tr{border:1px solid var(--line);border-radius:10px;margin:10px 12px;width:auto;padding:6px 0;background:#fff}
+  table.t td{border:0;display:flex;justify-content:space-between;gap:14px;padding:7px 14px;text-align:right}
+  table.t td::before{content:attr(data-label);font-weight:700;color:var(--grey);font-size:12px;text-align:left}
+  .tools .search input{min-width:0;width:100%}.tools .search{flex:1 1 100%}
+  .dl{grid-template-columns:110px 1fr}
+  .pill.local{display:none}
+  .foot .sp{margin-left:0}
+}
+@media (max-width:520px){.g2,.g3,.g4,.g6,.g3.keep{grid-template-columns:1fr}.kpi .v{font-size:26px}.pill.org{display:none}}
+
+/* ===== page loader — bubbles ===== */
+#cms-load{position:fixed;inset:0;z-index:9999;background:var(--ivory);display:grid;place-items:center;transition:opacity .45s ease,visibility .45s ease}
+#cms-load.hide{opacity:0;visibility:hidden;pointer-events:none}
+#cms-load .orbit{position:relative;width:140px;height:140px;display:grid;place-items:center}
+#cms-load .orbit b{font-family:'Quicksand',system-ui,sans-serif;font-size:22px;font-weight:800;letter-spacing:.14em;color:var(--bur);animation:cmsbubbletext 2.4s ease-in-out infinite}
+#cms-load .orbit i{position:absolute;top:50%;left:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--bur);box-shadow:0 0 0 3px rgba(110,23,37,.08),0 4px 12px rgba(110,23,37,.25);transform-origin:0 0;animation:cmsorbit 2.4s linear infinite}
+#cms-load .orbit i:nth-child(1){background:var(--bur);animation-delay:0s}
+#cms-load .orbit i:nth-child(2){background:var(--gold);animation-delay:-.4s;width:11px;height:11px;margin:-5.5px 0 0 -5.5px}
+#cms-load .orbit i:nth-child(3){background:var(--navy);animation-delay:-.8s;width:9px;height:9px;margin:-4.5px 0 0 -4.5px}
+#cms-load .orbit i:nth-child(4){background:var(--green);animation-delay:-1.2s;width:12px;height:12px;margin:-6px 0 0 -6px}
+#cms-load .orbit i:nth-child(5){background:var(--bur3);animation-delay:-1.6s;width:10px;height:10px;margin:-5px 0 0 -5px}
+#cms-load .orbit i:nth-child(6){background:var(--gold2);animation-delay:-2s;width:13px;height:13px;margin:-6.5px 0 0 -6.5px}
+#cms-load .tag{position:absolute;bottom:36px;left:0;right:0;text-align:center;font-weight:700;font-size:12px;color:var(--grey);letter-spacing:.08em}
+@keyframes cmsorbit{
+  0%   {transform:rotate(0deg)   translateX(64px) rotate(0deg)   scale(1)}
+  50%  {transform:rotate(180deg) translateX(64px) rotate(-180deg) scale(1.25)}
+  100% {transform:rotate(360deg) translateX(64px) rotate(-360deg) scale(1)}
+}
+@keyframes cmsbubbletext{
+  0%,100%{transform:scale(1);opacity:.95}
+  50%{transform:scale(1.08);opacity:1}
+}
+@media (prefers-reduced-motion:reduce){
+  #cms-load .orbit i,#cms-load .orbit b{animation:none}
+}
+</style></head><body>
+
+<div id="cms-load" role="status" aria-live="polite" aria-label="Loading">
+  <div class="orbit">
+    <b>CMS</b>
+    <i></i><i></i><i></i><i></i><i></i><i></i>
+  </div>
+  <div class="tag">PARISH YETU</div>
+</div>
+
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script defer src="/js/firebase-config.js"></script>
+<script defer src="/js/firebase-init.js"></script>
+<script defer src="/js/core.js"></script>
+
+<script defer>
+(function(){
+  var t = 0;
+  function ready(){
+    if (typeof Boot !== 'undefined' && Boot.guard) { run(); return; }
+    if (++t > 100) { if(window.PageLoader) PageLoader.done(); return; }
+    setTimeout(ready, 50);
+  }
+  function run(){ Boot.guard(function(){
+
+(function(){
+
+const u0=Auth.user();
+const isDean=u0.role==='deanery';
+
+/* The scope of parishes this view works with. Super is not expected here
+   (they land on /super-admin), but if they navigate manually they
+   still see everything. */
+const scopeParishes=()=>{
+  const all=DB.c('parishes');
+  if(u0.role==='super')return all;
+  if(isDean)return all.filter(p=>p.deanery===u0.organization);
+  return all;
+};
+const deaneries=()=>[...new Set(scopeParishes().map(p=>p.deanery||'—'))];
+const RS_ORDER=['Draft','Ready for Submission','Submitted','Under Review','Returned','Approved','Locked'];
+const canReview=()=>(u0.role==='diocese'||isDean);
+
+/* ---------- global [data-enter] handler ----------
+   One listener at document level in capture phase. Fires BEFORE any
+   drawer or modal scrim click handler, so the "Enter this parish" button
+   inside a drawer always works — regardless of when the button was rendered. */
+document.addEventListener('click',function(e){
+  const b=e.target.closest && e.target.closest('[data-enter]');
+  if(!b)return;
+  const id=b.getAttribute('data-enter');
+  if(!id)return;
+  e.preventDefault();
+  e.stopPropagation();
+  if(typeof Ctx.enterParish==='function')Ctx.enterParish(id);
+},true);
+
+/* ---------- actions ---------- */
+function setRep(p,st,c){
+  DB.upd('parishes',p.id,{reportStatus:st,reportComment:c||p.reportComment||''},'Reports',st+' parish report — '+p.name);
+  UI.toast(p.name+': report '+st.toLowerCase());
+  render();
+}
+
+function reviewMenu(anchor,p){
+  UI.menu(anchor,[
+    {label:'Approve report',fn:()=>setRep(p,'Approved')},
+    {label:'Return with comments',fn:()=>UI.formModal({
+      title:'Return report — '+p.name,
+      fields:[{k:'c',label:'Comments for the parish',type:'textarea',req:true,w:1}],
+      submit:'Return report',
+      onSave:v=>setRep(p,'Returned',v.c)
+    })},
+    {label:'Mark under review',fn:()=>setRep(p,'Under Review')}
+  ]);
+}
+
+/* ---------- overview tab ---------- */
+function overview(p){
+  const ps=scopeParishes();
+  const tot=k=>sum(ps,x=>x[k]||0);
+  const q=ps.filter(x=>['Submitted','Under Review'].includes(x.reportStatus));
+  const avg=ps.length?Math.round(tot('health')/ps.length):0;
+
+  if(!ps.length){
+    p.innerHTML=`<div class="alert">${ic('shield')}<span><b>No churches yet.</b> No churches are in your ${isDean?'deanery':'diocese'} scope yet.</span></div>`;
+    return;
+  }
+
+  p.innerHTML=`<div class="grid g6">${[
+    UI.kpi({label:'Parishes',icon:'admin',count:ps.length,sub:deaneries().length+' deaneries',cls:'k-bur'}),
+    UI.kpi({label:'Parishioners',icon:'people',count:tot('parishioners'),sub:'Registered across scope',cls:'k-bar'}),
+    UI.kpi({label:'Baptisms (YTD)',icon:'liturgy',count:tot('baptisms'),sub:'Sacramental statistics',cls:'k-gold'}),
+    UI.kpi({label:'Monthly giving',icon:'steward',count:tot('giving'),fmt:'ksh',sub:'Consolidated',cls:'k-navy'}),
+    UI.kpi({label:'Reports to review',icon:'report',count:q.length,sub:'Awaiting deanery/diocese',cls:'k-line',dn:true}),
+    UI.kpi({label:'Parish health',icon:'check',value:avg+'/100',sub:'Average index',cls:'k-green'})
+  ].join('')}</div>
+
+  <div class="grid mt">
+    <div class="card">
+      <div class="ch"><div><h3>Parish health &amp; reporting</h3><small>Attendance, giving and report compliance</small></div></div>
+      <div id="pt"></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><h3>Submissions queue</h3><small>${q.length} awaiting review</small></div></div>
+      <div class="cb"><div class="list">${
+        q.length ? q.map(x=>`<div class="li">
+            <div class="tx"><b>${esc(x.name)}</b><small>${esc(x.deanery)}</small></div>
+            ${UI.bd(x.reportStatus)}
+            ${canReview()?`<button type="button" class="btn sm p" data-r="${esc(x.id)}">Review</button>`:''}
+            <button type="button" class="btn sm" data-enter="${esc(x.id)}">${ic('chev')}Enter</button>
+          </div>`).join('') : '<div class="empty">No submissions waiting.</div>'
+      }</div></div>
+    </div>
+  </div>
+
+  <div class="grid g3 mt">
+    <div class="card"><div class="ch"><h3>Giving by deanery</h3></div><div class="cb">${Ch.hbars(deaneries().map(d=>({label:d,value:sum(ps.filter(x=>x.deanery===d),x=>x.giving)})),{fmt:ksh})}</div></div>
+    <div class="card"><div class="ch"><h3>Baptisms by parish</h3></div><div class="cb">${Ch.hbars([...ps].sort((a,b)=>b.baptisms-a.baptisms).slice(0,6).map(x=>({label:(x.name||'').replace(' Parish',''),value:x.baptisms,cls:'n'})))}</div></div>
+    <div class="card"><div class="ch"><h3>Report status</h3></div><div class="cb">${Ch.donut(RS_ORDER.map((s,i)=>({label:s,value:ps.filter(x=>x.reportStatus===s).length,color:PAL[i%6]})).filter(x=>x.value),{sub:'parishes'})}</div></div>
+  </div>`;
+
+  $$('[data-r]',p).forEach(b=>b.onclick=()=>{
+    const x=DB.get('parishes',b.dataset.r);
+    reviewMenu(b,x);
+  });
+
+  parishTable($('#pt',p),8);
+}
+
+/* ---------- parish table ---------- */
+function parishTable(h,size){
+  UI.table(h,{
+    rows:scopeParishes,
+    pageSize:size||10,
+    search:r=>r.name+r.priest+r.deanery,
+    filters:[
+      {key:'deanery',label:'Deanery',options:deaneries},
+      {key:'reportStatus',label:'Report status',options:RS_ORDER}
+    ],
+    export:'parishes',
+    cols:[
+      {key:'name',label:'Parish',render:r=>`<div class="cell">${UI.av(r.name,'')}<div>${esc(r.name)}<small>${esc(r.deanery)}</small></div></div>`},
+      {key:'priest',label:'Priest'},
+      {key:'parishioners',label:'Parishioners',render:r=>fmt(r.parishioners)},
+      {key:'giving',label:'Monthly giving',render:r=>ksh(r.giving)},
+      {key:'health',label:'Health',render:r=>`<div style="min-width:90px"><b>${r.health}</b>${UI.bar(r.health,r.health>80?'g':r.health>65?'y':'')}</div>`},
+      {key:'reportStatus',label:'Report',render:r=>UI.bd(r.reportStatus)}
+    ],
+    onRow:r=>UI.drawer({
+      title:r.name,
+      sub:(r.deanery||'')+' · '+(r.priest||''),
+      html:`<dl class="dl">
+        <dt>Parishioners</dt><dd>${fmt(r.parishioners)}</dd>
+        <dt>SCCs</dt><dd>${r.sccs||0}</dd>
+        <dt>Baptisms YTD</dt><dd>${r.baptisms||0}</dd>
+        <dt>Monthly giving</dt><dd>${ksh(r.giving)}</dd>
+        <dt>Health index</dt><dd>${r.health||0}/100</dd>
+        <dt>Report</dt><dd>${UI.bd(r.reportStatus)}</dd>
+      </dl>
+      <div class="mt"><div class="sec">Recent submissions</div>
+      ${r.reportComment?`<div class="li"><div class="tx"><b>Latest comment</b><small>${esc(r.reportComment)}</small></div></div>`:'<div class="mini">No comments on the latest report.</div>'}
+      </div>
+      <div class="mt"><button type="button" class="btn p" data-enter="${esc(r.id)}">${ic('chev')}Enter this parish</button></div>`
+    }),
+    actions:r=>{
+      const a=[];
+      a.push({label:'Enter this parish',fn:()=>Ctx.enterParish(r.id)});
+      if(canReview()){
+        a.push('-');
+        a.push({label:'Approve report',fn:()=>setRep(r,'Approved')});
+        a.push({label:'Return with comments',fn:()=>UI.formModal({
+          title:'Return report — '+r.name,
+          fields:[{k:'c',label:'Comments for the parish',type:'textarea',req:true,w:1}],
+          submit:'Return report',
+          onSave:v=>setRep(r,'Returned',v.c)
+        })});
+        a.push({label:'Mark under review',fn:()=>setRep(r,'Under Review')});
+      }
+      return a;
+    }
+  });
+}
+
+/* ---------- analytics ---------- */
+function analytics(p){
+  const ps=scopeParishes();
+  if(!ps.length){
+    p.innerHTML=`<div class="alert">${ic('shield')}<span>No churches are in your scope yet.</span></div>`;
+    return;
+  }
+  p.innerHTML=`
+    <div class="grid g2">
+      <div class="card"><div class="ch"><div><h3>Monthly giving by parish</h3><small>Latest figure reported by each parish (KSh)</small></div></div><div class="cb">${Ch.hbars(ps.map(x=>({label:(x.name||'').replace(' Parish',''),value:x.giving||0})),{fmt:ksh})}</div></div>
+      <div class="card"><div class="ch"><div><h3>Baptisms by deanery</h3></div></div><div class="cb">${Ch.bars(deaneries().map(d=>d.replace(' Deanery','')),[{name:'Baptisms',data:deaneries().map(d=>sum(ps.filter(x=>x.deanery===d),x=>x.baptisms||0)),color:'#6E1725'}])}</div></div>
+    </div>
+    <div class="card mt"><div class="ch"><div><h3>Parish league table</h3><small>Ranked by health index</small></div></div><div id="lt"></div></div>`;
+  UI.table($('#lt',p),{
+    rows:()=>[...scopeParishes()].sort((a,b)=>(b.health||0)-(a.health||0)),
+    pageSize:7,sort:'health',dir:-1,
+    cols:[
+      {key:'name',label:'Parish'},
+      {key:'deanery',label:'Deanery'},
+      {key:'sccs',label:'SCCs'},
+      {key:'baptisms',label:'Baptisms'},
+      {key:'health',label:'Health index',render:r=>`<b>${r.health||0}</b>`}
+    ],
+    actions:r=>[{label:'Enter this parish',fn:()=>Ctx.enterParish(r.id)}]
+  });
+}
+
+/* ---------- render ---------- */
+let host;
+function render(){
+  UI.tabs(host,[
+    {label:'Overview',render:overview},
+    {label:'Parishes',render:p=>{p.innerHTML='<div class="card" id="pp"></div>';parishTable($('#pp',p),10)}},
+    {label:'Analytics',render:analytics}
+  ]);
+}
+
+/* ---------- App shell ---------- */
+App.start({
+  file:'/diocese',
+  mod:'diocese',
+  crumb:'Diocesan Overview',
+  group:'Overview',
+  title:u=>u.role==='deanery'?'Deanery Overview':'Diocesan Overview',
+  subtitle:u=>u.role==='deanery'?'Parishes, reports and sacramental statistics for your deanery.':'Consolidated parishes, sacraments, finance and submissions across the diocese.',
+  actions:[
+    {label:'Reports & submissions',cls:'p',fn:()=>location.href='/reports#Submissions'},
+    {label:'Export parish data',icon:'down',fn:()=>UI.csv('parishes',scopeParishes())}
+  ],
+  render:h=>{
+    host=h;
+    render();
+    setTimeout(function(){ if(window.PageLoader) PageLoader.done(); }, 50);
+  }
+});
+
+})();
+
+  }); }
+  ready();
+})();
+</script>
+</body></html>

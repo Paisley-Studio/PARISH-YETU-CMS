@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Join your church · Parish Yetu</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bur:#6E1725;--bur2:#5A111D;--bur3:#8A2434;--gold:#C9A227;--gold2:#A98A1B;--ivory:#F7F3E8;--obs:#111315;--navy:#182A3A;--white:#fff;--line:#E8E5DD;--grey:#8B8A84;--ink:#23262A;--green:#1E6B4F;--red:#B3261E;
+  --bur-t:#F3E6E8;--gold-t:#F6EFD3;--green-t:#E1EFE9;--navy-t:#E3E9EE;--red-t:#F8E3E1;--grey-t:#EFEDE6;
+  --r:10px;--sh:0 1px 2px rgba(17,19,21,.05),0 4px 14px rgba(17,19,21,.04);--sh2:0 12px 40px rgba(17,19,21,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Quicksand',system-ui,sans-serif;font-weight:500;color:var(--ink);background:var(--ivory);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,h4{font-weight:700;line-height:1.2;color:var(--obs)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#d6d2c6;border-radius:8px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== page loader — bubbles ===== */
+#cms-load{position:fixed;inset:0;z-index:9999;background:var(--ivory);display:grid;place-items:center;transition:opacity .45s ease,visibility .45s ease}
+#cms-load.hide{opacity:0;visibility:hidden;pointer-events:none}
+#cms-load .orbit{position:relative;width:140px;height:140px;display:grid;place-items:center}
+#cms-load .orbit b{font-family:'Quicksand',system-ui,sans-serif;font-size:22px;font-weight:800;letter-spacing:.14em;color:var(--bur);animation:cmsbubbletext 2.4s ease-in-out infinite}
+#cms-load .orbit i{position:absolute;top:50%;left:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--bur);box-shadow:0 0 0 3px rgba(110,23,37,.08),0 4px 12px rgba(110,23,37,.25);transform-origin:0 0;animation:cmsorbit 2.4s linear infinite}
+#cms-load .orbit i:nth-child(1){background:var(--bur);animation-delay:0s}
+#cms-load .orbit i:nth-child(2){background:var(--gold);animation-delay:-.4s;width:11px;height:11px;margin:-5.5px 0 0 -5.5px}
+#cms-load .orbit i:nth-child(3){background:var(--navy);animation-delay:-.8s;width:9px;height:9px;margin:-4.5px 0 0 -4.5px}
+#cms-load .orbit i:nth-child(4){background:var(--green);animation-delay:-1.2s;width:12px;height:12px;margin:-6px 0 0 -6px}
+#cms-load .orbit i:nth-child(5){background:var(--bur3);animation-delay:-1.6s;width:10px;height:10px;margin:-5px 0 0 -5px}
+#cms-load .orbit i:nth-child(6){background:var(--gold2);animation-delay:-2s;width:13px;height:13px;margin:-6.5px 0 0 -6.5px}
+#cms-load .tag{position:absolute;bottom:36px;left:0;right:0;text-align:center;font-weight:700;font-size:12px;color:var(--grey);letter-spacing:.08em}
+@keyframes cmsorbit{0%{transform:rotate(0) translateX(64px) rotate(0) scale(1)}50%{transform:rotate(180deg) translateX(64px) rotate(-180deg) scale(1.25)}100%{transform:rotate(360deg) translateX(64px) rotate(-360deg) scale(1)}}
+@keyframes cmsbubbletext{0%,100%{transform:scale(1);opacity:.95}50%{transform:scale(1.08);opacity:1}}
+@media (prefers-reduced-motion:reduce){#cms-load .orbit i,#cms-load .orbit b{animation:none}}
+
+/* ===== page ===== */
+body{background:var(--ivory)}
+.lg{display:grid;grid-template-columns:1.05fr 1fr;min-height:100vh}
+.lv{background:var(--bur);color:#F6E9E5;padding:48px 56px;display:flex;flex-direction:column;justify-content:flex-start;gap:28px;position:relative;overflow:hidden}
+.lv .mark{display:flex;gap:12px;align-items:center;font-weight:800;letter-spacing:.06em;color:#fff;font-size:18px;flex:none}
+.lv .mark span{width:42px;height:42px;background:var(--gold);border-radius:10px;display:grid;place-items:center}
+.lv .hero{margin-top:40px;max-width:520px}
+.lv h1{color:#fff;font-size:44px;font-weight:800;letter-spacing:-.02em;line-height:1.08}
+.lv p{max-width:480px;margin-top:16px;color:#E8CFC9;font-size:16px;line-height:1.6}
+.lv ul{list-style:none;margin-top:28px;display:grid;gap:12px;color:#F0DAD5;font-weight:600}
+.lv li{display:flex;gap:10px;align-items:center}
+.lv li i{width:8px;height:8px;background:var(--gold);transform:rotate(45deg);flex:none}
+.lv .win{position:absolute;z-index:0;pointer-events:none;right:-80px;top:84px;width:min(400px,62%);height:auto;opacity:.5}
+.lv::after{content:"";position:absolute;left:0;right:0;bottom:0;height:68%;background:linear-gradient(to top,var(--bur) 62%,rgba(110,23,37,0));z-index:1;pointer-events:none}
+.lv>*{position:relative;z-index:2}
+
+.rv{display:grid;place-items:center;padding:36px 24px;overflow:auto;align-items:start}
+.box{width:min(480px,100%)}
+.box h2{font-size:28px;font-weight:800}
+.box>p{color:#5d6065;margin:6px 0 22px}
+.fl{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.fl label{font-weight:700;font-size:13px}
+.fl .inp{height:44px;font-size:15px;border:1px solid #D9D5C9;border-radius:9px;padding:0 12px;background:#fff;width:100%}
+.fl .inp:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+.ta{height:auto;padding:10px 12px;min-height:80px;resize:vertical;border:1px solid #D9D5C9;border-radius:9px;width:100%}
+.btn{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:9px;border:1px solid var(--line);background:#fff;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn.p{background:var(--bur);border-color:var(--bur);color:#fff}
+.btn.p:hover{background:var(--bur2)}
+.btn.big{width:100%;justify-content:center;height:48px;font-size:15px}
+.btn.gg{background:#fff;color:#3c4043;border-color:#DADCE0;font-weight:600}
+.btn.gg:hover{background:#F5F5F5;border-color:#C6C6C6;color:#202124}
+.btn.gg .glogo{width:18px;height:18px;flex:none}
+.btn[disabled]{opacity:.6;pointer-events:none}
+.err{background:var(--red-t);border:1px solid #E6B8B4;color:var(--red);padding:10px 12px;border-radius:9px;font-weight:700;margin-bottom:14px;display:none}
+.err.ok{background:var(--green-t);border-color:#b9d9cb;color:var(--green)}
+.back{position:absolute;top:22px;right:26px;font-weight:700;color:var(--bur)}
+.alt{margin-top:18px;text-align:center;font-weight:700;color:#5d6065;font-size:13.5px;line-height:1.7}
+.alt a{color:var(--bur)}
+
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--grey);font-weight:700;font-size:12px;letter-spacing:.08em}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* ===== CHURCH PICKER — dropdown ===== */
+.picker{position:relative}
+.picker .chosen{display:none;background:var(--green-t);border:1px solid #b9d9cb;color:var(--green);border-radius:9px;padding:10px 12px;font-weight:700;margin-bottom:10px}
+.picker .chosen.show{display:block}
+.picker .cres{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh2);padding:6px;max-height:280px;overflow:auto;z-index:50}
+.picker .cres.open{display:grid;gap:6px}
+.picker .cres button{text-align:left;border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 11px;cursor:pointer;font-weight:600}
+.picker .cres button:hover,.picker .cres button.on{border-color:var(--bur);background:var(--bur-t)}
+.picker .cres b{display:block;font-weight:700}
+.picker .cres small{color:var(--grey);font-weight:600}
+.picker .fh{font-size:12px;color:var(--grey);font-weight:600;margin-top:6px;display:none}
+.picker .fh.show{display:block}
+
+.hide{display:none!important}
+
+@media(max-width:900px){
+  .lg{grid-template-columns:1fr}
+  .lv{min-height:auto;padding:30px 26px 34px;gap:20px}
+  .lv .hero{margin-top:20px}
+  .lv h1{font-size:30px}
+  .lv .win,.lv ul,.lv::after{display:none}
+  .picker .cres{position:static;box-shadow:none;border:0;padding:0;max-height:260px;margin-top:6px}
+}
+</style></head><body>
+
+<div id="cms-load" role="status" aria-live="polite" aria-label="Loading">
+  <div class="orbit">
+    <b>CMS</b>
+    <i></i><i></i><i></i><i></i><i></i><i></i>
+  </div>
+  <div class="tag">PARISH YETU</div>
+</div>
+
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>window.PARISHOS_PUBLIC=true</script>
+<script defer src="/js/firebase-config.js"></script>
+<script defer src="/js/firebase-init.js"></script>
+<script defer src="/js/core.js"></script>
+
+<div class="lg">
+ <section class="lv" aria-label="Join your church">
+  <div class="mark"><span><svg width="26" height="26" viewBox="0 0 24 24"><path d="M10 2h4v7h7v4h-7v9h-4v-9H3V9h7z" fill="#6E1725"/></svg></span>PARISH YETU</div>
+  <svg class="win" viewBox="0 0 440 520" aria-hidden="true"><path d="M60 520V200Q60 40 220 20Q380 40 380 200V520Z" fill="#5A111D"/><path d="M100 520V210Q100 80 220 60Q340 80 340 210V520Z" fill="#7B2231"/><path d="M140 400V230Q140 130 220 110Q300 13０ 3００ ２３０V４００Z" fill="#C9A227" opacity=".95"/><path d="M２２０ １１０V４００M１４０ ２５０H３００M１５０ １９０L２９０ ３３０M２９０ １９０L１５０ ３３０" stroke="#5A111D" stroke-width="7" fill="none"/><circle cx="２２０" cy="２５０" r="２６" fill="#5A111D"/><path d="M２１４ ２３２h１２v１４h１４v１２h－１４v１４h－１２v－１４h－１４v－１２h１４z" fill="#C9A227"/></svg>
+  <div class="hero">
+    <h1>Join your parish family.</h1>
+    <p>Create your account, choose your church and you are a member straight away. Your parish office is told that you have joined.</p>
+    <ul>
+      <li><i></i>Read the Word and the sermons of your parish</li>
+      <li><i></i>See Mass times and register for events</li>
+      <li><i></i>Send prayer intentions and ask for pastoral help</li>
+    </ul>
+  </div>
+ </section>
+
+ <section class="rv"><a class="back" href="/home">← Back to homepage</a>
+  <div class="box">
+   <h2 id="ttl">Create your account</h2><p id="sub">Step 1 · find your church. Step 2 · tell us about yourself.</p>
+   <div class="err" id="err" role="alert"></div>
+   <div id="reg">
+
+    <div class="fl picker" id="picker">
+      <label for="cq">Your church</label>
+      <input class="inp" id="cq" type="search" placeholder="Search by parish, diocese or town…" autocomplete="off" aria-haspopup="listbox" aria-expanded="false">
+      <div class="chosen" id="chosen"></div>
+      <div class="cres" id="cres" role="listbox"></div>
+      <p class="fh" id="cmsg">Loading churches…</p>
+    </div>
+
+    <p style="margin:6px 0 16px"><a href="#request" id="rq" style="color:var(--bur);font-weight:800">I cannot find my church</a></p>
+
+    <button class="btn gg big" id="gbtn" type="button">
+      <svg class="glogo" viewBox="0 0 48 48" aria-hidden="true">
+        <path fill="#EA4335" d="M24 9.5c3.54 0 6.7 1.22 9.19 3.6l6.87-6.87C35.86 2.4 30.36 0 24 0 14.64 0 6.55 5.4 2.55 13.3l7.99 6.2C12.4 13.4 17.75 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.6 24.5c0-1.6-.15-3.1-.42-4.6H24v9.15h12.7c-.55 2.95-2.2 5.45-4.7 7.15l7.7 5.97c4.5-4.15 6.9-10.25 6.9-17.67z"/>
+        <path fill="#FBBC05" d="M10.55 28.5A14.5 14.5 0 0 1 9.75 24c0-1.55.28-3.05.78-4.5l-7.99-6.2A24 24 0 0 0 0 24c0 3.87.92 7.52 2.55 10.7l8-6.2z"/>
+        <path fill="#34A853" d="M24 48c6.48 0 11.92-2.15 15.9-5.85l-7.7-5.97c-2.13 1.44-4.87 2.32-8.2 2.32-6.25 0-11.6-3.9-13.45-9.5l-8 6.2C6.55 42.6 14.64 48 24 48z"/>
+      </svg>
+      Continue with Google
+    </button>
+
+    <div class="divider">OR</div>
+
+    <form id="f" novalidate>
+     <div class="fl"><label for="nm">Full name</label><input class="inp" id="nm" autocomplete="name" placeholder="As it appears on your baptism record"></div>
+     <div class="fl"><label for="em">Email</label><input class="inp" id="em" type="email" autocomplete="email" placeholder="you@example.com"></div>
+     <div class="fl"><label for="ph">Phone number</label><input class="inp" id="ph" type="tel" autocomplete="tel" placeholder="+254 7XX XXX XXX"></div>
+     <div class="fl" data-pw><label for="pw">Password</label><input class="inp" id="pw" type="password" autocomplete="new-password" placeholder="At least 8 characters"></div>
+     <div class="fl" data-pw><label for="pw2">Confirm password</label><input class="inp" id="pw2" type="password" autocomplete="new-password"></div>
+     <button class="btn p big" type="submit" id="go">Create account and join</button>
+    </form>
+    <p class="alt">Already a member? <a href="/login">Sign in</a></p>
+   </div>
+
+   <div id="req" class="hide">
+    <p class="fh show" style="margin-bottom:14px">Tell us about your church. The platform administrator will check the details. Your church only appears on the platform once it has been verified.</p>
+    <form id="rf" novalidate>
+     <div class="fl"><label for="rn">Church / parish name</label><input class="inp" id="rn"></div>
+     <div class="fl"><label for="rt">Town or location</label><input class="inp" id="rt"></div>
+     <div class="fl"><label for="rd">Diocese (if you know it)</label><input class="inp" id="rd"></div>
+     <div class="fl"><label for="rc">Your name</label><input class="inp" id="rc"></div>
+     <div class="fl"><label for="re">Your email</label><input class="inp" id="re" type="email"></div>
+     <div class="fl"><label for="ro">Anything else we should know</label><textarea class="ta" id="ro" maxlength="900"></textarea></div>
+     <button class="btn p big" type="submit">Send request</button>
+    </form>
+    <p class="alt"><a href="#" id="back2">← Back to registration</a></p>
+   </div>
+  </div>
+ </section>
+</div>
+
+<script defer>
+(function(){
+  var t = 0;
+  function ready(){
+    if (typeof Boot !== 'undefined' && Boot.ready) { run(); return; }
+    if (++t > 100) { if(window.PageLoader) PageLoader.done(); return; }
+    setTimeout(ready, 50);
+  }
+  function run(){
+(async function(){
+ await Boot.ready;
+ const $ = s => document.querySelector(s);
+ const $$ = s => [...document.querySelectorAll(s)];
+ const err = $('#err');
+ const show = (m, ok) => { err.textContent = m; err.className = 'err' + (ok ? ' ok' : ''); err.style.display = 'block'; };
+
+ if (!FB.ok) { show('This site has not been connected to Firebase yet. See README.md, step 5.'); if(window.PageLoader)PageLoader.done(); return; }
+
+ const cur = Auth.user();
+ if (cur) { location.replace(cur.landing); return; }
+
+ let all = [], sel = null, finish = !!FB.auth.currentUser;
+
+ const picker = $('#picker'), cq = $('#cq'), cres = $('#cres'), cmsg = $('#cmsg');
+
+ const openList = () => { cres.classList.add('open'); cmsg.classList.add('show'); cq.setAttribute('aria-expanded','true'); draw(); };
+ const closeList = () => { cres.classList.remove('open'); cmsg.classList.remove('show'); cq.setAttribute('aria-expanded','false'); };
+
+ const setFinish = () => {
+   finish = true;
+   $$('[data-pw]').forEach(e => e.classList.add('hide'));
+   $('#em').closest('.fl').classList.add('hide');
+   $('#ttl').textContent = 'Finish joining your church';
+   $('#sub').textContent = 'Your account exists. Choose your church to complete your membership.';
+   $('#go').textContent = 'Join this church';
+   $('#gbtn').classList.add('hide');
+   $('.divider').classList.add('hide');
+ };
+ if (finish) setFinish();
+
+ const choose = c => {
+   sel = c;
+   $('#chosen').textContent = 'Joining: ' + c.name + (c.dioceseName ? ' · ' + c.dioceseName : '') + (c.town ? ' · ' + c.town : '');
+   $('#chosen').classList.add('show');
+   cq.value = c.name;
+   closeList();
+ };
+
+ const draw = () => {
+   const r = Dir.search(all, cq.value), sh = r.slice(0, cq.value.trim() ? 25 : 8);
+   cres.innerHTML = sh.map(c => `<button type="button" role="option" data-c="${esc(c.id)}" class="${sel && sel.id === c.id ? 'on' : ''}"><b>${esc(c.name)}</b><small>${esc([c.town, c.county, c.dioceseName].filter(Boolean).join(' · '))}</small></button>`).join('');
+   $$('#cres button').forEach(b => b.onclick = e => { e.preventDefault(); choose(all.find(c => c.id === b.dataset.c)); });
+   cmsg.textContent = !all.length ? 'No churches are registered on the platform yet.'
+     : !r.length ? 'No church matches your search.'
+     : r.length > sh.length ? 'Showing ' + sh.length + ' of ' + r.length + '. Type more to narrow the list.'
+     : r.length + (r.length === 1 ? ' church found.' : ' churches found.');
+ };
+
+ try { all = await Dir.load(); } catch (e) { cmsg.textContent = 'The church list could not be loaded. Please try again later.'; }
+
+ cq.addEventListener('focus', openList);
+ cq.addEventListener('click', openList);
+ cq.addEventListener('input', () => { sel = null; $('#chosen').classList.remove('show'); openList(); });
+ document.addEventListener('click', e => { if (!picker.contains(e.target)) closeList(); });
+ cq.addEventListener('keydown', e => { if (e.key === 'Escape') closeList(); });
+
+ const want = new URLSearchParams(location.search).get('church');
+ if (want) { const c = all.find(x => x.id === want); if (c) choose(c); }
+
+ const view = () => {
+   const r = location.hash === '#request';
+   $('#req').classList.toggle('hide', !r);
+   $('#reg').classList.toggle('hide', r);
+   $('#ttl').textContent = r ? 'Tell us about your church' : (finish ? 'Finish joining your church' : 'Create your account');
+   err.style.display = 'none';
+ };
+ $('#rq').onclick = e => { e.preventDefault(); location.hash = '#request'; };
+ $('#back2').onclick = e => { e.preventDefault(); location.hash = ''; };
+ window.addEventListener('hashchange', view); view();
+
+ /* ---------- Email/password signup ---------- */
+ $('#f').addEventListener('submit', async e => {
+   e.preventDefault(); err.style.display = 'none';
+   const name = $('#nm').value.trim(), email = $('#em').value.trim(), phone = $('#ph').value.trim(), pw = $('#pw').value;
+   if (!sel) { show('Choose your church from the list first.'); openList(); return; }
+   if (name.length < 2) { show('Enter your full name.'); return; }
+   if (!finish) {
+     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { show('Enter a valid email address.'); return; }
+     if (pw.length < 8) { show('Choose a password of at least 8 characters.'); return; }
+     if (pw !== $('#pw2').value) { show('The two passwords do not match.'); return; }
+   }
+   if (phone.length < 7) { show('Enter your phone number.'); return; }
+   const b = $('#go'), t = b.textContent;
+   b.disabled = true; b.textContent = 'Creating your membership…';
+   try {
+     const u = finish
+       ? await Auth.finishRegistration({ name, phone, parishId: sel.id })
+       : await Auth.register({ name, email, phone, password: pw, parishId: sel.id });
+     UI.toast('Welcome to ' + sel.name + ', ' + u.name.split(' ')[0]);
+     setTimeout(() => location.href = u.landing, 700);
+   } catch (x) {
+     if (FB.auth.currentUser && !finish) {
+       setFinish();
+       show('Your account was created, but joining the church did not finish (' + authMsg(x) + '). Press the button to try again; nothing will be duplicated.');
+     } else show(authMsg(x));
+     b.disabled = false; b.textContent = finish ? 'Join this church' : t;
+   }
+ });
+
+ /* ---------- Google signup ---------- */
+ $('#gbtn').addEventListener('click', async () => {
+   err.style.display = 'none';
+   if (!sel) { show('Choose your church from the list first.'); openList(); return; }
+   const b = $('#gbtn'), t = b.innerHTML;
+   b.disabled = true; b.innerHTML = 'Connecting to Google…';
+   try {
+     const phone = ($('#ph') && $('#ph').value.trim()) || '';
+     await Auth.registerWithGoogle({ parishId: sel.id, phone });
+     UI.toast('Welcome to ' + sel.name + '!');
+     setTimeout(() => location.href = Auth.user().landing, 600);
+   } catch (x) {
+     show(authMsg(x));
+     b.disabled = false; b.innerHTML = t;
+   }
+ });
+
+ /* ---------- Church request ---------- */
+ $('#rf').addEventListener('submit', async e => {
+   e.preventDefault(); err.style.display = 'none';
+   const v = {
+     name: $('#rn').value.trim(), town: $('#rt').value.trim(), diocese: $('#rd').value.trim(),
+     contactName: $('#rc').value.trim(), contactEmail: $('#re').value.trim(), notes: $('#ro').value.trim()
+   };
+   if (v.name.length < 2 || v.contactName.length < 2 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.contactEmail)) {
+     show('Enter the church name, your name and a valid email.'); return;
+   }
+   try {
+     await Auth.requestChurch(v);
+     $('#rf').reset();
+     show('Thank you. Your request has been sent to the platform administrator. You can register once your church has been added.', true);
+   } catch (x) { show(authMsg(x)); }
+ });
+
+ if (window.PageLoader) PageLoader.done();
+})();
+  }
+  ready();
+})();
+</script>
+<script defer>
+(function(){
+  var el = document.getElementById('cms-load');
+  if(!el){ window.PageLoader = { done:function(){} }; return; }
+  var start = Date.now();
+  var cleared = false;
+  function finish(){
+    if(cleared) return;
+    cleared = true;
+    var wait = Math.max(0, 600 - (Date.now() - start));
+    setTimeout(function(){
+      if(!el.parentNode) return;
+      el.classList.add('hide');
+      setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 500);
+    }, wait);
+  }
+  window.PageLoader = { done: finish };
+  setTimeout(finish, 12000);
+})();
+</script>
+</body></html>

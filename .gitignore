@@ -1,0 +1,10 @@
+node_modules/
+serviceAccount*.json
+*-adminsdk-*.json
+.env
+parish-key.json
+r2-credentials.txt
+*credentials*
+*.local
+firestore-debug.log
+firebase-debug.log

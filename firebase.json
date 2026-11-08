@@ -1,0 +1,392 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "**/*.json",
+      "**/*.txt",
+      "**/*.pem",
+      "**/*.key",
+      "**/*.env",
+      "**/*credential*",
+      "**/*secret*",
+      "scripts/**",
+      "docs/**",
+      "tests/**",
+      "README.md",
+      "*.rules",
+      "functions/**",
+      "r2-worker/**"
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "rewrites": [
+      {
+        "source": "/admin",
+        "destination": "/admin/index.html"
+      },
+      {
+        "source": "/admin/",
+        "destination": "/admin/index.html"
+      },
+      {
+        "source": "/*",
+        "destination": "/parish-home/index.html"
+      }
+    ],
+    "redirects": [
+      {
+        "source": "/admin.html",
+        "destination": "/admin",
+        "type": 301
+      },
+      {
+        "source": "/00-join.html",
+        "destination": "/join",
+        "type": 301
+      },
+      {
+        "source": "/00-join",
+        "destination": "/join",
+        "type": 301
+      },
+      {
+        "source": "/01-home.html",
+        "destination": "/home",
+        "type": 301
+      },
+      {
+        "source": "/01-home",
+        "destination": "/home",
+        "type": 301
+      },
+      {
+        "source": "/02-login.html",
+        "destination": "/login",
+        "type": 301
+      },
+      {
+        "source": "/02-login",
+        "destination": "/login",
+        "type": 301
+      },
+      {
+        "source": "/03-parish-dashboard.html",
+        "destination": "/dashboard",
+        "type": 301
+      },
+      {
+        "source": "/03-parish-dashboard",
+        "destination": "/dashboard",
+        "type": 301
+      },
+      {
+        "source": "/04-diocese-dashboard.html",
+        "destination": "/diocese",
+        "type": 301
+      },
+      {
+        "source": "/04-diocese-dashboard",
+        "destination": "/diocese",
+        "type": 301
+      },
+      {
+        "source": "/05-parishioners.html",
+        "destination": "/parishioners",
+        "type": 301
+      },
+      {
+        "source": "/05-parishioners",
+        "destination": "/parishioners",
+        "type": 301
+      },
+      {
+        "source": "/06-families.html",
+        "destination": "/families",
+        "type": 301
+      },
+      {
+        "source": "/06-families",
+        "destination": "/families",
+        "type": 301
+      },
+      {
+        "source": "/07-sacraments.html",
+        "destination": "/sacraments",
+        "type": 301
+      },
+      {
+        "source": "/07-sacraments",
+        "destination": "/sacraments",
+        "type": 301
+      },
+      {
+        "source": "/08-masses.html",
+        "destination": "/masses",
+        "type": 301
+      },
+      {
+        "source": "/08-masses",
+        "destination": "/masses",
+        "type": 301
+      },
+      {
+        "source": "/09-pastoral.html",
+        "destination": "/pastoral",
+        "type": 301
+      },
+      {
+        "source": "/09-pastoral",
+        "destination": "/pastoral",
+        "type": 301
+      },
+      {
+        "source": "/10-scc.html",
+        "destination": "/scc",
+        "type": 301
+      },
+      {
+        "source": "/10-scc",
+        "destination": "/scc",
+        "type": 301
+      },
+      {
+        "source": "/11-ministries.html",
+        "destination": "/ministries",
+        "type": 301
+      },
+      {
+        "source": "/11-ministries",
+        "destination": "/ministries",
+        "type": 301
+      },
+      {
+        "source": "/12-events.html",
+        "destination": "/events",
+        "type": 301
+      },
+      {
+        "source": "/12-events",
+        "destination": "/events",
+        "type": 301
+      },
+      {
+        "source": "/13-sermons.html",
+        "destination": "/sermons",
+        "type": 301
+      },
+      {
+        "source": "/13-sermons",
+        "destination": "/sermons",
+        "type": 301
+      },
+      {
+        "source": "/14-catechesis.html",
+        "destination": "/catechesis",
+        "type": 301
+      },
+      {
+        "source": "/14-catechesis",
+        "destination": "/catechesis",
+        "type": 301
+      },
+      {
+        "source": "/15-finance.html",
+        "destination": "/finance",
+        "type": 301
+      },
+      {
+        "source": "/15-finance",
+        "destination": "/finance",
+        "type": 301
+      },
+      {
+        "source": "/16-accounting.html",
+        "destination": "/accounting",
+        "type": 301
+      },
+      {
+        "source": "/16-accounting",
+        "destination": "/accounting",
+        "type": 301
+      },
+      {
+        "source": "/17-assets.html",
+        "destination": "/assets",
+        "type": 301
+      },
+      {
+        "source": "/17-assets",
+        "destination": "/assets",
+        "type": 301
+      },
+      {
+        "source": "/18-projects.html",
+        "destination": "/projects",
+        "type": 301
+      },
+      {
+        "source": "/18-projects",
+        "destination": "/projects",
+        "type": 301
+      },
+      {
+        "source": "/19-documents.html",
+        "destination": "/documents",
+        "type": 301
+      },
+      {
+        "source": "/19-documents",
+        "destination": "/documents",
+        "type": 301
+      },
+      {
+        "source": "/20-communications.html",
+        "destination": "/communications",
+        "type": 301
+      },
+      {
+        "source": "/20-communications",
+        "destination": "/communications",
+        "type": 301
+      },
+      {
+        "source": "/21-reports.html",
+        "destination": "/reports",
+        "type": 301
+      },
+      {
+        "source": "/21-reports",
+        "destination": "/reports",
+        "type": 301
+      },
+      {
+        "source": "/22-governance.html",
+        "destination": "/governance",
+        "type": 301
+      },
+      {
+        "source": "/22-governance",
+        "destination": "/governance",
+        "type": 301
+      },
+      {
+        "source": "/23-settings.html",
+        "destination": "/settings",
+        "type": 301
+      },
+      {
+        "source": "/23-settings",
+        "destination": "/settings",
+        "type": 301
+      },
+      {
+        "source": "/24-register.html",
+        "destination": "/register",
+        "type": 301
+      },
+      {
+        "source": "/24-register",
+        "destination": "/register",
+        "type": 301
+      },
+      {
+        "source": "/25-super-admin.html",
+        "destination": "/super-admin",
+        "type": 301
+      },
+      {
+        "source": "/25-super-admin",
+        "destination": "/super-admin",
+        "type": 301
+      },
+      {
+        "source": "/26-website.html",
+        "destination": "/website",
+        "type": 301
+      },
+      {
+        "source": "/26-website",
+        "destination": "/website",
+        "type": 301
+      },
+      {
+        "source": "/parish-register.html",
+        "destination": "/platform",
+        "type": 301
+      },
+      {
+        "source": "/parish-register",
+        "destination": "/platform",
+        "type": 301
+      },
+      {
+        "source": "/register-parish.html",
+        "destination": "/register-parish",
+        "type": 301
+      },
+      {
+        "source": "/register-parish",
+        "destination": "/register-parish",
+        "type": 301
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "admin/**",
+        "headers": [
+          {
+            "key": "X-Robots-Tag",
+            "value": "noindex, nofollow"
+          }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          }
+        ]
+      }
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "hosting": {
+      "port": 5000
+    },
+    "ui": {
+      "enabled": false
+    },
+    "singleProjectMode": true
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/00-join",
+      "destination": "/join",
+      "permanent": true
+    },
+    {
+      "source": "/01-home",
+      "destination": "/home",
+      "permanent": true
+    },
+    {
+      "source": "/02-login",
+      "destination": "/login",
+      "permanent": true
+    },
+    {
+      "source": "/03-parish-dashboard",
+      "destination": "/dashboard",
+      "permanent": true
+    },
+    {
+      "source": "/04-diocese-dashboard",
+      "destination": "/diocese",
+      "permanent": true
+    },
+    {
+      "source": "/05-parishioners",
+      "destination": "/parishioners",
+      "permanent": true
+    },
+    {
+      "source": "/06-families",
+      "destination": "/families",
+      "permanent": true
+    },
+    {
+      "source": "/07-sacraments",
+      "destination": "/sacraments",
+      "permanent": true
+    },
+    {
+      "source": "/08-masses",
+      "destination": "/masses",
+      "permanent": true
+    },
+    {
+      "source": "/09-pastoral",
+      "destination": "/pastoral",
+      "permanent": true
+    },
+    {
+      "source": "/10-scc",
+      "destination": "/scc",
+      "permanent": true
+    },
+    {
+      "source": "/11-ministries",
+      "destination": "/ministries",
+      "permanent": true
+    },
+    {
+      "source": "/12-events",
+      "destination": "/events",
+      "permanent": true
+    },
+    {
+      "source": "/13-sermons",
+      "destination": "/sermons",
+      "permanent": true
+    },
+    {
+      "source": "/14-catechesis",
+      "destination": "/catechesis",
+      "permanent": true
+    },
+    {
+      "source": "/15-finance",
+      "destination": "/finance",
+      "permanent": true
+    },
+    {
+      "source": "/16-accounting",
+      "destination": "/accounting",
+      "permanent": true
+    },
+    {
+      "source": "/17-assets",
+      "destination": "/assets",
+      "permanent": true
+    },
+    {
+      "source": "/18-projects",
+      "destination": "/projects",
+      "permanent": true
+    },
+    {
+      "source": "/19-documents",
+      "destination": "/documents",
+      "permanent": true
+    },
+    {
+      "source": "/20-communications",
+      "destination": "/communications",
+      "permanent": true
+    },
+    {
+      "source": "/21-reports",
+      "destination": "/reports",
+      "permanent": true
+    },
+    {
+      "source": "/22-governance",
+      "destination": "/governance",
+      "permanent": true
+    },
+    {
+      "source": "/23-settings",
+      "destination": "/settings",
+      "permanent": true
+    },
+    {
+      "source": "/24-register",
+      "destination": "/register",
+      "permanent": true
+    },
+    {
+      "source": "/25-super-admin",
+      "destination": "/super-admin",
+      "permanent": true
+    },
+    {
+      "source": "/26-website",
+      "destination": "/website",
+      "permanent": true
+    },
+    {
+      "source": "/parish-register",
+      "destination": "/platform",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/:slug",
+      "destination": "/parish-home/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/(.*).html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ]
+    },
+    {
+      "source": "/admin(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/super-admin(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    }
+  ]
+}

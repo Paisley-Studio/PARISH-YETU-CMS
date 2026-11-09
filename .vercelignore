@@ -1,0 +1,22 @@
+# Same idea as hosting.ignore in firebase.json: only the website is public, never tooling or backend code.
+.claude
+.firebase
+docs
+scripts
+tests
+r2-worker
+node_modules
+README.md
+firebase.json
+firebase.test.json
+firestore.rules
+firestore.indexes.json
+storage.rules
+skills-lock.json
+*.log
+*.pem
+*.key
+*.env
+*credential*
+*secret*
+parish-key.json

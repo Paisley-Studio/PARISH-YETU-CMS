@@ -111,9 +111,17 @@ service cloud.firestore {
       allow read, write: if isSuper();
     }
     
+    // Approvals, rejections and suspensions are written here by the Worker (service account) in the
+    // same commit as the change itself. Nobody can edit or delete an entry.
     match /platformAudit/{id} {
       allow read, create: if isSuper();
       allow update, delete: if false;
+    }
+
+    // Outgoing platform email queue for the "Trigger Email" Firebase Extension. Server-only.
+    match /mail/{id} {
+      allow read: if isSuper();
+      allow write: if false;
     }
 
     // ---------- church requests ----------

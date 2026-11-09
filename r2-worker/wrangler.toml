@@ -6,8 +6,11 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 R2_BUCKET = "parish-yetu-documents"
 R2_ACCOUNT_ID = "d9cd59ccb5997ae4a76a311668b37d1c"
-ALLOWED_ORIGIN = "https://parishyetu.church,https://www.parishyetu.church,https://church-cms-4d735.web.app,https://church-cms-4d735.firebaseapp.com"
+APP_URL = "https://parishyetu.church"
+MAIL_REPLY_TO = ""   # optional: where applicants' replies go (sender + SMTP are set in the Trigger Email extension)
+ALLOWED_ORIGIN ="https://parishyetu.church,https://www.parishyetu.church,https://church-cms-4d735.web.app,https://church-cms-4d735.firebaseapp.com"
 # Secrets (set with `npx wrangler secret put NAME`, never in this file):
 #   R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY   R2 API token (documents + branding images)
 #   FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY   dedicated service account for /api/register-parish
 #                                                 (roles: Cloud Datastore User, Firebase Authentication Admin)
+# Platform emails are written to Firestore `mail/` and sent by the "Trigger Email from Firestore" extension (SMTP).

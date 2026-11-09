@@ -13,6 +13,8 @@
  *
  * Commands
  *   node scripts/admin.js make-super   --email you@example.org [--name "Full Name"] [--password "initial password"]
+ *        Sets the superAdmin:true claim + users/{uid} role 'super'. Then sign in at /super-admin/login.
+ *   node scripts/admin.js revoke-super --email you@example.org
  *   node scripts/admin.js add-diocese  --name "Diocese of X" [--archdiocese "Archdiocese of Y"] [--id diocese-x]
  *   node scripts/admin.js add-parish   --name "St Mary's Parish" --diocese diocese-x --town Nyeri [--deanery "North"] [--county Nyeri] [--address ...] [--phone ...] [--email ...] [--priest "Fr ..."]
  *   node scripts/admin.js assign       --email person@example.org --role priest|admin|secretary|finance|scc --parish <parishId> [--scc <sccId>]
@@ -105,7 +107,8 @@ async function ensureWebsite(id, p, dry) {
       u = await auth.createUser({ email: opt('email'), password: opt('password'), displayName: opt('name') || 'Platform Administrator', emailVerified: true });
       console.log('Created sign-in account', u.uid);
     }
-    const claims = claimsFor('super', {});
+    // superAdmin:true is the claim the Security Rules, the Worker and the /super-admin page check.
+    const claims = { ...claimsFor('super', {}), superAdmin: true };
     await auth.setCustomUserClaims(u.uid, claims);
     await db.doc('users/' + u.uid).set({
       name: opt('name') || u.displayName || 'Platform Administrator',
@@ -193,9 +196,19 @@ async function ensureWebsite(id, p, dry) {
     if (d.organization)  opts.organization = d.organization;
     if (d.sccId)         opts.sccId        = d.sccId;
     const claims = claimsFor(d.role || 'parishioner', opts);
+    if (d.role === 'super' && d.status === 'active') claims.superAdmin = true;
     await auth.setCustomUserClaims(u.uid, claims);
     await snap.ref.set({ claims, claimsUpdatedAt: TS() }, { merge: true });
     console.log('Claims refreshed for', u.email, '->', JSON.stringify(claims));
+  }
+  else if (cmd === 'revoke-super') {
+    need('email');
+    const u = await userByEmail(opt('email'));
+    if (!u) { console.error('No such account.'); process.exit(1); }
+    await auth.setCustomUserClaims(u.uid, { role: 'none', status: 'suspended' });
+    await auth.revokeRefreshTokens(u.uid);
+    await db.doc('users/' + u.uid).set({ role: 'none', status: 'suspended', claims: admin.firestore.FieldValue.delete(), updatedAt: TS() }, { merge: true });
+    console.log('Platform access removed and sessions revoked for', u.email);
   }
   else if (cmd === 'list-churches') {
     const s = await db.collection('churchDirectory').get();

@@ -63,6 +63,7 @@ export function validate(data) {
       county: str(p, 'county', 'County / region', { max: 80 }),
       town: str(p, 'town', 'Town or location', { req: true, min: 2, max: 120 }),
       address: str(p, 'address', 'Physical address', { max: 240 }),
+      priest: str(p, 'priest', 'Parish priest', { max: 120 }),
       phone: phone(p, 'phone', 'Parish telephone', true),
       email: email(p, 'email', 'Parish email', false)
     },
@@ -233,7 +234,7 @@ export async function registerParish(env, user, body) {
         diocese: diocese ? diocese.name : '', archdiocese: diocese ? (diocese.kind === 'Archdiocese' ? diocese.name : diocese.archdiocese || '') : '',
         deaneryId: deanery ? deanery.id : '', pendingDeanery,
         dioceseProposalId: prop ? prop.id : '', proposedDiocese: prop ? prop.name : '',
-        priest: '', patron: B.patron, outstations: ['Main Church'], stats: {},
+        priest: P.priest, patron: B.patron, outstations: ['Main Church'], stats: {},
         status: 'active', registrationStatus: 'active', verificationStatus: 'pending',
         nameKey: S.nameKey(P.name, P.town), townKey: S.placeKey(P.town), createdBy: uid, registeredVia: 'self-service'
       };

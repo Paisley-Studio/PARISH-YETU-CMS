@@ -303,6 +303,7 @@ table.t tr.click{cursor:pointer}
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>window.PARISHOS_LOGIN='/super-admin/login'</script>
 <script defer src="/js/firebase-config.js"></script>
 <script defer src="/js/firebase-init.js"></script>
 <script defer src="/js/core.js"></script>
@@ -329,6 +330,9 @@ const dioById=id=>DS.find(d=>d.id===id);
 const dioceseName=id=>{const d=dioById(id);return d?d.name:'—'};
 const pStatus=p=>p.status&&p.status!=='active'?p.status:(p.verificationStatus==='pending'?'pending':'active');
 const STATUS_BD={active:'<span class="bd g">Active</span>',pending:'<span class="bd y">Pending verification</span>',suspended:'<span class="bd r">Suspended</span>',rejected:'<span class="bd r">Rejected</span>'};
+const stBadge=p=>(STATUS_BD[pStatus(p)]||'')+(pStatus(p)==='pending'&&p.infoRequested?' <span class="bd b">Info requested</span>':'');
+const APPL={}; // parishId -> applicant users/{createdBy} profile (pending applications only)
+const applicant=p=>APPL[p.id]||null;
 const siteOpen=p=>p.slug?Site.openHref(p.slug):'';
 const siteDisp=p=>p.slug?Site.display(p.slug):'—';
 const deaneryCount=()=>sum(DS,d=>(d.deaneries||[]).filter(x=>(x.status||'active')==='active').length);
@@ -336,27 +340,56 @@ const ok=m=>{UI.toast(m);refresh()};
 const fail=e=>UI.toast((e&&e.code==='permission-denied')?'Permission denied by the database rules.':'Could not save: '+((e&&e.message)||e),'err');
 const audit=(action,data)=>Platform.audit(action,data).catch(()=>{});
 
+/* ---------- trusted platform API (Cloudflare Worker) ----------
+   Approve / reject / request info / suspend / restore and support sessions run on the server: it checks
+   the superAdmin claim, changes the parish and the administrator's account in one commit, writes the
+   platformAudit entry itself and sends the email. The browser cannot skip any of those steps. */
+async function api(path,body){
+ const fu=FB.auth.currentUser;if(!fu)throw new Error('You are signed out. Sign in again.');
+ const r=await fetch(FB.api+path,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+await fu.getIdToken()},body:JSON.stringify(body)});
+ const j=await r.json().catch(()=>({}));
+ if(!r.ok)throw new Error(j.error||('The platform service answered '+r.status));
+ return j;
+}
+const EMAIL_NOTE={queued:'email handed to the mail server',skipped:'no email address on file, contact them yourself'};
+const MAIL={}; // mail/{auditId} -> delivery state written back by the Trigger Email extension
+const mailBadge=a=>{if(!a.emailStatus||a.emailStatus==='skipped')return a.emailStatus==='skipped'?'<span class="bd">No address</span>':'';const d=MAIL[a.id]||'';return d==='SUCCESS'?'<span class="bd g">Delivered</span>':d==='ERROR'?'<span class="bd r" title="Check the mail/'+esc(a.id)+' document for the SMTP error">Failed</span>':'<span class="bd y">'+(d?esc(d.toLowerCase()):'Queued')+'</span>'};
+
 /* ---------- parish lifecycle ---------- */
-function setParishState(p,action,reason){
- const b=DB_.batch(),pr=DB_.doc('parishes/'+p.id),dr=DB_.doc('churchDirectory/'+p.id);
- const verified=p.verificationStatus!=='pending'&&p.verificationStatus!=='rejected';
- let pp,dd;
- if(action==='approve'){pp={verificationStatus:'verified',status:'active',verifiedAt:ts(),verifiedBy:u.id};dd={status:'active'}}
- else if(action==='reject'){pp={verificationStatus:'rejected',status:'rejected',reviewNote:reason||''};dd={status:'rejected'}}
- else if(action==='suspend'){pp={status:'suspended',suspendedReason:reason||''};dd={status:'suspended'}}
- else if(action==='restore'){pp={status:'active',suspendedReason:''};dd={status:verified?'active':'pending'}}
- pp.updatedAt=ts();dd.updatedAt=ts();
- b.update(pr,pp);b.set(dr,dd,{merge:true});
- return b.commit().then(()=>audit('parish.'+action,{parishId:p.id,name:p.name,reason:reason||''}));
+function setParishState(p,action,message){
+ return api('/api/platform/parish-action',{parishId:p.id,action,message:message||''});
 }
 function confirmAction(p,action){
- const words={approve:['Approve parish','Approve '+p.name+'? It becomes visible in the public church directory, members can join it, and its published website goes live.','Approve',false],
-  reject:['Reject registration','Reject the registration of '+p.name+'? Its staff lose access. Give a reason the applicant can be told.','Reject',true],
-  suspend:['Suspend parish','Suspend '+p.name+'? All of its staff and members immediately lose access and its website goes offline. Nothing is deleted.','Suspend',true],
-  restore:['Restore parish','Restore '+p.name+'? Its staff and members regain access.','Restore',false]}[action];
- if(action==='reject'||action==='suspend'){
-  UI.formModal({title:words[0],size:'sm',fields:[{k:'reason',label:'Reason (recorded in the audit trail)',type:'textarea',req:true}],submit:words[2],onSave:v=>{setParishState(p,action,v.reason).then(()=>ok(p.name+': '+action+'ed')).catch(fail)}});
- }else UI.confirm({title:words[0],msg:words[1],ok:words[2],danger:words[3]},()=>setParishState(p,action).then(()=>ok(p.name+(action==='approve'?' approved':' restored'))).catch(fail));
+ const W={
+  approve:{t:'Approve parish',msg:'Approve '+p.name+'? It is listed in the public church directory, members can join, its website can go live, and the administrator receives a welcome email.',ok:'Approve & send welcome email',done:'approved'},
+  'request-info':{t:'Request more information',label:'What do you need from the applicant? (sent to them by email)',ok:'Send request',done:'information requested'},
+  reject:{t:'Reject registration',label:'Reason (sent to the applicant and kept in the audit trail)',ok:'Reject & notify',done:'rejected',danger:1},
+  suspend:{t:'Suspend parish',label:'Reason (sent to the parish and kept in the audit trail). Staff and members lose access immediately; nothing is deleted.',ok:'Suspend & notify',done:'suspended',danger:1},
+  restore:{t:'Restore parish',msg:'Restore '+p.name+'? '+(pStatus(p)==='rejected'?'It goes back to the applications queue for review.':'Its staff and members regain access and the administrator is emailed.'),ok:'Restore',done:'restored'}}[action];
+ const run=m=>setParishState(p,action,m).then(r=>ok(p.name+' '+W.done+(r.emailStatus?' · '+(EMAIL_NOTE[r.emailStatus]||r.emailStatus):''))).catch(fail);
+ if(W.label)UI.formModal({title:W.t,size:'sm',fields:[{k:'message',label:W.label,type:'textarea',req:true}],submit:W.ok,onSave:v=>{run(v.message)}});
+ else UI.confirm({title:W.t,msg:W.msg,ok:W.ok,danger:!!W.danger},()=>run(''));
+}
+/* Support: sign in as one of the parish's staff accounts to see exactly what they see. */
+async function supportSession(p){
+ let staff=[];
+ try{staff=(await DB_.collection('users').where('parishId','==',p.id).limit(50).get()).docs.map(d=>({...d.data(),id:d.id})).filter(x=>['admin','priest','secretary','finance','scc'].includes(x.role)&&x.status==='active')}catch(e){return fail(e)}
+ if(!staff.length)return UI.toast('This parish has no active staff account to sign in as.','err');
+ staff.sort((a,b)=>(a.role==='admin'?0:1)-(b.role==='admin'?0:1));
+ UI.formModal({title:'Log in as parish staff',size:'sm',fields:[
+   {k:'uid',label:'Account',type:'select',blank:false,options:staff.map(x=>({v:x.id,l:x.name+' · '+(roleDef(x.role)||{label:x.role}).label+' · '+x.email}))},
+   {k:'reason',label:'Reason (recorded in the platform audit)',type:'textarea',req:true}],
+  submit:'Start support session',
+  onSave:v=>{
+   UI.confirm({title:'Leave the platform console?',msg:'You will be signed out of the platform console in this browser and signed in as the selected person until you press “End support session” or close the tab. Everything you do is done as them.',ok:'Continue'},async()=>{
+    try{
+     const r=await api('/api/platform/impersonate',{uid:v.uid,reason:v.reason});
+     await FB.auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+     await FB.auth.signInWithCustomToken(r.token);
+     location.href='/dashboard';
+    }catch(e){fail(e)}
+   });
+  }});
 }
 function reassign(p){
  const opts=DS.filter(d=>(d.status||'active')==='active').map(d=>({v:d.id,l:d.name}));
@@ -401,12 +434,12 @@ function assignSlug(p){ // older parishes created before web addresses existed
 }
 function parishActions(p){
  const st=pStatus(p),a=[];
- if(st==='pending'){a.push({label:'Approve parish',fn:()=>confirmAction(p,'approve')},{label:'Reject registration',danger:true,fn:()=>confirmAction(p,'reject')})}
+ if(st==='pending'){a.push({label:'Approve parish',fn:()=>confirmAction(p,'approve')},{label:'Request more information',fn:()=>confirmAction(p,'request-info')},{label:'Reject registration',danger:true,fn:()=>confirmAction(p,'reject')})}
  if(st==='active')a.push({label:'Suspend parish',danger:true,fn:()=>confirmAction(p,'suspend')});
  if(st==='suspended'||st==='rejected')a.push({label:'Restore parish',fn:()=>confirmAction(p,'restore')});
  a.push('-',{label:'View details',fn:()=>churchDrawer(p)});
  if(p.slug)a.push({label:'Open public website',fn:()=>window.open(siteOpen(p),'_blank','noopener')});
- if(st==='active'||st==='pending')a.push({label:'Enter this church',fn:()=>Ctx.enterParish(p.id)});
+ if(st==='active'||st==='pending')a.push({label:'Log in as parish staff (support)',fn:()=>supportSession(p)});
  a.push('-',{label:'Reassign diocese / deanery',fn:()=>reassign(p)},p.slug?{label:'Change web address',fn:()=>changeSlug(p)}:{label:'Assign web address',fn:()=>assignSlug(p)},{label:'Edit church details',fn:()=>editChurch(p)});
  return a;
 }
@@ -462,12 +495,12 @@ function overview(host){
  const pprops=PROPS.filter(x=>x.status==='Pending Verification'||x.status==='Clarification Requested');
  const recent=[...PS].sort((a,b)=>(b._t||0)-(a._t||0)).slice(0,6);
  host.innerHTML=`<div class="grid g4">${[
-   UI.kpi({label:'Registered parishes',icon:'admin',count:PS.length,sub:cnt('active')+' active · '+cnt('suspended')+' suspended',cls:'k-bur'}),
-   UI.kpi({label:'Pending registrations',icon:'shield',count:cnt('pending'),sub:'Awaiting verification',cls:'k-gold'}),
-   UI.kpi({label:'Diocese proposals',icon:'doc',count:pprops.length,sub:'Awaiting review',cls:'k-bar'}),
-   UI.kpi({label:'Dioceses / deaneries',icon:'report',value:DS.length+' / '+deaneryCount(),sub:'In the official directory',cls:'k-navy'})].join('')}</div>
- <div class="grid g2 mt"><div class="card"><div class="ch"><div><h3>Waiting for verification</h3><small>Self-registered parishes</small></div><a class="btn sm" href="#Registrations">All</a></div><div class="cb"><div class="list">${pend.slice(0,6).map(p=>`<div class="li"><div class="tx"><b>${esc(p.name)}</b><small>${esc([p.town,p.country].filter(Boolean).join(', '))} · ${esc(p.dioceseId?dioceseName(p.dioceseId):p.proposedDiocese?'Proposed: '+p.proposedDiocese:'No diocese')}</small></div><button class="btn sm p" data-ap="${esc(p.id)}">Review</button></div>`).join('')||'<div class="empty">No parishes are waiting.</div>'}</div></div></div>
- <div class="card"><div class="ch"><div><h3>Recent registrations</h3><small>Newest parishes on the platform</small></div></div><div class="cb"><div class="list">${recent.map(p=>`<div class="li"><div class="tx"><b>${esc(p.name)}</b><small>${esc(siteDisp(p))}</small></div>${STATUS_BD[pStatus(p)]||''}</div>`).join('')||'<div class="empty">No parishes yet.</div>'}</div></div></div></div>
+   UI.kpi({label:'Total parishes',icon:'admin',count:PS.length,sub:cnt('rejected')+' rejected · '+DS.length+' dioceses',cls:'k-bur'}),
+   UI.kpi({label:'Pending applications',icon:'shield',count:cnt('pending'),sub:PS.filter(p=>pStatus(p)==='pending'&&p.infoRequested).length+' waiting on the applicant · '+pprops.length+' diocese proposals',cls:'k-gold'}),
+   UI.kpi({label:'Active parishes',icon:'check',count:cnt('active'),sub:'Verified and live',cls:'k-green'}),
+   UI.kpi({label:'Suspended parishes',icon:'lock',count:cnt('suspended'),sub:'Staff and members blocked',cls:'k-navy'})].join('')}</div>
+ <div class="grid g2 mt"><div class="card"><div class="ch"><div><h3>Waiting for verification</h3><small>Self-registered parishes</small></div><a class="btn sm" href="#Applications">All</a></div><div class="cb"><div class="list">${pend.slice(0,6).map(p=>`<div class="li"><div class="tx"><b>${esc(p.name)}</b><small>${esc([p.town,p.country].filter(Boolean).join(', '))} · ${esc(p.dioceseId?dioceseName(p.dioceseId):p.proposedDiocese?'Proposed: '+p.proposedDiocese:'No diocese')}</small></div><button class="btn sm p" data-ap="${esc(p.id)}">Review</button></div>`).join('')||'<div class="empty">No parishes are waiting.</div>'}</div></div></div>
+ <div class="card"><div class="ch"><div><h3>Recent registrations</h3><small>Newest parishes on the platform</small></div></div><div class="cb"><div class="list">${recent.map(p=>`<div class="li"><div class="tx"><b>${esc(p.name)}</b><small>${esc(siteDisp(p))}</small></div>${stBadge(p)}</div>`).join('')||'<div class="empty">No parishes yet.</div>'}</div></div></div></div>
  <div class="grid g2 mt"><div class="card"><div class="ch"><div><h3>Parishes by diocese</h3></div></div><div class="cb">${DS.length?Ch.hbars(DS.map(d=>({label:d.name,value:PS.filter(p=>p.dioceseId===d.id).length})).sort((a,b)=>b.value-a.value).slice(0,10),{fmt:v=>fmt(v)}):'<div class="empty">No dioceses yet.</div>'}</div></div>
  <div class="card"><div class="ch"><div><h3>Verification status</h3></div></div><div class="cb">${Ch.donut([{label:'Active',value:cnt('active'),color:'#1E6B4F'},{label:'Pending',value:cnt('pending'),color:'#C9A227'},{label:'Suspended',value:cnt('suspended'),color:'#B3261E'},{label:'Rejected',value:cnt('rejected'),color:'#8B8A84'}],{sub:'parishes'})}</div></div></div>`;
  $$('[data-ap]',host).forEach(b=>b.onclick=()=>churchDrawer(PS.find(p=>p.id===b.dataset.ap)));
@@ -479,16 +512,16 @@ function parishTable(host,rowsFn,o={}){
   cols:[{key:'name',label:'Parish',render:p=>`<div class="cell">${UI.av(p.name||'','')}<div>${esc(p.name||'')}<small>${esc([p.town,p.country].filter(Boolean).join(', '))}</small></div></div>`},
    {key:'dioceseId',label:'Diocese / deanery',render:p=>`${esc(p.dioceseId?dioceseName(p.dioceseId):(p.proposedDiocese?'Proposed: '+p.proposedDiocese:'—'))}<br><small class="mini">${esc(p.deanery||(p.pendingDeanery?'Requested: '+p.pendingDeanery:''))}</small>`},
    {key:'slug',label:'Website',render:p=>p.slug?`<a href="${esc(siteOpen(p))}" target="_blank" rel="noopener" style="color:var(--bur);font-weight:700">${esc(siteDisp(p))}</a><br><small class="mini">${p.websitePublished?'Published':'Not published'}</small>`:'<span class="mini">No address</span>'},
-   {key:'_st',label:'Status',val:pStatus,render:p=>STATUS_BD[pStatus(p)]||esc(pStatus(p))},
+   {key:'_st',label:'Status',val:pStatus,render:p=>stBadge(p)||esc(pStatus(p))},
    ...(o.extra||[])],
   onRow:p=>churchDrawer(p),actions:p=>parishActions(p)});
 }
 function registrations(host){
  const pend=()=>PS.filter(p=>pStatus(p)==='pending');
  const aff=()=>PS.filter(p=>p.pendingDeanery&&p.dioceseId);
- host.innerHTML=`<div class="card"><div class="ch"><div><h3>Parish registrations awaiting verification</h3><small>Approve to list the parish publicly and allow members to join</small></div></div><div class="cb" id="rt"></div></div>
+ host.innerHTML=`<div class="card"><div class="ch"><div><h3>Parish applications awaiting review</h3><small>Click an application to review it, then approve, request more information or reject. The applicant is emailed every decision.</small></div></div><div class="cb" id="rt"></div></div>
  <div class="card mt"><div class="ch"><div><h3>Deanery affiliation requests</h3><small>Parishes that named a deanery not yet in the directory</small></div></div><div class="cb"><div class="list" id="afl"></div></div></div>`;
- parishTable($('#rt',host),pend,{filters:false,sort:'_st',extra:[{key:'admin',label:'Registered via',sort:false,render:p=>esc(p.registeredVia==='self-service'?'Self-service':'Platform')}]});
+ parishTable($('#rt',host),pend,{filters:false,sort:'_t',dir:-1,extra:[{key:'admin',label:'Applicant',sort:false,render:p=>{const a=applicant(p);return a?`${esc(a.name||'')}<br><small class="mini">${esc(a.email||'')}</small>`:'<span class="mini">—</span>'}},{key:'_t',label:'Submitted',render:p=>p._t?esc(new Date(p._t).toLocaleDateString('en-GB')):'—'}]});
  const L=$('#afl',host);
  L.innerHTML=aff().map(p=>`<div class="li"><div class="tx"><b>${esc(p.name)}</b><small>Requests deanery “${esc(p.pendingDeanery)}” in ${esc(dioceseName(p.dioceseId))}</small></div><button class="btn sm p" data-aa="${esc(p.id)}">Approve</button><button class="btn sm" data-ar="${esc(p.id)}">Decline</button></div>`).join('')||'<div class="empty">No affiliation requests.</div>';
  $$('[data-aa]',L).forEach(b=>b.onclick=()=>{const p=PS.find(x=>x.id===b.dataset.aa),d=dioById(p.dioceseId);if(!d)return;
@@ -520,7 +553,7 @@ function dioceses(host){
 function dioceseDrawer(d){
  const ps=PS.filter(p=>p.dioceseId===d.id),groups={};ps.forEach(p=>{const k=p.deanery||'No deanery';(groups[k]=groups[k]||[]).push(p)});
  const dr=UI.drawer({title:d.name,sub:[d.kind,d.country,d.bishop].filter(Boolean).join(' · '),html:`<dl class="dl"><dt>Province</dt><dd>${esc(d.kind==='Archdiocese'?'Metropolitan see':(d.archdiocese||'—'))}</dd><dt>Location</dt><dd>${esc([d.location,d.country].filter(Boolean).join(', ')||'—')}</dd><dt>Bishop</dt><dd>${esc(d.bishop||'—')}</dd><dt>Status</dt><dd>${esc(d.status||'active')}</dd></dl>
-  <div class="mt">${Object.keys(groups).sort().map(k=>`<div class="sec">${esc(k)} · ${groups[k].length}</div><div class="list">${groups[k].map(p=>`<div class="li"><div class="tx"><b>${esc(p.name)}</b><small>${esc(siteDisp(p))}</small></div>${STATUS_BD[pStatus(p)]||''}</div>`).join('')}</div>`).join('')||'<div class="empty">No parishes in this diocese yet.</div>'}</div>`,
+  <div class="mt">${Object.keys(groups).sort().map(k=>`<div class="sec">${esc(k)} · ${groups[k].length}</div><div class="list">${groups[k].map(p=>`<div class="li"><div class="tx"><b>${esc(p.name)}</b><small>${esc(siteDisp(p))}</small></div>${stBadge(p)}</div>`).join('')}</div>`).join('')||'<div class="empty">No parishes in this diocese yet.</div>'}</div>`,
   footer:[{label:'Close',fn:c=>c()},{label:'Manage deaneries',fn:c=>{c();deaneries(d)}},{label:'Edit diocese',cls:'p',fn:c=>{c();dioceseForm(d)}}]});
 }
 function proposals(host){
@@ -590,7 +623,7 @@ function assignDioc(d){
 }
 function auditView(host){
  host.innerHTML=`<div class="alert lock" style="margin-bottom:14px">${ic('lock')}<span>Platform decisions: approvals, suspensions, reassignments, web-address changes and diocesan appointments. Entries cannot be edited or deleted.</span></div><div class="card" id="at"></div>`;
- UI.table($('#at',host),{rows:()=>AUD,pageSize:15,search:a=>JSON.stringify(a),cols:[{key:'_t',label:'When',render:a=>esc(a._t?new Date(a._t).toLocaleString('en-GB'):'—')},{key:'action',label:'Action',render:a=>`<b>${esc(a.action)}</b>`},{key:'name',label:'Subject',render:a=>esc(a.name||a.parishId||a.dioceseId||a.email||'—')},{key:'byName',label:'By',render:a=>esc(a.byName||a.by||'—')},{key:'reason',label:'Detail',sort:false,render:a=>esc(a.reason||a.note||(a.to?('→ '+a.to):'')||'')}]});
+ UI.table($('#at',host),{rows:()=>AUD,pageSize:15,search:a=>JSON.stringify(a),cols:[{key:'_t',label:'When',render:a=>esc(a._t?new Date(a._t).toLocaleString('en-GB'):'—')},{key:'action',label:'Action',render:a=>`<b>${esc(a.action)}</b>`},{key:'name',label:'Subject',render:a=>esc(a.name||a.parishId||a.dioceseId||a.email||'—')},{key:'byName',label:'By',render:a=>esc(a.byName||a.by||'—')},{key:'emailStatus',label:'Email',sort:false,render:mailBadge},{key:'reason',label:'Detail',sort:false,render:a=>esc(a.reason||a.note||(a.to?('→ '+a.to):'')||'')}]});
 }
 
 function churchDrawer(p){
@@ -600,12 +633,12 @@ function churchDrawer(p){
   <dl class="dl"><dt>Parish ID</dt><dd>${esc(p.id)}</dd><dt>Website</dt><dd>${p.slug?`<a href="${esc(url)}" target="_blank" rel="noopener" style="color:var(--bur);font-weight:800">${esc(siteDisp(p))}</a>`:'Not assigned'}</dd>
   <dt>Type</dt><dd>${esc(p.parishType||'Parish')}</dd><dt>Diocese</dt><dd>${esc(p.dioceseId?dioceseName(p.dioceseId):(p.proposedDiocese?'Proposed: '+p.proposedDiocese+' (pending)':'—'))}</dd>
   <dt>Deanery</dt><dd>${esc(p.deanery||(p.pendingDeanery?'Requested: '+p.pendingDeanery:'—'))}</dd><dt>Location</dt><dd>${esc([p.address,p.town,p.county,p.country].filter(Boolean).join(', ')||'—')}</dd>
-  <dt>Phone</dt><dd>${esc(p.phone||'—')}</dd><dt>Email</dt><dd>${esc(p.email||'—')}</dd><dt>Priest</dt><dd>${esc(p.priest||'—')}</dd>
+  <dt>Town</dt><dd>${esc(p.town||'—')}</dd><dt>Parish priest</dt><dd>${esc(p.priest||'Not provided')}</dd><dt>Parish phone</dt><dd>${esc(p.phone||'—')}</dd><dt>Parish email</dt><dd>${esc(p.email||'—')}</dd><dt>Applicant</dt><dd>${applicant(p)?esc(applicant(p).name||'')+'<br><a style="color:var(--bur)" href="mailto:'+esc(applicant(p).email||'')+'">'+esc(applicant(p).email||'')+'</a> · '+esc(applicant(p).phone||'')+' · account '+esc(applicant(p).status||'—'):'<span class="mini">'+(pStatus(p)==='pending'?'Not found':'Shown for pending applications')+'</span>'}</dd>
   <dt>Registered</dt><dd>${esc(p.registeredVia==='self-service'?'Self-service registration':'Platform administrator')}${p._t?' · '+new Date(p._t).toLocaleDateString('en-GB'):''}</dd>
   <dt>Parishioners</dt><dd>${fmt((p.stats&&p.stats.parishioners)||0)}</dd>${p.reviewNote?`<dt>Review note</dt><dd>${esc(p.reviewNote)}</dd>`:''}${p.suspendedReason?`<dt>Suspension</dt><dd>${esc(p.suspendedReason)}</dd>`:''}</dl>
   <div class="mt flex wrap" style="gap:8px" id="dact"></div>`,footer:[{label:'Close',fn:c=>c()}]});
  const box=$('#dact',dr);
- parishActions(p).filter(a=>a!=='-').forEach(a=>{const b=document.createElement('button');b.className='btn sm'+(a.danger?' d':/Approve|Restore/.test(a.label)?' p':'');b.textContent=a.label;b.onclick=()=>{dr.close();a.fn()};box.appendChild(b)});
+ parishActions(p).filter(a=>a!=='-').forEach(a=>{const b=document.createElement('button');b.className='btn sm'+(a.danger?' d':/Approve|Restore/.test(a.label)?' p':/information/.test(a.label)?' g':'');b.textContent=a.label;b.onclick=()=>{dr.close();a.fn()};box.appendChild(b)});
 }
 function editChurch(p){
  UI.formModal({title:'Edit '+p.name,size:'lg',fields:[{k:'name',label:'Church name',req:true,w:1},{k:'town',label:'Town'},{k:'county',label:'County'},{k:'country',label:'Country'},{k:'address',label:'Address',w:1},{k:'phone',label:'Phone',type:'tel'},{k:'email',label:'Email',type:'email'},{k:'priest',label:'Parish priest',w:1}],values:p,submit:'Save changes',
@@ -622,7 +655,7 @@ function editChurch(p){
 /* ---------- data ---------- */
 const tms=x=>x&&x.toMillis?x.toMillis():0;
 function render(){
- UI.tabs(currentHost,[{label:'Overview',render:overview},{label:'Registrations',render:registrations},{label:'Churches',render:churches},{label:'Dioceses',render:dioceses},{label:'Diocese Proposals',render:proposals},{label:'Platform Audit',render:auditView}]);
+ UI.tabs(currentHost,[{label:'Overview',render:overview},{label:'Applications',render:registrations},{label:'Parishes',render:churches},{label:'Dioceses',render:dioceses},{label:'Diocese Proposals',render:proposals},{label:'Platform Audit',render:auditView}]);
 }
 function refresh(){
  return Promise.all([DB_.collection('parishes').limit(1000).get(),DB_.collection('dioceses').limit(500).get(),DB_.collection('dioceseProposals').limit(300).get(),DB_.collection('platformAudit').orderBy('at','desc').limit(300).get().catch(()=>({docs:[]}))])
@@ -631,18 +664,20 @@ function refresh(){
   DS=ds.docs.map(x=>({...x.data(),id:x.id})).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
   PROPS=pr.docs.map(x=>({...x.data(),id:x.id,_t:tms(x.data().createdAt)}));
   AUD=au.docs.map(x=>({...x.data(),id:x.id,_t:tms(x.data().at)}));
+  DB_.collection('mail').orderBy('createdAt','desc').limit(300).get().then(m=>m.docs.forEach(d=>{MAIL[d.id]=((d.data().delivery||{}).state)||''})).catch(()=>{});
   Ctx._dioceses=DS;
-  Ctx.parishes=PS.filter(p=>pStatus(p)==='active'||pStatus(p)==='pending');
-  render();
- }).catch(e=>{UI.toast('Could not load platform data: '+e.message,'err')});
+  // Applicant profiles for the review queue (the account that registered each pending parish).
+  return Promise.all(PS.filter(p=>pStatus(p)==='pending'&&p.createdBy).slice(0,150).map(p=>DB_.doc('users/'+p.createdBy).get().then(d=>{APPL[p.id]=d.exists?d.data():null}).catch(()=>{})));
+ }).then(render).catch(e=>{UI.toast('Could not load platform data: '+e.message,'err')});
 }
 
-App.start({file:'/super-admin',mod:'settings',crumb:'Platform',group:'System',title:'Platform Administration',
+App.start({file:'/super-admin',mod:'platform',crumb:'Platform',group:'Platform',title:'Platform Console',
  subtitle:'Parish registrations, verification, dioceses and deaneries across PARISH YETU.',
  actions:u.role==='super'?[{label:'New diocese',icon:'plus',fn:()=>dioceseForm()},{label:'New church',icon:'plus',cls:'p',fn:newChurch}]:[],
  render:host=>{
   currentHost=host;
-  if(u.role!=='super'){host.innerHTML='<div class="card"><div class="skel"><div style="max-width:420px">'+ic('lock')+'<h3 style="margin:10px 0 6px">Super admin only</h3><p style="color:var(--grey)">This page is reserved for the PARISH YETU platform administrator.</p></div></div></div>';return}
+  if(u.role!=='super'){host.innerHTML='<div class="card"><div class="skel"><div style="max-width:420px">'+ic('lock')+'<h3 style="margin:10px 0 6px">Platform owner only</h3><p style="color:var(--grey)">This console is reserved for the PARISH YETU platform owner.</p><a class="btn p mt" href="'+esc(u.landing)+'">Go to my workspace</a></div></div></div>';return}
+  if(!u.superAdmin)setTimeout(()=>{const ph=$('.phead');if(ph)ph.insertAdjacentHTML('beforebegin',`<div class="alert red" style="margin-bottom:16px">${ic('shield')}<span><b>Your account is missing the superAdmin claim</b>, so approvals, rejections, suspensions, emails and support log-ins will be refused. On your computer run <code>npm run admin -- make-super --email ${esc(u.email)}</code>, then sign out and sign in again.</span></div>`)},0);
   host.innerHTML='<div class="card"><div class="cb">Loading platform data…</div></div>';
   refresh();
   setTimeout(function(){ if(window.PageLoader) PageLoader.done(); }, 80);

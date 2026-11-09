@@ -235,3 +235,93 @@ test('migration: existing parishes get a unique address without losing data; re-
   assert.equal((await get('parishes/st-peters-kikuyu')).data.slug, 'st-peters-kikuyu');
   assert.equal((await get('parishes/' + adminA.pid)).data.slug, before, 'registered parish untouched');
 });
+
+/* ---------- platform owner (super admin) API ---------- */
+async function list(coll) {
+  const r = await fetch(FS + '/' + coll + '?pageSize=300', { headers: H('owner') });
+  return ((await r.json()).documents || []).map(d => ({ id: d.name.split('/').pop(), ...decodeFields(d.fields) }));
+}
+async function setClaimsFor(uid, c) {
+  const r = await fetch(AUTH + '/identitytoolkit.googleapis.com/v1/projects/' + P + '/accounts:update', { method: 'POST', headers: H('owner'), body: JSON.stringify({ localId: uid, customAttributes: JSON.stringify(c) }) });
+  assert.equal(r.status, 200);
+}
+let joseph, josephPid;
+
+test('platform: actions need the superAdmin claim', async () => {
+  joseph = await signUp('joseph@stjoseph.test');
+  const r = await api('/api/register-parish', reg({ parish: { name: 'St. Joseph Parish', town: 'Ruiru', email: 'office@stjoseph.test', priest: 'Fr. Peter Kamau' }, admin: { name: 'Joseph Njoroge' } }), joseph.token);
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  josephPid = r.body.parishId;
+  assert.equal((await get('parishes/' + josephPid)).data.priest, 'Fr. Peter Kamau', 'priest name captured at registration');
+  const noClaim = await api('/api/platform/parish-action', { parishId: josephPid, action: 'approve' }, superU.token);
+  assert.equal(noClaim.status, 403, 'role:super profile without the claim is refused');
+  assert.equal((await api('/api/platform/parish-action', { parishId: josephPid, action: 'approve' }, joseph.token)).status, 403, 'parish admin refused');
+  await setClaimsFor(superU.uid, { role: 'super', status: 'active', superAdmin: true });
+  await refresh(superU);
+});
+
+test('platform: request info -> approve sends emails, activates and audits atomically', async () => {
+  const bad = await api('/api/platform/parish-action', { parishId: josephPid, action: 'request-info' }, superU.token);
+  assert.equal(bad.status, 400, 'a message is required');
+  const ri = await api('/api/platform/parish-action', { parishId: josephPid, action: 'request-info', message: 'Please send a letter from the diocese.' }, superU.token);
+  assert.equal(ri.status, 200, JSON.stringify(ri.body));
+  assert.equal(ri.body.emailStatus, 'queued'); assert.deepEqual(ri.body.emailTo, ['joseph@stjoseph.test']);
+  let p = (await get('parishes/' + josephPid)).data;
+  assert.equal(p.infoRequested, true); assert.equal(p.verificationStatus, 'pending');
+
+  await patch('users/' + joseph.uid, { status: 'pending' }); // an account waiting for approval
+  const ap = await api('/api/platform/parish-action', { parishId: josephPid, action: 'approve' }, superU.token);
+  assert.equal(ap.status, 200, JSON.stringify(ap.body));
+  p = (await get('parishes/' + josephPid)).data;
+  assert.equal(p.status, 'active'); assert.equal(p.verificationStatus, 'verified'); assert.equal(p.infoRequested, false);
+  assert.equal((await get('churchDirectory/' + josephPid)).data.status, 'active');
+  assert.equal((await get('users/' + joseph.uid)).data.status, 'active', 'applicant account activated');
+  assert.equal((await claims(joseph.uid)).status, 'active');
+  const mails = (await list('mail')).filter(m => m.to.includes('joseph@stjoseph.test'));
+  assert.ok(mails.some(m => /approved/.test(m.message.subject)), 'welcome email queued');
+  assert.ok(mails.some(m => /More information/.test(m.message.subject)), 'info request email queued');
+  const aud = (await list('platformAudit')).filter(a => a.parishId === josephPid);
+  assert.ok(aud.some(a => a.action === 'parish.approve' && a.by === superU.uid && a.emailStatus === 'queued'));
+  assert.ok(aud.some(a => a.action === 'parish.request-info'));
+  assert.equal((await api('/api/platform/parish-action', { parishId: josephPid, action: 'approve' }, superU.token)).status, 409, 'cannot approve twice');
+  assert.equal((await get('mail/' + mails[0].id, joseph.token)).status, 403, 'mail queue is server-only');
+});
+
+test('platform: suspend blocks the parish and notifies; restore brings it back', async () => {
+  const s = await api('/api/platform/parish-action', { parishId: josephPid, action: 'suspend', message: 'Unpaid subscription.' }, superU.token);
+  assert.equal(s.status, 200, JSON.stringify(s.body));
+  assert.deepEqual(s.body.emailTo.sort(), ['joseph@stjoseph.test', 'office@stjoseph.test']);
+  await refresh(joseph);
+  assert.equal((await get('parishes/' + josephPid, joseph.token)).status, 403, 'staff blocked immediately');
+  assert.equal((await get('churchDirectory/' + josephPid)).data.status, 'suspended');
+  const r = await api('/api/platform/parish-action', { parishId: josephPid, action: 'restore' }, superU.token);
+  assert.equal(r.status, 200);
+  assert.equal((await get('parishes/' + josephPid, joseph.token)).status, 200);
+  assert.equal((await get('churchDirectory/' + josephPid)).data.status, 'active');
+});
+
+test('platform: reject, then restore puts the application back in the queue', async () => {
+  const x = await signUp('anne@stanne.test');
+  const r = await api('/api/register-parish', reg({ parish: { name: 'St. Anne Parish', town: 'Juja' }, admin: { name: 'Anne W' } }), x.token);
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  const rj = await api('/api/platform/parish-action', { parishId: r.body.parishId, action: 'reject', message: 'Not a Catholic parish.' }, superU.token);
+  assert.equal(rj.status, 200);
+  assert.equal((await get('parishes/' + r.body.parishId)).data.status, 'rejected');
+  assert.equal((await api('/api/platform/parish-action', { parishId: r.body.parishId, action: 'restore' }, superU.token)).status, 200);
+  const p = (await get('parishes/' + r.body.parishId)).data;
+  assert.equal(p.status, 'active'); assert.equal(p.verificationStatus, 'pending', 'back to review, not silently verified');
+});
+
+test('platform: support session signs in as parish staff, is audited', async () => {
+  assert.equal((await api('/api/platform/impersonate', { uid: joseph.uid }, superU.token)).status, 400, 'reason required');
+  assert.equal((await api('/api/platform/impersonate', { uid: superU.uid, reason: 'test' }, superU.token)).status, 403, 'never another platform account');
+  assert.equal((await api('/api/platform/impersonate', { uid: joseph.uid, reason: 'xyz' }, joseph.token)).status, 403);
+  const imp = await api('/api/platform/impersonate', { uid: joseph.uid, reason: 'Cannot see Mass schedule' }, superU.token);
+  assert.equal(imp.status, 200, JSON.stringify(imp.body));
+  const ex = await fetch(AUTH + '/identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=fake', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: imp.body.token, returnSecureToken: true }) });
+  const j = await ex.json(); assert.ok(j.idToken, JSON.stringify(j));
+  const claimsOf = t => JSON.parse(Buffer.from(t.split('.')[1], 'base64url').toString());
+  assert.equal(claimsOf(j.idToken).user_id, joseph.uid); assert.equal(claimsOf(j.idToken).impersonatedBy, superU.uid);
+  assert.equal((await get('parishes/' + josephPid, j.idToken)).status, 200, 'sees what the admin sees');
+  assert.ok((await list('platformAudit')).some(a => a.action === 'support.impersonation-started' && a.targetUid === joseph.uid && a.reason === 'Cannot see Mass schedule'));
+});

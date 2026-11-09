@@ -165,14 +165,23 @@ try {
 
   console.log('E2E: platform Super Admin');
   const su = await (await fetch('http://127.0.0.1:9199/identitytoolkit.googleapis.com/v1/accounts:signUp?key=fake', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'super@parishyetu.test', password: 'Passw0rd!long', returnSecureToken: true }) })).json();
-  await put('users/' + su.localId, { name: 'Platform Admin', email: 'super@parishyetu.test', role: 'super', status: 'active', parishId: '', title: 'Super Admin' });
-  await go('/login' + EMU);
+  // Only the superAdmin claim (as set by `npm run admin -- make-super`): the profile document is created on first sign-in.
+  await fetch('http://127.0.0.1:9199/identitytoolkit.googleapis.com/v1/projects/' + P + '/accounts:update', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer owner' }, body: JSON.stringify({ localId: su.localId, customAttributes: JSON.stringify({ role: 'super', status: 'active', superAdmin: true }) }) });
+  await go('/admin' + EMU);
+  await waitFor(`document.body.innerText.includes('Staff sign in')`, 'staff login');
+  assert.ok(!(await js(`/platform/i.test(document.body.innerText)`)), 'the staff login never mentions the platform admin');
+  step('staff sign-in page has no Platform Administrator option');
+  await go('/super-admin' + EMU);
+  await waitFor(`location.pathname.endsWith('/super-admin/login')`, 'signed-out console redirects to its own login');
+  await waitFor(`!!document.getElementById('em')`, 'platform login form');
   await waitFor(`!!document.getElementById('em')`, 'login form');
   await js(`document.getElementById('em').value='super@parishyetu.test';document.getElementById('pw').value='Passw0rd!long';document.getElementById('go').click();true`);
   await waitFor(`location.pathname.endsWith('/super-admin')`, 'redirect to super admin');
-  await waitFor(`document.body.innerText.includes('Pending registrations')`, 'super admin overview');
-  step('super admin signs in through the login page and lands on Platform Administration');
-  await go('/super-admin#Churches');
+  await waitFor(`document.body.innerText.includes('Pending applications') && document.body.innerText.includes('Suspended parishes')`, 'super admin overview');
+  assert.ok(!(await js(`document.body.innerText.includes('missing the superAdmin claim')`)), 'claim recognised');
+  assert.equal((await get('users/' + su.localId)).role, 'super', 'profile self-created from the claim');
+  step('super admin signs in at /super-admin/login (claim only, no profile) and lands on the Platform Console');
+  await go('/super-admin#Parishes');
   await waitFor(`[...document.querySelectorAll('table.t tbody tr')].some(r=>r.innerText.includes("St. Mary's Parish, Thika"))`, 'churches table');
   assert.ok(await js(`document.body.innerText.includes('Suspended')`));
   await js(`[...document.querySelectorAll('table.t tbody tr')].find(r=>r.innerText.includes("St. Mary's Parish, Thika")).click();true`);
@@ -183,7 +192,7 @@ try {
   for (let i = 0; i < 40; i++) { if ((await get('parishes/st-marys-parish-thika')).status === 'active') break; await sleep(250); }
   assert.equal((await get('parishes/st-marys-parish-thika')).status, 'active');
   assert.equal((await get('churchDirectory/st-marys-parish-thika')).status, 'active', 'verified parish returns to the public directory');
-  step('super admin restores the parish from the Churches table (parish + directory updated)');
+  step('super admin restores the parish from the Parishes table via the platform API (parish + directory updated)');
   await go('/super-admin#Dioceses');
   await waitFor(`document.body.innerText.includes('Archdiocese of Nairobi') && document.body.innerText.includes("Diocese of Murang'a")`, 'dioceses tab');
   await go('/super-admin#Platform%20Audit');

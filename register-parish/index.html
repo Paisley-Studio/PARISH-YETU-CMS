@@ -228,6 +228,7 @@ const R=[
    ${inp('address','Physical address',{w:1,ph:'Street, landmark or P.O. Box',hint:'Where visitors can find the church. Optional.'})}
    ${inp('phone','Parish telephone',{req:true,type:'tel',ac:'tel',ph:'+254 7xx xxx xxx'})}
    ${inp('email','Official parish email',{type:'email',ac:'email',ph:'office@parish.org',hint:'Optional, if the parish has one.'})}
+   ${inp('priest','Parish priest',{w:1,ph:'e.g. Fr. John Mwangi',hint:'Name of the current parish priest. Optional, but it speeds up verification.'})}
   </div>
   <div class="urlprev" id="urlprev" ${slugPreview()?'':'hidden'}>Your parish website will be at <b id="urlv">parishyetu.church/${esc(slugPreview())}</b><small>Final address is confirmed when you submit. If it is already taken, a short code is added.</small></div>
   <datalist id="kc">${KENYA_COUNTIES.map(c=>`<option value="${esc(c)}">`).join('')}</datalist></div>`},
@@ -285,7 +286,7 @@ const R=[
   const sec=(i,t,rows)=>`<section class="sec"><header><b>${esc(t)}</b><button type="button" class="btn sm" data-go="${i}">Edit</button></header><dl>${rows.map(r=>row(r[0],r[1])).join('')||'<dd style="color:var(--grey)">Nothing added yet</dd>'}</dl></section>`;
   return `<div class="kicker">Step 5 of 5</div><h2>Review and submit</h2><p class="sub">Check that everything is correct. Use <b>Edit</b> to change any section — nothing you have entered will be lost.</p>
   <div class="rv">
-   ${sec(0,'Parish identity',[['Official name',F.name],['Type',F.parishType],['Location',[F.town,F.county,country].filter(Boolean).join(', ')],['Address',F.address],['Telephone',F.phone],['Email',F.email],['Web address','parishyetu.church/'+slugPreview()+' (confirmed on submission)']])}
+   ${sec(0,'Parish identity',[['Official name',F.name],['Type',F.parishType],['Location',[F.town,F.county,country].filter(Boolean).join(', ')],['Address',F.address],['Telephone',F.phone],['Email',F.email],['Parish priest',F.priest],['Web address','parishyetu.church/'+slugPreview()+' (confirmed on submission)']])}
    ${sec(1,'Church hierarchy',hier)}
    ${sec(2,'Parish administrator',[['Name',F.aName],['Email',signedIn?signedIn.email:F.aEmail],['Telephone',F.aPhone]])}
    ${sec(3,'Branding',[['Logo',logoFile?logoFile.name:''],['Motto',F.motto],['Patron',F.patron],['Website',F.website],['Introduction',F.about&&F.about.length>140?F.about.slice(0,140)+'…':F.about]])}
@@ -358,7 +359,7 @@ function wire(){
 function payload(){
  const country=F.country==='Other'?(F.countryOther||'').trim():F.country;
  return {
-  parish:{name:F.name,parishType:F.parishType,country,county:F.county||'',town:F.town,address:F.address||'',phone:F.phone,email:F.email||''},
+  parish:{name:F.name,parishType:F.parishType,country,county:F.county||'',town:F.town,address:F.address||'',phone:F.phone,email:F.email||'',priest:F.priest||''},
   hierarchy:F.propose?{proposal:{name:F.pName,kind:F.pKind,archdiocese:F.pArch||'',country:F.pCountry,location:F.pLocation||'',bishop:F.pBishop||'',deanery:F.pDeanery||'',notes:F.pNotes||''}}
    :{dioceseId:F.dioceseNA?'':F.dioceseId||'',dioceseNotApplicable:!!F.dioceseNA,
      deaneryId:/^__/.test(F.deaneryChoice||'')?'':F.deaneryChoice||'',deaneryName:F.deaneryChoice==='__other'?F.deaneryOther||'':'',deaneryNotApplicable:F.deaneryChoice==='__na'},
@@ -367,7 +368,7 @@ function payload(){
   agree:!!F.agree
  };
 }
-const FIELD_STEP={name:0,parishType:0,country:0,county:0,town:0,address:0,phone:0,email:0,dioceseId:1,deaneryId:1,deaneryOther:1,pName:1,pCountry:1,pArch:1,pLocation:1,pBishop:1,pDeanery:1,aName:2,aEmail:2,aPhone:2,pw:2,motto:3,about:3,patron:3,website:3,publicEmail:3,publicPhone:3,agree:4};
+const FIELD_STEP={name:0,parishType:0,country:0,county:0,town:0,address:0,priest:0,phone:0,email:0,dioceseId:1,deaneryId:1,deaneryOther:1,pName:1,pCountry:1,pArch:1,pLocation:1,pBishop:1,pDeanery:1,aName:2,aEmail:2,aPhone:2,pw:2,motto:3,about:3,patron:3,website:3,publicEmail:3,publicPhone:3,agree:4};
 
 async function ensureAccount(){
  if(FB.auth.currentUser)return FB.auth.currentUser;

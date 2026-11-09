@@ -70,6 +70,30 @@ export async function verifyIdToken(idToken, env) {
   return payload;
 }
 
+/* ---------- service-account JWT signing ---------- */
+async function signServiceJwt(env, payload) {
+  if (!env.FIREBASE_CLIENT_EMAIL || !env.FIREBASE_PRIVATE_KEY) throw new Error('Backend credentials are not configured');
+  const pem = String(env.FIREBASE_PRIVATE_KEY).replace(/-----[^-]+-----/g, '').replace(/[^A-Za-z0-9+/=]/g, '');
+  const der = Uint8Array.from(atob(pem), c => c.charCodeAt(0));
+  const key = await crypto.subtle.importKey('pkcs8', der, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['sign']);
+  const unsigned = strToB64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' })) + '.' + strToB64url(JSON.stringify(payload));
+  const sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', key, new TextEncoder().encode(unsigned));
+  return unsigned + '.' + bytesToB64url(sig);
+}
+
+/* Firebase custom token (the same format the Admin SDK's createCustomToken produces). The browser
+ * exchanges it with signInWithCustomToken. Valid for exchange for 5 minutes only. */
+export async function createCustomToken(env, uid, claims) {
+  const now = Math.floor(Date.now() / 1000);
+  const payload = {
+    iss: env.FIREBASE_CLIENT_EMAIL || 'firebase-auth-emulator@example.com', sub: env.FIREBASE_CLIENT_EMAIL || 'firebase-auth-emulator@example.com',
+    aud: 'https://identitytoolkit.googleapis.com/google.identity.identitytoolkit.v1.IdentityToolkit',
+    iat: now, exp: now + 300, uid, claims: claims || {},
+  };
+  if (emulated(env)) return strToB64url(JSON.stringify({ alg: 'none', typ: 'JWT' })) + '.' + strToB64url(JSON.stringify(payload)) + '.';
+  return signServiceJwt(env, payload);
+}
+
 /* ---------- service-account access token ---------- */
 const SCOPES = 'https://www.googleapis.com/auth/datastore https://www.googleapis.com/auth/identitytoolkit';
 let saToken = null, saExpiry = 0;
@@ -77,16 +101,10 @@ export async function accessToken(env) {
   if (emulated(env)) return 'owner'; // emulators accept "owner" as an admin credential
   const now = Math.floor(Date.now() / 1000);
   if (saToken && now < saExpiry - 120) return saToken;
-  if (!env.FIREBASE_CLIENT_EMAIL || !env.FIREBASE_PRIVATE_KEY) throw new Error('Backend credentials are not configured');
-  const pem = String(env.FIREBASE_PRIVATE_KEY).replace(/-----[^-]+-----/g, '').replace(/[^A-Za-z0-9+/=]/g, '');
-  const der = Uint8Array.from(atob(pem), c => c.charCodeAt(0));
-  const key = await crypto.subtle.importKey('pkcs8', der, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['sign']);
-  const unsigned = strToB64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' })) + '.' +
-    strToB64url(JSON.stringify({ iss: env.FIREBASE_CLIENT_EMAIL, scope: SCOPES, aud: 'https://oauth2.googleapis.com/token', iat: now, exp: now + 3600 }));
-  const sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', key, new TextEncoder().encode(unsigned));
+  const assertion = await signServiceJwt(env, { iss: env.FIREBASE_CLIENT_EMAIL, scope: SCOPES, aud: 'https://oauth2.googleapis.com/token', iat: now, exp: now + 3600 });
   const r = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: 'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=' + unsigned + '.' + bytesToB64url(sig),
+    body: 'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=' + assertion,
   });
   const j = await r.json().catch(() => ({}));
   if (!r.ok || !j.access_token) throw new Error('Google token exchange failed (' + r.status + ')');

@@ -60,7 +60,9 @@ const CROSS=(s,c)=>`<svg width="${s||24}" height="${s||24}" viewBox="0 0 24 24" 
 const ALLMODS=['dash','portal','diocese','parishioners','families','sacraments','masses','pastoral','scc','ministries','events','sermons','catechesis','finance','accounting','assets','projects','documents','comms','reports','governance','settings'];
 const FLAGS=['pii','giving','private','write'];
 const ROLES0=[
- {key:'super',label:'Super Admin',scope:'Platform',landing:'/super-admin',desc:'Platform administrator with full access across every level.',perms:[...ALLMODS.filter(m=>m!=='portal'),...FLAGS]},
+ /* The platform owner manages churches on the platform (applications, suspension, dioceses), not a
+    church's internal records, so the only module it has is the platform console. */
+ {key:'super',label:'Super Admin',scope:'Platform',landing:'/super-admin',desc:'Platform owner: approves, suspends and supports the parishes on PARISH YETU.',perms:['platform']},
  {key:'diocese',label:'Diocesan Administrator',scope:'Diocese',landing:'/diocese',desc:'Consolidated view of deaneries, parishes, reports and submissions.',perms:['diocese','reports','governance','settings','giving']},
  {key:'deanery',label:'Deanery Administrator',scope:'Deanery',landing:'/diocese',desc:'Oversees parishes within the deanery and reviews submissions.',perms:['diocese','reports','governance']},
  {key:'priest',label:'Parish Priest',scope:'Parish',landing:'/dashboard',desc:'Pastoral leader with full parish visibility including confidential care.',perms:['dash','parishioners','families','sacraments','masses','pastoral','scc','ministries','events','sermons','catechesis','finance','assets','projects','documents','comms','reports','governance','pii','giving','private','write']},
@@ -94,12 +96,14 @@ const Ctx={parishId:null,parishes:[],profile:null};
 
 /* ---------- boot sequence ---------- */
 const Boot={error:null,notice:null,
- guard(fn){return this.ready.then(()=>{if(this.error){this.showError(this.error);return}if(!Auth.user()){location.replace('/login');return}fn()})},
+ /* Pages may set window.PARISHOS_LOGIN (e.g. the platform console uses /super-admin/login). */
+ loginPath(){return window.PARISHOS_LOGIN||'/login'},
+ guard(fn){return this.ready.then(()=>{if(this.error){this.showError(this.error);return}if(!Auth.user()){location.replace(this.loginPath());return}fn()})},
  showError(e){
   const msg=Boot.explain(e);
   document.body.innerHTML=`<div style="min-height:100vh;display:grid;place-items:center;background:#F7F3E8;font-family:Quicksand,system-ui,sans-serif;padding:24px"><div style="max-width:520px;background:#fff;border:1px solid #E8E5DD;border-radius:12px;padding:28px;box-shadow:0 4px 14px rgba(17,19,21,.06)"><h2 style="color:#6E1725;margin-bottom:8px">${esc(msg.title)}</h2><p style="color:#5d6065;line-height:1.6">${esc(msg.body)}</p><div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap"><button id="bt-retry" class="btn p">Try again</button><button id="bt-out" class="btn">Sign out</button></div></div></div>`;
   document.getElementById('bt-retry').onclick=()=>location.reload();
-  document.getElementById('bt-out').onclick=()=>Auth.logout().then(()=>location.href='/login');
+  document.getElementById('bt-out').onclick=()=>Auth.logout().then(()=>location.href=Boot.loginPath());
   console.error('PARISH YETU could not start:',e);
  },
  explain(e){
@@ -393,12 +397,21 @@ const Auth={_u:null,_fu:null,_registering:false,
   return{id:fu.uid,name:p.name,email:p.email,role:p.role,roleLabel:r.label,scope:r.scope,organization:p.organization||'',title:p.title||r.label,avatar:initials(p.name),permissions:r.perms,personId:p.personId||'',sccId:p.sccId||'',landing:r.landing,parishId:p.parishId||'',dioceseId:p.dioceseId||'',deanery:p.deanery||''};
  },
  async resolve(fu){
-  this._fu=fu;let snap=await FB.db.doc('users/'+fu.uid).get();
-  if(!snap.exists&&!this._registering){const pend=Members.pending(fu.uid);if(pend){try{await Members.completeProfile(fu,pend)}catch(e){console.warn('Registration recovery failed',e)}snap=await FB.db.doc('users/'+fu.uid).get()}}
+  this._fu=fu;
+  /* The superAdmin custom claim (set only by scripts/admin.js make-super) is the source of truth for
+     platform owners. It is read from the signed token, so the browser cannot forge it. */
+  let claims={};try{claims=(await fu.getIdTokenResult()).claims||{}}catch(e){console.warn('Could not read token claims',e)}
+  const superClaim=claims.superAdmin===true&&!claims.impersonatedBy;
+  const uref=FB.db.doc('users/'+fu.uid);let snap=await uref.get();
+  if(!snap.exists&&superClaim){ // claim set but no profile document yet: create it (rules allow this for superAdmin)
+   try{await uref.set({name:fu.displayName||String(fu.email||'').split('@')[0]||'Platform Administrator',email:String(fu.email||'').toLowerCase(),role:'super',status:'active',title:'Super Admin',organization:'Platform',parishId:'',personId:fu.uid,createdAt:ts()});snap=await uref.get()}catch(e){console.warn('Could not create the platform profile',e)}
+  }
+  if(!snap.exists&&!this._registering){const pend=Members.pending(fu.uid);if(pend){try{await Members.completeProfile(fu,pend)}catch(e){console.warn('Registration recovery failed',e)}snap=await uref.get()}}
   if(!snap.exists){this._u=null;Boot.notice='no-profile';return}
-  const p=snap.data();
+  let p=snap.data();
   if(p.status!=='active'){this._u=null;Boot.notice='suspended';await FB.auth.signOut();return}
-  this._u=this.session(p,fu);Ctx.profile=p;
+  if(superClaim&&p.role!=='super')p={...p,role:'super'};
+  this._u=this.session(p,fu);this._u.superAdmin=superClaim;this._u.impersonatedBy=String(claims.impersonatedBy||'');Ctx.profile=p;
  },
  async login(email,pw,remember){
   await FB.auth.setPersistence(remember?firebase.auth.Auth.Persistence.LOCAL:firebase.auth.Auth.Persistence.SESSION);
@@ -616,6 +629,7 @@ const Profile={open(id){const p=DB.get('parishioners',id);if(!p)return UI.toast(
  $$('[data-cert]',d).forEach(b=>b.onclick=()=>Cert.preview(DB.get('sacraments',b.dataset.cert)))}};
 
 const NAV=[
+ {g:'Platform',i:'shield',items:[['Overview','/super-admin#Overview','platform'],['Applications','/super-admin#Applications','platform'],['Parishes','/super-admin#Parishes','platform'],['Dioceses','/super-admin#Dioceses','platform'],['Diocese Proposals','/super-admin#Diocese Proposals','platform'],['Platform Audit','/super-admin#Platform Audit','platform']]},
  {g:'Overview',i:'dash',items:[['Dashboard','/dashboard','dash'],['Parish Website','/website','dash'],['Diocesan Overview','/diocese','diocese']]},
  {g:'People',i:'people',items:[['Parishioners','/parishioners','parishioners'],['Families','/families','families'],['SCCs','/scc','scc'],['Ministries','/ministries','ministries'],['Volunteers','/ministries#Volunteers','ministries']]},
  {g:'Liturgy',i:'liturgy',items:[['Masses','/masses','masses'],['Mass Intentions','/masses#Intentions','masses'],['Sacraments','/sacraments','sacraments'],['Sermons','/sermons','sermons'],['Liturgical Calendar','/sermons#Liturgical Calendar','sermons']]},
@@ -629,7 +643,7 @@ const NAV=[
 ];
 const PORTAL_NAV=[{g:'My Parish',i:'dash',items:[['My Portal','/dashboard','portal'],['My Family','/dashboard#My Family','portal'],['Mass Schedule','/dashboard#Mass Schedule','portal'],['Giving','/dashboard#Giving','portal'],['Events','/dashboard#Events','portal'],['Sermons','/dashboard#Sermons','portal'],['Announcements','/dashboard#Announcements','portal'],['Sacraments','/dashboard#Sacraments','portal'],['Requests','/dashboard#Requests','portal'],['My Parish Website','/website','portal']]}];
 const App={
- start(cfg){const u=Auth.user();DB.load();if(!u){location.replace('/login');return}
+ start(cfg){const u=Auth.user();DB.load();if(!u){location.replace(Boot.loginPath());return}
   const file=cfg.file,hash=()=>decodeURIComponent(location.hash.slice(1));const portal=u.role==='parishioner';const nav=(portal?PORTAL_NAV:NAV).map(g=>({...g,items:g.items.filter(it=>can(it[2]))})).filter(g=>g.items.length);
   const activeFor=()=>{const same=nav.flatMap(g=>g.items).filter(i=>i[1].split('#')[0]===file);const h=hash().split('&')[0];return same.find(i=>i[1].includes('#')&&decodeURIComponent(i[1].split('#')[1])===h)||same.find(i=>!i[1].includes('#'))||same[0]};
   const act=activeFor();
@@ -638,6 +652,7 @@ const App={
   const canExit=(Ctx.parishes.length&&Ctx.parishId&&['super','diocese','deanery'].includes(u.role));
   document.body.innerHTML=`<div class="app" id="app"><aside class="side" id="side" aria-label="Main navigation"><div class="brand"><span class="mark">${CROSS(26,'#6E1725')}</span><div><b>PARISH YETU</b><span>${esc(org)}</span></div></div><nav class="nav" id="nav"></nav><div class="sidefoot"><b style="color:#fff">${esc(u.roleLabel)}</b><br>${esc(u.scope)} scope</div></aside><div class="main"><header class="top"><button class="iconbtn" id="burger" aria-label="Toggle navigation">${ic('menu')}</button><div class="crumb">Parish Yetu / ${esc(grp.g)} / <b id="crumbp">${esc(cfg.crumb||cfg.title)}</b></div><div class="gsearch">${ic('search')}<input id="gs" placeholder="Search pages and people…" aria-label="Global search" autocomplete="off"><div class="gres" id="gres"></div></div>${canExit?`<button class="btn" id="exitp" style="margin-right:6px">${ic('out')}Exit church</button>`:''}<span class="pill org sp2"><i></i>${esc(org)}</span>${Site.slug()?`<button class="pill site" id="sitepill" title="${esc(Site.display())}" aria-label="My parish website: ${esc(Site.display())}">${ic('globe')}<span>Parish website</span></button>`:''}<button class="iconbtn" id="bell" aria-label="Notifications">${ic('bell')}<span class="dot" id="bdot"></span></button><button class="user" id="usr" aria-label="Account menu"><span class="av b">${esc(u.avatar)}</span><div><b>${esc(u.name.split(' ').slice(0,2).join(' '))}</b><small>${esc(u.roleLabel)}</small></div></button></header><main class="content" id="content"><div class="phead"><div><h1 id="ptitle"></h1><p id="psub"></p></div><div class="pactions" id="pact"></div></div><div id="view"></div></main><footer class="foot"><span>${CROSS(11,'#C9A227')} Parish Yetu · Catholic parish management</span><span class="sp">Signed in as ${esc(u.roleLabel)} · ${esc(u.name)}</span></footer></div><div class="scrim" id="scrim"></div></div>`;
   const app=$('#app');
+  if(u.impersonatedBy){const bn=document.createElement('div');bn.setAttribute('role','alert');bn.style.cssText='background:#B3261E;color:#fff;padding:9px 18px;font-weight:700;display:flex;gap:12px;align-items:center;flex-wrap:wrap';bn.innerHTML=`${ic('shield')}<span>Support session: you are signed in as ${esc(u.name)} (${esc(u.email)}). Everything you do here is done as this person and is attributed to them.</span><button class="btn sm" id="endimp" style="margin-left:auto;color:var(--obs)">End support session</button>`;$('.main').prepend(bn);$('#endimp').onclick=()=>Auth.logout().then(()=>location.href='/super-admin/login')}
   $('#nav').innerHTML=nav.map(g=>`<div class="ng ${g===grp?'open has-active':''}"><button aria-expanded="${g===grp}">${ic(g.i)}<span>${g.g}</span>${ic('chev','chev')}</button><div class="items">${g.items.map(it=>`<a href="${it[1].replace(/ /g,'%20')}" class="${it===act?'active':''}" data-h="${it[1]}">${it[0]}</a>`).join('')}</div></div>`).join('');
   $$('.ng>button').forEach(b=>b.onclick=()=>{if(app.classList.contains('collapsed')&&innerWidth>900){app.classList.remove('collapsed');localStorage.setItem('parishos.collapsed','0')}const g=b.parentElement;g.classList.toggle('open');b.setAttribute('aria-expanded',g.classList.contains('open'))});
   window.addEventListener('hashchange',()=>{const a=activeFor();$$('#nav a').forEach(x=>x.classList.toggle('active',x.dataset.h===(a&&a[1])))});
@@ -655,15 +670,15 @@ const App={
    if(['super','diocese','deanery'].includes(u.role)&&Ctx.parishes.length>1)menuItems.push({label:'Switch church',fn:()=>Ctx.switcher()});
    if(Ctx.parishId&&['super','diocese','deanery'].includes(u.role))menuItems.push({label:'Exit church',fn:()=>Ctx.exitParish()});
    menuItems.push({label:'Back to homepage',fn:()=>location.href='/home'});
-   menuItems.push({label:'Sign out',danger:true,fn:()=>{Auth.logout().then(()=>{location.href='/login'})}});
+   menuItems.push({label:'Sign out',danger:true,fn:()=>{Auth.logout().then(()=>{location.href=(u.role==='super'||u.impersonatedBy)?'/super-admin/login':Boot.loginPath()})}});
    UI.menu($('#usr'),menuItems)};
   const gs=$('#gs'),gr=$('#gres');gs.oninput=()=>{const q=gs.value.trim().toLowerCase();if(q.length<2){gr.style.display='none';return}const pg=nav.flatMap(g=>g.items.map(i=>({l:i[0],h:i[1],s:g.g}))).filter(i=>i.l.toLowerCase().includes(q)).slice(0,5);const pp=can('pii')||can('parishioners')?DB.c('parishioners').filter(p=>p.name.toLowerCase().includes(q)).slice(0,5).map(p=>({l:p.name,h:'/parishioners#open='+p.id,s:'Parishioner'})):[];const r=[...pg,...pp];gr.innerHTML=r.length?r.map(i=>`<a href="${i.h}">${esc(i.l)} <span class="mini">· ${esc(i.s)}</span></a>`).join(''):'<a href="#" style="color:var(--grey)">No matches</a>';gr.style.display='block'};document.addEventListener('click',e=>{if(!e.target.closest('.gsearch'))gr.style.display='none'});
   const view=$('#view');
   {
    const mins=+DB.load().settings.sessionMinutes||30;let idle;
-   const arm=()=>{clearTimeout(idle);idle=setTimeout(()=>{Auth.logout().then(()=>{sessionStorage.setItem('parishos.notice','You were signed out after a period of inactivity.');location.href='/login'})},mins*60000)};
+   const arm=()=>{clearTimeout(idle);idle=setTimeout(()=>{Auth.logout().then(()=>{sessionStorage.setItem('parishos.notice','You were signed out after a period of inactivity.');location.href=(u.role==='super'||u.impersonatedBy)?'/super-admin/login':Boot.loginPath()})},mins*60000)};
    ['click','keydown','pointerdown'].forEach(ev=>document.addEventListener(ev,arm,{passive:true}));arm();
-   if(!Ctx.parishId&&u.role!=='parishioner'){const ph=$('.phead');if(ph)ph.insertAdjacentHTML('beforebegin',`<div class="alert" style="margin-bottom:16px">${ic('shield')}<span><b>No church is selected.</b> ${u.role==='super'?'Create the first diocese and church under Settings → Churches, or enter a church from the list.':'No churches are linked to your account yet. Contact the platform administrator.'}</span></div>`)}
+   if(!Ctx.parishId&&u.role!=='parishioner'&&u.role!=='super'){const ph=$('.phead');if(ph)ph.insertAdjacentHTML('beforebegin',`<div class="alert" style="margin-bottom:16px">${ic('shield')}<span><b>No church is selected.</b> ${u.role==='super'?'Create the first diocese and church under Settings → Churches, or enter a church from the list.':'No churches are linked to your account yet. Contact the platform administrator.'}</span></div>`)}
   }
   if(![].concat(cfg.mod).some(can)){view.innerHTML=`<div class="card"><div class="skel"><div style="max-width:420px">${ic('lock')}<h3 style="margin:10px 0 6px">Access restricted</h3><p style="color:var(--grey)">Your role (${esc(u.roleLabel)}) does not include the ${esc(cfg.title)} module. Open your workspace to continue.</p><a class="btn p mt" href="${u.landing}">Go to my dashboard</a></div></div></div>`;return}
   try{cfg.render(view,u)}catch(err){console.error(err);view.innerHTML=`<div class="alert red">This view could not be displayed: ${esc(err.message)}</div>`}

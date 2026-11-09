@@ -23,15 +23,19 @@ parishes; each parish has its own administration environment, records, members, 
   (never `super`). Progress is tracked in `registrations/{uid}`; submitting again resumes safely.
 * **Verification** – a self-registered parish can start working immediately, but stays `verificationStatus: pending`
   (hidden from the public directory, no member sign-ups, website not public) until the platform administrator approves it
-  in *Platform Administration → Registrations*.
+  in *Platform Console → Applications*.
 * **Parish websites** – `/parish-home` renders every parish at `/{slug}` (Hosting rewrite `/*`; real files and clean URLs
   always win). Content comes only from `parishes/{id}/public/site` once published; staff edit a draft in **Parish Website**
   (`/website`), preview it and publish. Slugs never change when a name changes; a changed slug keeps redirecting.
 * **Website link everywhere** – every parish dashboard (staff and member portal) shows the parish's own website card, and
   the app header has a *Parish website* shortcut (open, copy, share). The link always comes from the user's own parish record.
-* **Platform Administration** (`/super-admin`) – registrations, approve/reject/suspend/restore, dioceses
-  (create, edit, activate/deactivate, deaneries), diocese proposals, deanery affiliation requests, reassignment, web-address
-  changes, diocesan administrators, and an append-only platform audit.
+* **Platform Console** (`/super-admin`, signs in at `/super-admin/login`) – for the platform owner only. It manages the
+  churches on the platform, not their internal records: review applications (approve / request more information / reject),
+  suspend and restore parishes, dioceses and deaneries, diocese proposals, web addresses, and support log-in as a parish's
+  staff. Approve / reject / request-info / suspend / restore and support log-ins run in the Worker
+  (`POST /api/platform/*`), which requires the `superAdmin` custom claim, writes the change and its `platformAudit` entry in
+  one commit, and emails the parish administrator (see *Platform emails* below). The staff sign-in at `/admin` is for parish
+  and diocesan staff only.
 
 ## What it does
 
@@ -83,7 +87,13 @@ Roles live in `users/{uid}` and can only be changed by the platform administrato
    export GOOGLE_APPLICATION_CREDENTIALS=/secure/path/serviceAccountKey.json
    node scripts/admin.js make-super --email you@example.org --name "Your Name" --password "a long initial password"
    ```
-   There are no default accounts and no public way to become an administrator. Sign in and change the password.
+   This sets the `superAdmin: true` custom claim. Sign in at **`/super-admin/login`** (not `/admin` or `/login`) and change
+   the password. If you created the account before this claim existed, run `make-super` again and sign in again.
+   There are no default accounts and no public way to become an administrator. `revoke-super --email …` removes access.
+
+   **Platform emails** (approval, rejection, request for information, suspension, restore) are written by the Worker to
+   the Firestore `mail` collection and delivered over SMTP by the *Trigger Email from Firestore* Firebase Extension
+   (collection `mail`; sender and SMTP settings are configured in the extension).
 8. **Configure and deploy the Cloudflare Worker** (backend API + R2) – see *Cloudflare Worker* below.
 9. **Create the first diocese and church** (parishes can also register themselves at `/register-parish`) – either sign in as the platform administrator and use *Settings → Churches*, or:
    ```
@@ -164,7 +174,7 @@ It never renames a parish, changes an existing slug, or touches nested records.
 /register-parish              church self-registration wizard
 /parish-home                  public parish website shell for /{slug}
 /website                   Parish Profile & Website editor (and member view of the link)
-/super-admin               Platform Administration
+/super-admin               Platform Console (login: /super-admin/login)
 js/slug.js                        slug / duplicate-key rules (copied to r2-worker/src/slug.js: npm run sync-slug)
 r2-worker/                        Cloudflare Worker: backend API + R2
 tests/                            emulator integration tests and browser end-to-end test

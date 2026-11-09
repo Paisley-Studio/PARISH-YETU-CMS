@@ -138,11 +138,11 @@ body{background:var(--ivory)}
   </svg>
   <div class="hero">
     <h1>Staff &amp; office sign in.</h1>
-    <p>Choose the office you serve, then sign in. The platform verifies your account against your chosen office and takes you to the right workspace.</p>
+    <p>Choose the office you serve, then sign in. Parish Yetu verifies your account against your chosen office and takes you to the right workspace.</p>
     <ul>
       <li><i></i>Parish priest &amp; administrator workspace</li>
       <li><i></i>Secretary, finance &amp; SCC leader tools</li>
-      <li><i></i>Diocesan and platform administration</li>
+      <li><i></i>Deanery &amp; diocesan administration</li>
     </ul>
   </div>
  </section>
@@ -217,8 +217,7 @@ body{background:var(--ivory)}
     { key: 'finance',   label: 'Finance Officer',         desc: 'Collections, budgets, accounting.',          icon: 'steward' },
     { key: 'scc',       label: 'SCC Leader',              desc: 'Small Christian Community leader.',          icon: 'people'  },
     { key: 'deanery',   label: 'Deanery Administrator',   desc: 'Oversees parishes in a deanery.',            icon: 'report'  },
-    { key: 'diocese',   label: 'Diocesan Administrator',  desc: 'Consolidated diocesan view.',                icon: 'report'  },
-    { key: 'super',     label: 'Platform Administrator',  desc: 'Platform owner with full access.',           icon: 'shield'  }
+    { key: 'diocese',   label: 'Diocesan Administrator',  desc: 'Consolidated diocesan view.',                icon: 'report'  }
   ];
 
   let chosen = null;
@@ -266,7 +265,7 @@ body{background:var(--ivory)}
   if (notice) { sessionStorage.removeItem('parishos.notice'); show(notice, 'ok'); }
 
   if (Boot.notice === 'suspended') show(AUTH_MSG['parishos/suspended']);
-  if (Boot.notice === 'no-profile') show('This account has no staff profile. Contact the platform administrator.', 'warn');
+  if (Boot.notice === 'no-profile') show('This account has no staff profile. Ask your parish priest or administrator to add you.', 'warn');
 
   if (window.PageLoader) PageLoader.done();
 
@@ -283,14 +282,8 @@ body{background:var(--ivory)}
     try {
       const s = await Auth.login(em, pw, rm);
 
-      // --- SUPER ADMIN FIX ---
-      // If they selected Platform Admin, skip the parish check and let them in.
-      if (chosen.key === 'super') {
-        UI.toast('Welcome, Platform Administrator');
-        setTimeout(() => location.href = '/super-admin', 450);
-        return;
-      }
-      // -----------------------
+      // Not a parish / diocesan staff account: go to that account's own workspace, no questions asked.
+      if (s.role === 'super') { location.href = s.landing; return; }
 
       if (s.role === 'parishioner') {
         await FB.auth.signOut();
@@ -312,7 +305,7 @@ body{background:var(--ivory)}
       setTimeout(() => location.href = s.landing, 450);
     } catch (x) {
       if (x.code === 'parishos/no-profile') {
-        show('This account is not linked to a parish yet. Contact the platform administrator.', 'warn');
+        show('This account is not linked to a parish yet. Ask your parish priest or administrator to add you.', 'warn');
         b.disabled = false; b.textContent = 'Sign in as staff';
         return;
       }

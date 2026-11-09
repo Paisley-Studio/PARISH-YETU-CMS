@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Platform console · Parish Yetu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='28' fill='%23182A3A'/%3E%3Ctext x='64' y='86' text-anchor='middle' font-family='Quicksand,Segoe UI,system-ui,sans-serif' font-weight='900' font-size='64' letter-spacing='-2' fill='%23FFFFFF'%3EP%3Ctspan fill='%23C9A227'%3EY%3C/tspan%3E%3C/text%3E%3C/svg%3E">
+<style>
+:root{--bur:#6E1725;--gold:#C9A227;--ivory:#F7F3E8;--obs:#111315;--navy:#182A3A;--line:#E8E5DD;--grey:#8B8A84;--ink:#23262A;--green:#1E6B4F;--red:#B3261E;--red-t:#F8E3E1;--green-t:#E1EFE9;--gold-t:#F6EFD3;--sh2:0 12px 40px rgba(17,19,21,.18)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Quicksand',system-ui,sans-serif;font-weight:500;color:var(--ink);background:var(--navy);min-height:100vh;display:grid;place-items:center;padding:24px 16px;-webkit-font-smoothing:antialiased}
+button,input{font-family:inherit;font-size:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.box{width:min(420px,100%);background:#fff;border-radius:14px;padding:30px 28px;box-shadow:var(--sh2)}
+.mark{display:flex;gap:10px;align-items:center;font-weight:800;letter-spacing:.06em;color:var(--navy);margin-bottom:22px}
+.mark span{width:36px;height:36px;border-radius:9px;background:var(--navy);display:grid;place-items:center}
+h1{font-size:22px;font-weight:800;color:var(--obs)}
+.sub{color:#5d6065;margin:6px 0 20px;font-size:14px}
+.fl{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.fl label{font-weight:700;font-size:13px}
+.inp{height:44px;font-size:15px;border:1px solid #D9D5C9;border-radius:9px;padding:0 12px;background:#fff;width:100%}
+.inp:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;width:100%;border-radius:9px;border:1px solid var(--navy);background:var(--navy);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+.btn:hover{background:var(--obs)}.btn[disabled]{opacity:.6;pointer-events:none}
+.btn.ghost{background:#fff;color:var(--navy);margin-top:10px}
+.msg{padding:10px 12px;border-radius:9px;font-weight:700;font-size:13.5px;margin-bottom:14px;display:none;line-height:1.5}
+.msg.err{display:block;background:var(--red-t);color:var(--red);border:1px solid #E6B8B4}
+.msg.ok{display:block;background:var(--green-t);color:var(--green);border:1px solid #b9d9cb}
+.msg.warn{display:block;background:var(--gold-t);color:#6b5610;border:1px solid #E5D48E}
+.msg code{font-family:Consolas,monospace;font-size:12px;background:rgba(0,0,0,.06);padding:1px 4px;border-radius:4px;word-break:break-all}
+.row{display:flex;justify-content:space-between;align-items:center;margin:2px 0 18px;font-size:13.5px}
+.row a{color:var(--bur);font-weight:700;text-decoration:none}
+.chk{display:flex;gap:8px;align-items:center;font-weight:600}.chk input{accent-color:var(--navy);width:16px;height:16px}
+.foot{margin-top:18px;font-size:12px;color:var(--grey);font-weight:600;text-align:center}
+.hide{display:none!important}
+</style></head><body>
+
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>window.PARISHOS_PUBLIC=true;window.PageLoader={done:function(){}}</script>
+<script defer src="/js/firebase-config.js"></script>
+<script defer src="/js/firebase-init.js"></script>
+<script defer src="/js/core.js"></script>
+
+<main class="box">
+  <div class="mark"><span><svg width="20" height="20" viewBox="0 0 24 24"><path d="M10 2h4v7h7v4h-7v9h-4v-9H3V9h7z" fill="#C9A227"/></svg></span>PARISH YETU</div>
+  <h1>Platform console</h1>
+  <p class="sub">For the Parish Yetu platform owner only.</p>
+  <div class="msg" id="msg" role="alert"></div>
+
+  <form id="f" novalidate>
+    <div class="fl"><label for="em">Email</label><input class="inp" id="em" type="email" autocomplete="username"></div>
+    <div class="fl"><label for="pw">Password</label><input class="inp" id="pw" type="password" autocomplete="current-password"></div>
+    <div class="row"><label class="chk"><input type="checkbox" id="rm" checked> Keep me signed in</label><a href="#" id="fg">Forgot password?</a></div>
+    <button class="btn" type="submit" id="go">Sign in</button>
+  </form>
+
+  <div id="other" class="hide">
+    <button class="btn ghost" type="button" id="out">Sign out and use another account</button>
+  </div>
+  <p class="foot">Parish staff sign in at <a href="/admin" style="color:inherit">/admin</a>.</p>
+</main>
+
+<script defer>
+(function(){
+  var tries = 0;
+  (function wait(){ if (typeof Boot !== 'undefined' && Boot.ready) return start(); if (++tries > 200) return; setTimeout(wait, 50); })();
+
+  function start(){ (async function(){
+    await Boot.ready;
+    const $ = s => document.querySelector(s);
+    const msg = $('#msg');
+    const show = (html, kind) => { msg.innerHTML = html; msg.className = 'msg ' + (kind || 'err'); };
+    const clear = () => { msg.className = 'msg'; msg.innerHTML = ''; };
+    const MAKE_SUPER = email => `<code>npm run admin -- make-super --email ${esc(email || 'you@example.org')}</code>`;
+
+    if (!FB.ok) { show('Firebase is not configured on this site (js/firebase-config.js).'); return; }
+
+    const notice = sessionStorage.getItem('parishos.notice');
+    if (notice) { sessionStorage.removeItem('parishos.notice'); show(esc(notice), 'ok'); }
+
+    /* Already signed in? Platform owners go straight in; anyone else is told plainly. */
+    const cur = Auth.user();
+    if (cur && cur.role === 'super') { location.replace('/super-admin'); return; }
+    if (cur) {
+      show('You are signed in as <b>' + esc(cur.email) + '</b>, which is not a platform account.', 'warn');
+      $('#f').classList.add('hide'); $('#other').classList.remove('hide');
+    } else if (Boot.notice === 'no-profile' && FB.auth.currentUser) {
+      show('This sign-in has no Parish Yetu profile. To make it a platform account, run on your computer:<br>' + MAKE_SUPER(FB.auth.currentUser.email) + '<br>then sign in again.', 'warn');
+    }
+    $('#out').onclick = () => Auth.logout().then(() => location.reload());
+
+    $('#f').addEventListener('submit', async e => {
+      e.preventDefault(); clear();
+      const em = $('#em').value.trim(), pw = $('#pw').value;
+      if (!em || !pw) { show('Enter your email and password.'); return; }
+      const b = $('#go'); b.disabled = true; b.textContent = 'Signing in…';
+      try {
+        const s = await Auth.login(em, pw, $('#rm').checked);
+        if (s.role !== 'super') {
+          await Auth.logout();
+          show('This account does not have platform access. If it should, run:<br>' + MAKE_SUPER(em) + '<br>then sign in again.');
+          return;
+        }
+        location.href = '/super-admin';
+      } catch (x) {
+        if (x.code === 'parishos/no-profile') show('Signed in, but this account has no platform profile. Run:<br>' + MAKE_SUPER(em) + '<br>then sign in again.', 'warn');
+        else if (x.code === 'parishos/suspended') show('This account is suspended.');
+        else show(esc(authMsg(x)));
+      } finally { b.disabled = false; b.textContent = 'Sign in'; }
+    });
+
+    $('#fg').onclick = e => {
+      e.preventDefault();
+      const em = $('#em').value.trim();
+      if (!em) { show('Type your email above first, then press “Forgot password?”.', 'warn'); return; }
+      Auth.reset(em).then(() => show('If that email has an account, a reset link is on its way.', 'ok')).catch(x => show(esc(authMsg(x))));
+    };
+    $('#em').focus();
+  })(); }
+})();
+</script>
+</body></html>

@@ -104,7 +104,7 @@
       "about": { "@id": "https://parishyetu.church/#organization" },
       "primaryImageOfPage": { "@type": "ImageObject", "url": "https://parishyetu.church/og-image.png" },
       "inLanguage": "en-KE",
-      "dateModified": "2026-11-08",
+      "dateModified": "2026-11-09",
       "breadcrumb": { "@id": "https://parishyetu.church/home#breadcrumb" }
     },
     {
@@ -148,6 +148,7 @@
   --bur:#6E1725;--bur2:#5A111D;--bur3:#8A2434;--gold:#C9A227;--gold2:#A98A1B;--ivory:#F7F3E8;--obs:#111315;--navy:#182A3A;--white:#fff;--line:#E8E5DD;--grey:#8B8A84;--ink:#23262A;--green:#1E6B4F;--red:#B3261E;
   --bur-t:#F3E6E8;--gold-t:#F6EFD3;--green-t:#E1EFE9;--navy-t:#E3E9EE;--red-t:#F8E3E1;--grey-t:#EFEDE6;
   --r:10px;--sh:0 1px 2px rgba(17,19,21,.05),0 4px 14px rgba(17,19,21,.04);--sh2:0 12px 40px rgba(17,19,21,.18);
+  --ease:cubic-bezier(.16,1,.3,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -161,10 +162,11 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stro
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 /* buttons */
-.btn{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:9px;border:1px solid var(--line);background:#fff;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s,color .15s}
+.btn{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:9px;border:1px solid var(--line);background:#fff;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s,color .15s,transform .3s var(--ease),box-shadow .3s}
 .btn:hover{border-color:var(--bur);color:var(--bur)}
 .btn.p{background:var(--bur);border-color:var(--bur);color:#fff}.btn.p:hover{background:var(--bur2);color:#fff}
 .btn.g{background:var(--gold);border-color:var(--gold);color:var(--obs)}.btn.g:hover{background:var(--gold2);color:#fff}
+.btn.p:hover,.btn.g:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(110,23,37,.28)}
 .btn.n{background:var(--navy);border-color:var(--navy);color:#fff}.btn.n:hover{background:var(--obs);color:#fff}
 .btn.d{background:#fff;border-color:#E6B8B4;color:var(--red)}.btn.d:hover{background:var(--red);color:#fff;border-color:var(--red)}
 .btn.sm{height:30px;padding:0 11px;font-size:12.5px;border-radius:7px}
@@ -176,11 +178,13 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stro
 .bd.g{background:var(--green-t);color:var(--green)}.bd.y{background:var(--gold-t);color:#7a6210}.bd.r{background:var(--red-t);color:var(--red)}.bd.b{background:var(--navy-t);color:var(--navy)}.bd.p{background:var(--bur-t);color:var(--bur)}
 
 /* shared UI */
-.inp,.sel,.ta{height:38px;border:1px solid #D9D5C9;border-radius:9px;padding:0 12px;background:#fff;width:100%}
+.inp,.sel,.ta{height:38px;border:1px solid #D9D5C9;border-radius:9px;padding:0 12px;background:#fff;width:100%;transition:border-color .25s,box-shadow .25s}
 .ta{height:auto;padding:10px 12px;min-height:80px;resize:vertical}
-.inp:focus,.sel:focus,.ta:focus{outline:2px solid var(--gold);outline-offset:0;border-color:var(--gold)}
+.inp:focus,.sel:focus,.ta:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 4px rgba(201,162,39,.18)}
 .empty{padding:44px 20px;text-align:center;color:var(--grey);font-weight:600}
 .empty b{display:block;color:var(--obs);font-size:15px;margin-bottom:4px}
+.shake{animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
 /* ===== landing ===== */
 .wrap{max-width:1200px;margin:0 auto;padding:0 28px}
@@ -193,7 +197,7 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stro
 
 /* ===== HERO ===== */
 .hero{background:var(--bur);color:#fff;position:relative;overflow:hidden}
-.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center;min-height:640px;position:relative;z-index:2;padding-top:60px;padding-bottom:140px}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center;min-height:580px;position:relative;z-index:2;padding-top:60px;padding-bottom:140px}
 .hero h1{font-size:clamp(36px,5.2vw,68px);font-weight:800;line-height:1.02;letter-spacing:-.02em;color:#fff}
 .hero h1 .eyebrow{display:block;font-size:14px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);line-height:1.4;margin-bottom:18px}
 .hero p{font-size:18px;line-height:1.65;color:#EBD3CD;margin-top:22px;max-width:560px;font-weight:500}
@@ -244,8 +248,8 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stro
 .slider.paused .dot.on i{animation-play-state:paused}
 @keyframes dotfill{to{transform:scaleX(1)}}
 
-/* rose window */
-.rosebox{width:min(500px,100%);justify-self:center;text-align:center;animation:rise 1s cubic-bezier(.16,1,.3,1) .15s both}
+/* rose window (resized: smaller) */
+.rosebox{width:min(320px,100%);justify-self:center;text-align:center;animation:rise 1s cubic-bezier(.16,1,.3,1) .15s both}
 .rose{width:100%;height:auto;display:block;overflow:visible}
 .rose .pt{transition:fill .5s ease}
 .rose .pt.hit{fill:var(--wc);filter:url(#rglow)}
@@ -272,111 +276,171 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stro
 @keyframes burst{0%{opacity:1;transform:scale(.2)}100%{opacity:0;transform:scale(2.4)}}
 .rose .dart{animation:dart 1.3s cubic-bezier(.16,1,.3,1) forwards}
 @keyframes dart{0%{opacity:0;transform:translateY(0)}18%{opacity:1}100%{opacity:0;transform:translateY(-118px)}}
-.hero .rcap{margin:10px auto 0;max-width:none;min-height:26px;font-size:15px;font-weight:700;color:#EBD3CD;opacity:0;transform:translateY(6px);transition:opacity .5s,transform .5s cubic-bezier(.16,1,.3,1)}
+.hero .rcap{margin:8px auto 0;max-width:none;min-height:24px;font-size:14px;font-weight:700;color:#EBD3CD;opacity:0;transform:translateY(6px);transition:opacity .5s,transform .5s cubic-bezier(.16,1,.3,1)}
 .hero .rcap.on{opacity:1;transform:none}
 .rcap b{color:var(--wc,#fff);font-weight:800;letter-spacing:.08em}
-.rcap small{color:#C9A9A2;font-size:12.5px;margin-left:8px}
+.rcap small{color:#C9A9A2;font-size:12px;margin-left:8px}
 
-/* ===== SECTIONS (Animations & Redesign added below) ===== */
+/* ===== SECTIONS (animated, below the hero) ===== */
 .strip{background:var(--obs);color:#fff}
 .strip .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding-top:26px;padding-bottom:26px}
 .strip b{font-size:28px;font-weight:800;display:block;color:var(--gold)}.strip span{color:#C9C6BD;font-weight:600;font-size:13px}
 
 section.s{padding:92px 0}
 section.s h2{font-size:clamp(28px,3.6vw,44px);font-weight:800;letter-spacing:-.015em;max-width:760px;line-height:1.1}
+section.s h2::after{content:"";display:block;width:0;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--gold),transparent);margin-top:14px;transition:width 1s var(--ease) .3s}
+.rv.on h2::after{width:84px}
 section.s .lead{font-size:17px;color:#55585c;max-width:640px;margin-top:14px;line-height:1.65}
 
-/* Cards with animation & hover lift */
+/* cards: lift, gold line, icon pop (same motion language as Studio Desk) */
 .sac{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:42px}
-.sc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px;transition:transform .4s cubic-bezier(.16,1,.3,1),box-shadow .4s,border-color .4s}
-.sc:hover{border-color:var(--gold);transform:translateY(-6px);box-shadow:0 14px 30px rgba(110,23,37,.10)}
-.sc svg{margin-bottom:12px;transition:transform .3s cubic-bezier(.16,1,.3,1)}
-.sc:hover svg{transform:scale(1.1)}
+.sc{position:relative;overflow:hidden;background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px;transition:transform .4s var(--ease),box-shadow .4s,border-color .4s}
+.sc:hover{border-color:var(--bur);transform:translateY(-6px);box-shadow:0 14px 30px rgba(110,23,37,.10)}
+.sc svg{margin-bottom:12px;transition:transform .3s var(--ease)}
+.sc:hover svg{transform:scale(1.15) rotate(-4deg)}
 .sc h3{font-size:17px;margin-bottom:5px}.sc p{color:#5d6065;font-size:13.5px;line-height:1.5}
 
+/* water fill on hover: two slow, flowing tides; maroon rises, text turns white */
+.sc>*{position:relative;z-index:2}
+.sc::before,.sc::after{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(100% + 26px);pointer-events:none;transform:translateY(calc(100% + 4px))}
+.sc::before{z-index:1;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='26' viewBox='0 0 220 26' preserveAspectRatio='none'%3E%3Cpath d='M0 13C37 26 73 26 110 13S183 0 220 13V26H0Z' fill='%238A2434' fill-opacity='0.55'/%3E%3C/svg%3E") repeat-x 0 0/220px 26px,linear-gradient(rgba(138,36,52,.55),rgba(138,36,52,.55)) 0 25px/100% 100% no-repeat;transition:transform 2.3s cubic-bezier(.25,.6,.3,1) .05s;animation:tideb 11s linear infinite}
+.sc::after{z-index:1;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='26' viewBox='0 0 160 26' preserveAspectRatio='none'%3E%3Cpath d='M0 13C27 0 53 0 80 13S133 26 160 13V26H0Z' fill='%236E1725' fill-opacity='1'/%3E%3C/svg%3E") repeat-x 0 0/160px 26px,linear-gradient(var(--bur),var(--bur)) 0 25px/100% 100% no-repeat;transition:transform 1.9s cubic-bezier(.25,.6,.3,1);animation:tidef 7s linear infinite}
+.sc:hover::before,.sc:hover::after,.sc:focus-within::before,.sc:focus-within::after{transform:translateY(0)}
+@keyframes tidef{from{background-position:0 0,0 25px}to{background-position:160px 0,0 25px}}
+@keyframes tideb{from{background-position:220px 0,0 25px}to{background-position:0 0,0 25px}}
+.sc h3,.sc p{transition:color .6s ease .7s}
+.sc:hover h3{color:#fff}
+.sc:hover p{color:#F3E6E8}
+.sc svg{transition:transform .3s var(--ease),filter .6s ease .7s}
+.sc:hover svg{filter:brightness(0) invert(1)}
+@media (prefers-reduced-motion:reduce){.sc::before,.sc::after{animation:none}}
+
+/* steps to join */
+.stn{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:0;margin-top:46px}
+.stn .sc{padding:30px 26px 28px;min-height:190px}
+.stn .sc:hover b.num{background:#fff;color:var(--bur);animation:none}
+.stn .gh{position:absolute;right:18px;top:6px;z-index:2;font-size:88px;font-weight:800;line-height:1;color:rgba(110,23,37,.07);transition:color .6s ease .7s;pointer-events:none}
+.stn .sc:hover .gh{color:rgba(255,255,255,.14)}
+.stc{position:relative;list-style:none;width:64px;height:2px;align-self:center;background:repeating-linear-gradient(90deg,var(--gold) 0 6px,transparent 6px 12px)}
+.stc::after{content:"";position:absolute;top:-3px;left:0;width:8px;height:8px;border-radius:50%;background:var(--bur);animation:travel 2.2s ease-in-out infinite}
+@keyframes travel{0%{left:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{left:calc(100% - 8px);opacity:0}}
+@keyframes travelv{0%{top:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{top:calc(100% - 8px);opacity:0}}
+.stjoin{margin-top:36px;text-align:center}
+.stjoin .btn{height:52px;padding:0 30px;font-size:15px;border-radius:11px}
+@media(max-width:760px){
+  .stn{grid-template-columns:1fr}
+  .stc{width:2px;height:40px;justify-self:center;background:repeating-linear-gradient(180deg,var(--gold) 0 6px,transparent 6px 12px)}
+  .stc::after{left:-3px;top:0;animation:travelv 2.2s ease-in-out infinite}
+}
+
 .cta2{background:var(--obs);color:#fff;text-align:center;padding:110px 0;position:relative;overflow:hidden}
+.cta2::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(201,162,39,.14) 1px,transparent 1px);background-size:22px 22px;opacity:.7;pointer-events:none}
+.cta2::after{content:"";position:absolute;left:50%;top:50%;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;background:radial-gradient(circle,rgba(201,162,39,.22),transparent 65%);animation:halo 4s ease-in-out infinite;pointer-events:none}
+.cta2 .wrap{position:relative;z-index:2}
+@keyframes halo{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.15)}}
 .cta2 h2{color:#fff;font-size:clamp(34px,5vw,64px);font-weight:800;letter-spacing:-.02em;margin:0 auto}
 .cta2 p{color:#C9C6BD;font-size:17px;margin:16px auto 32px;max-width:540px}
 .cta2 .btn{height:56px;padding:0 34px;font-size:16px;border-radius:12px}
 footer.f{background:var(--obs);color:#8f8d86;padding:26px 0;border-top:1px solid #23262A;font-weight:600;font-size:13px}
 footer.f .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between;align-items:center}
 footer.f nav{display:flex;gap:18px;flex-wrap:wrap}
+footer.f a{transition:color .2s}
 footer.f a:hover{color:var(--gold)}
 
-/* Scroll Reveal Animation */
-.js .rv{opacity:0;transform:translateY(30px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+/* scroll reveal (IntersectionObserver) + staggered children */
+.js .rv{opacity:0;transform:translateY(30px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
 .js .rv.on{opacity:1;transform:none}
+.js .stg>*{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease) calc(var(--i,0)*80ms),transform .7s var(--ease) calc(var(--i,0)*80ms),box-shadow .4s,border-color .4s}
+.js .stg.on>*{opacity:1;transform:none}
+.js .stg.done>*{transition-delay:0s}
+.js .stg.on>.sc:hover{transform:translateY(-6px)}
+.js .stg.on>li:not(.sc):hover{transform:translateX(4px)}
+.js .strip .stg.on>div:hover{transform:translateY(-3px)}
 
 .cfind{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
 .cfind .inp{flex:1 1 320px;height:52px;font-size:16px}
 .cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
-.cc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:4px}
-.cc:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 10px 20px rgba(110,23,37,.08)}
+.cc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:4px;transition:transform .4s var(--ease),box-shadow .4s,border-color .4s;animation:fadeIn .6s var(--ease) backwards;animation-delay:calc(var(--i,0)*60ms)}
+.cc:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 20px rgba(110,23,37,.08)}
 .cc h3{font-size:16px}.cc small{color:var(--grey);font-weight:600}.cc .btn{margin-top:12px;align-self:flex-start}
 .cmsg{margin-top:22px;color:#5d6065;font-weight:600}
-.stn{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:42px}
-.stn .sc b.num{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--bur);color:#fff;margin-bottom:12px}
+.spin{display:inline-block;width:14px;height:14px;margin-right:8px;vertical-align:-2px;border:2px solid rgba(201,162,39,.3);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
+.stn .sc b.num{display:grid;place-items:center;width:46px;height:46px;font-size:18px;border-radius:50%;background:var(--bur);color:#fff;margin-bottom:18px;transition:background .6s ease .7s,color .6s ease .7s;animation:logoPulse 3s ease-in-out infinite}
 
 .about{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start}
 .about p{color:#4a4d52;font-size:16px;line-height:1.75;margin-top:14px}
 .about ul{list-style:none;display:grid;gap:10px}
-.about li{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 16px;font-weight:600;color:#4a4d52;transition:transform .3s cubic-bezier(.16,1,.3,1),border-color .3s}
+.about li{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 16px;font-weight:600;color:#4a4d52;transition:transform .3s var(--ease),border-color .3s}
 .about li:hover{transform:translateX(4px);border-color:var(--gold)}
 .about li b{color:var(--bur)}
 
-/* ===== FAQ REDESIGN (2 Columns, Centered) ===== */
-.faq-container {
-  max-width: 960px; margin: 42px auto 0;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;
+/* ===== FAQ — framed panel, 3 cells, hairline dividers ===== */
+.faqbox{display:grid;grid-template-columns:.8fr 1.2fr;background:#fff;border:1px solid var(--line);border-radius:24px;overflow:hidden}
+.faqside{padding:48px 40px;border-right:1px solid var(--line)}
+.faqhelp{margin-top:32px;background:var(--bur);color:#fff;border-radius:16px;padding:24px}
+.faqhelp b{display:block;font-size:18px;font-weight:800}
+.faqhelp p{color:#EBD3CD;font-size:14px;line-height:1.6;margin:6px 0 16px}
+.faqcols{display:grid;grid-template-columns:1fr 1fr;align-items:start}
+.faqcol{padding:14px 28px}
+.faqcol+.faqcol{border-left:1px solid var(--line)}
+.fq{border-bottom:1px solid var(--line)}
+.fq:last-child{border-bottom:0}
+.fq summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:20px 0}
+.fq summary::-webkit-details-marker{display:none}
+.fq summary:focus-visible{outline-offset:2px}
+.qn{flex:none;font-size:11.5px;font-weight:800;letter-spacing:.1em;color:var(--gold2);background:var(--gold-t);border-radius:8px;padding:4px 8px}
+.qt{flex:1;font-weight:700;font-size:15.5px;line-height:1.4;color:var(--obs);transition:color .25s}
+.fq summary:hover .qt,.fq[open] .qt{color:var(--bur)}
+.qi{flex:none;position:relative;width:28px;height:28px;border-radius:50%;background:var(--bur-t);transition:background .3s}
+.qi::before,.qi::after{content:"";position:absolute;left:50%;top:50%;width:11px;height:2px;border-radius:2px;background:var(--bur);transform:translate(-50%,-50%);transition:transform .35s var(--ease),background .3s}
+.qi::after{transform:translate(-50%,-50%) rotate(90deg)}
+.fq[open] .qi{background:var(--bur)}
+.fq[open] .qi::before,.fq[open] .qi::after{background:#fff}
+.fq[open] .qi::after{transform:translate(-50%,-50%) rotate(0)}
+.qa{padding:0 0 20px;color:#5d6065;font-size:14.5px;line-height:1.7;animation:fadeIn .4s var(--ease) both}
+.qa a{color:var(--bur);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:980px){
+  .faqbox{grid-template-columns:1fr}
+  .faqside{border-right:0;border-bottom:1px solid var(--line);padding:36px 28px}
 }
-.faq-item {
-  background: #fff; padding: 24px; border-radius: 16px;
-  border: 1px solid var(--line); box-shadow: 0 4px 12px rgba(0,0,0,.03);
-  transition: transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s, border-color .3s;
-  animation: rise .8s cubic-bezier(.16,1,.3,1) both;
+@media(max-width:700px){
+  .faqcols{grid-template-columns:1fr}
+  .faqcol{padding:6px 22px}
+  .faqcol+.faqcol{border-left:0;border-top:1px solid var(--line)}
 }
-.faq-item:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(201,162,39,.15); border-color: var(--gold); }
-.faq-q { font-weight: 800; font-size: 17px; color: var(--bur); margin-bottom: 10px; display: flex; gap: 12px; line-height: 1.4; }
-.faq-q::before {
-  content: "?"; display: inline-flex; justify-content: center; align-items: center;
-  width: 26px; height: 26px; background: var(--gold); color: var(--bur);
-  border-radius: 50%; font-size: 15px; flex-shrink: 0; font-weight: 800;
-}
-.faq-a { font-size: 14.5px; color: #5d6065; line-height: 1.65; padding-left: 38px; }
-.faq-a a { color: var(--bur); font-weight: 800; text-decoration: underline; }
 
 /* Responsive */
 @media(max-width:980px){
   .hero .wrap,.about{grid-template-columns:1fr}
-  .rosebox{width:300px;margin-top:6px}
+  .rosebox{width:230px;margin-top:6px}
   .sac{grid-template-columns:repeat(2,1fr)}
   .nv nav{display:none}.nv .btn{margin-left:auto}
   .strip .wrap{grid-template-columns:1fr 1fr}
   .hero .wrap{min-height:0;padding-bottom:120px}
   .cgrid{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:760px){
-  .stn{grid-template-columns:1fr}
-  .faq-container { grid-template-columns: 1fr; }
+  .faqw{grid-template-columns:1fr;gap:30px}
+  .faqside{position:static}
 }
 @media(max-width:560px){
   .sac,.cgrid{grid-template-columns:1fr}section.s{padding:64px 0}.wrap{padding:0 18px}
+  .qa{padding:0 20px 20px 20px}
+  .qn{display:none}
 }
 
-/* ===== page loader — bubbles ===== */
+/* ===== page loader — compact orbit ===== */
 #cms-load{position:fixed;inset:0;z-index:9999;background:var(--ivory);display:grid;place-items:center;transition:opacity .45s ease,visibility .45s ease}
 #cms-load.hide{opacity:0;visibility:hidden;pointer-events:none}
-#cms-load .orbit{position:relative;width:140px;height:140px;display:grid;place-items:center}
-#cms-load .orbit b{font-family:'Quicksand',system-ui,sans-serif;font-size:22px;font-weight:800;letter-spacing:.14em;color:var(--bur);animation:cmsbubbletext 2.4s ease-in-out infinite}
-#cms-load .orbit i{position:absolute;top:50%;left:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--bur);box-shadow:0 0 0 3px rgba(110,23,37,.08),0 4px 12px rgba(110,23,37,.25);transform-origin:0 0;animation:cmsorbit 2.4s linear infinite}
+#cms-load .orbit{position:relative;width:76px;height:76px;display:grid;place-items:center}
+#cms-load .orbit b{font-family:'Quicksand',system-ui,sans-serif;font-size:13px;font-weight:800;letter-spacing:.06em;color:var(--bur);animation:cmsbubbletext 2.4s ease-in-out infinite}
+#cms-load .orbit i{position:absolute;top:50%;left:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--bur);box-shadow:0 0 0 2px rgba(110,23,37,.08),0 2px 6px rgba(110,23,37,.25);transform-origin:0 0;animation:cmsorbit 2.4s linear infinite}
 #cms-load .orbit i:nth-child(1){background:var(--bur);animation-delay:0s}
-#cms-load .orbit i:nth-child(2){background:var(--gold);animation-delay:-.4s;width:11px;height:11px;margin:-5.5px 0 0 -5.5px}
-#cms-load .orbit i:nth-child(3){background:var(--navy);animation-delay:-.8s;width:9px;height:9px;margin:-4.5px 0 0 -4.5px}
-#cms-load .orbit i:nth-child(4){background:var(--green);animation-delay:-1.2s;width:12px;height:12px;margin:-6px 0 0 -6px}
-#cms-load .orbit i:nth-child(5){background:var(--bur3);animation-delay:-1.6s;width:10px;height:10px;margin:-5px 0 0 -5px}
-#cms-load .orbit i:nth-child(6){background:var(--gold2);animation-delay:-2s;width:13px;height:13px;margin:-6.5px 0 0 -6.5px}
-#cms-load .tag{position:absolute;bottom:36px;left:0;right:0;text-align:center;font-weight:700;font-size:12px;color:var(--grey);letter-spacing:.08em}
-@keyframes cmsorbit{0%{transform:rotate(0deg) translateX(64px) rotate(0deg) scale(1)}50%{transform:rotate(180deg) translateX(64px) rotate(-180deg) scale(1.25)}100%{transform:rotate(360deg) translateX(64px) rotate(-360deg) scale(1)}}
+#cms-load .orbit i:nth-child(2){background:var(--gold);animation-delay:-.4s;width:7px;height:7px;margin:-3.5px 0 0 -3.5px}
+#cms-load .orbit i:nth-child(3){background:var(--navy);animation-delay:-.8s;width:6px;height:6px;margin:-3px 0 0 -3px}
+#cms-load .orbit i:nth-child(4){background:var(--green);animation-delay:-1.2s;width:7px;height:7px;margin:-3.5px 0 0 -3.5px}
+#cms-load .orbit i:nth-child(5){background:var(--bur3);animation-delay:-1.6s;width:6px;height:6px;margin:-3px 0 0 -3px}
+#cms-load .orbit i:nth-child(6){background:var(--gold2);animation-delay:-2s;width:8px;height:8px;margin:-4px 0 0 -4px}
+#cms-load .tag{position:absolute;bottom:36px;left:0;right:0;text-align:center;font-weight:700;font-size:11px;color:var(--grey);letter-spacing:.08em}
+@keyframes cmsorbit{0%{transform:rotate(0deg) translateX(32px) rotate(0deg) scale(1)}50%{transform:rotate(180deg) translateX(32px) rotate(-180deg) scale(1.25)}100%{transform:rotate(360deg) translateX(32px) rotate(-360deg) scale(1)}}
 @keyframes cmsbubbletext{0%,100%{transform:scale(1);opacity:.95}50%{transform:scale(1.08);opacity:1}}
 @media (prefers-reduced-motion:reduce){#cms-load .orbit i,#cms-load .orbit b{animation:none}}
 
@@ -388,15 +452,15 @@ footer.f a:hover{color:var(--gold)}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes draw{to{stroke-dashoffset:0}}
 
-.pym{display:inline-flex;align-items:baseline;background:var(--bur);color:#fff;border-radius:11px;padding:7px 13px 8px;line-height:1;white-space:nowrap;animation:logoPulse 3s ease-in-out infinite}
+.pym{display:inline-flex;align-items:baseline;background:none;color:var(--bur);padding:0;line-height:1;white-space:nowrap}
 .pym b{font-size:24px;font-weight:800;letter-spacing:-.01em}
-.pym i{font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.03em;margin-left:1px}
-.pym i:first-of-type{margin-right:6px}
+.pym i{font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.02em;margin-left:0}
+.pym i:first-of-type{margin-right:2px}
 .pym .y{color:var(--gold)}
-.pym .y+i{color:#F3E2A6}
-#cms-load .orbit b.pyl{display:flex;align-items:baseline;font-size:22px;letter-spacing:0}
-#cms-load .pyl small{font-size:9px;font-weight:800;letter-spacing:.03em}
-#cms-load .pyl small:first-of-type{margin-right:4px}
+.pym .y+i{color:var(--gold2)}
+#cms-load .orbit b.pyl{display:flex;align-items:baseline;font-size:13px;letter-spacing:0}
+#cms-load .pyl small{font-size:6px;font-weight:800;letter-spacing:.03em}
+#cms-load .pyl small:first-of-type{margin-right:2px}
 #cms-load .pyl .y{color:var(--gold2)}
 
 /* Hamburger menu */
@@ -421,7 +485,7 @@ footer.f a:hover{color:var(--gold)}
   .nv.open .nvm nav a,.nv.open .nvb .btn{animation:fadeIn .4s cubic-bezier(.16,1,.3,1) both}
 }
 </style>
-<noscript><style>#cms-load{display:none}</style></noscript>
+<noscript><style>#cms-load{display:none}.js .rv,.js .stg>*{opacity:1!important;transform:none!important}</style></noscript>
 </head>
 <body>
 
@@ -560,7 +624,7 @@ footer.f a:hover{color:var(--gold)}
 </div>
 </section>
 
-<div class="strip"><div class="wrap"><div><b>Word</b><span>Receive and reflect on the Scriptures</span></div><div><b>Worship</b><span>Know when and where your parish gathers for Mass</span></div><div><b>Fellowship</b><span>Belong to your family, SCC and parish</span></div><div><b>Service</b><span>Take part in ministries and parish life</span></div></div></div>
+<div class="strip"><div class="wrap stg"><div><b>Word</b><span>Receive and reflect on the Scriptures</span></div><div><b>Worship</b><span>Know when and where your parish gathers for Mass</span></div><div><b>Fellowship</b><span>Belong to your family, SCC and parish</span></div><div><b>Service</b><span>Take part in ministries and parish life</span></div></div></div>
 
 <!-- SECTION: FIND -->
 <section class="s" id="find" aria-labelledby="find-title"><div class="wrap rv">
@@ -581,7 +645,7 @@ footer.f a:hover{color:var(--gold)}
 <section class="s" id="services" aria-labelledby="services-title" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap rv">
   <h2 id="services-title">Everything a parishioner needs, in one place</h2>
   <p class="lead">Once you have joined your church on Parish Yetu you can use these services, whenever you need them.</p>
-  <div class="sac">
+  <div class="sac stg">
     <article class="sc"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3 4 5 6.500 5 9.500a5 5 0 0 1-10 0C7 9.500 9 7 12 3z" fill="#6E1725"/></svg><h3>God's Word</h3><p>Read the sermons and homilies shared by your parish priest, with the Scripture passage for each.</p></article>
     <article class="sc"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 1.500-4-.3 2 1 3 1.500 3 0-3-1-5 1-8zM8 21h8v-3H8z" fill="#C9A227"/></svg><h3>Mass times &amp; events</h3><p>See the Mass schedule and upcoming parish events, and register for the ones you wish to attend.</p></article>
     <article class="sc"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10l-1 7a4 4 0 0 1-8 0zM11 14h2v5h4v2H7v-2h4z" fill="#182A3A"/></svg><h3>Prayer &amp; Mass intentions</h3><p>Offer a Mass intention or ask the parish to pray with you. Prayer requests stay private.</p></article>
@@ -597,11 +661,14 @@ footer.f a:hover{color:var(--gold)}
 <section class="s" id="join" aria-labelledby="join-title"><div class="wrap rv">
   <h2 id="join-title">Joining your parish takes three steps</h2>
   <p class="lead">There is nothing to wait for. As soon as you register you are a member of your church, and your parish office is told that you have joined.</p>
-  <ol class="stn" style="list-style:none">
-    <li class="sc"><b class="num">1</b><h3>Find your church</h3><p>Search for your parish by name, diocese or town.</p></li>
-    <li class="sc"><b class="num">2</b><h3>Create your account</h3><p>Give your name, email address, phone number and a password.</p></li>
-    <li class="sc"><b class="num">3</b><h3>Take part</h3><p>Read the Word, see the Mass times, send a prayer intention and stay in touch with your parish.</p></li>
+  <ol class="stn stg" style="list-style:none">
+    <li class="sc"><span class="gh" aria-hidden="true">01</span><b class="num">1</b><h3>Find your church</h3><p>Search for your parish by name, diocese or town.</p></li>
+    <li class="stc" aria-hidden="true"></li>
+    <li class="sc"><span class="gh" aria-hidden="true">02</span><b class="num">2</b><h3>Create your account</h3><p>Give your name, email address, phone number and a password.</p></li>
+    <li class="stc" aria-hidden="true"></li>
+    <li class="sc"><span class="gh" aria-hidden="true">03</span><b class="num">3</b><h3>Take part</h3><p>Read the Word, see the Mass times, send a prayer intention and stay in touch with your parish.</p></li>
   </ol>
+  <p class="stjoin"><a class="btn p" href="/register">Create your account</a></p>
 </div></section>
 
 <!-- SECTION: ABOUT -->
@@ -614,7 +681,7 @@ footer.f a:hover{color:var(--gold)}
   </div>
   <div id="parishes">
     <h3 style="font-size:22px;margin-bottom:14px">For parish priests and administrators</h3>
-    <ul>
+    <ul class="stg">
       <li><b>Members &amp; families</b>: one register of your parishioners, families and Jumuiya.</li>
       <li><b>Sacramental records</b>: baptism, confirmation and marriage, with certificate requests.</li>
       <li><b>Mass schedule &amp; events</b>: publish Mass times and take event registrations.</li>
@@ -625,50 +692,55 @@ footer.f a:hover{color:var(--gold)}
   </div>
 </div></section>
 
-<!-- SECTION: FAQ (REDESIGNED) -->
+<!-- SECTION: FAQ (modern accordion) -->
 <section class="s" id="faq" aria-labelledby="faq-title"><div class="wrap rv">
-  <h2 id="faq-title">Frequently asked questions</h2>
-  <p class="lead">Questions parishioners and parish offices often ask about Parish Yetu.</p>
-  
-  <div class="faq-container">
-    <!-- Column 1 -->
-    <div class="faq-column">
-      <div class="faq-item" style="animation-delay:0.1s;">
-        <div class="faq-q">What is Parish Yetu?</div>
-        <div class="faq-a">Parish Yetu (“Our Parish” in Swahili) is an online home for Catholic parishes. Parishioners use it to find their church, read the homilies shared by their priest, see Mass times and events, send prayer intentions, request pastoral care and view their own sacramental records. Parishes use it to manage their church community.</div>
-      </div>
-      <div class="faq-item" style="animation-delay:0.2s;">
-        <div class="faq-q">How do I find my Catholic parish on Parish Yetu?</div>
-        <div class="faq-a">Use the <a href="#find">church directory</a> above. Search by the name of your parish, your diocese or your town, then choose your church and select <em>Join this church</em>.</div>
-      </div>
-      <div class="faq-item" style="animation-delay:0.3s;">
-        <div class="faq-q">How do I join my church on Parish Yetu?</div>
-        <div class="faq-a">Find your church, then <a href="/register">create your account</a> with your name, email address, phone number and a password. As soon as you register you are a member of your church, and your parish office is told that you have joined.</div>
-      </div>
-      <div class="faq-item" style="animation-delay:0.4s;">
-        <div class="faq-q">Can I see Mass times and parish events?</div>
-        <div class="faq-a">Yes. Once you have joined your church you can see its Mass schedule and upcoming parish events, and register for the events you wish to attend.</div>
+  <div class="faqbox">
+    <div class="faqside">
+      <h2 id="faq-title">Frequently asked questions</h2>
+      <p class="lead">Questions parishioners and parish offices often ask about Parish Yetu.</p>
+      <div class="faqhelp">
+        <b>Still have a question?</b>
+        <p>Your parish office can help with anything about your membership, or you can start by finding your church.</p>
+        <a class="btn g" href="#find">Find your church</a>
       </div>
     </div>
-
-    <!-- Column 2 -->
-    <div class="faq-column">
-      <div class="faq-item" style="animation-delay:0.15s;">
-        <div class="faq-q">Are my prayer requests private?</div>
-        <div class="faq-a">Yes. You can offer a Mass intention or ask your parish to pray with you, and prayer requests stay private.</div>
-      </div>
-      <div class="faq-item" style="animation-delay:0.25s;">
-        <div class="faq-q">Can I get my baptism, confirmation or marriage certificate?</div>
-        <div class="faq-a">You can view your own baptism, confirmation and marriage records in Parish Yetu and request certificates from your parish.</div>
-      </div>
-      <div class="faq-item" style="animation-delay:0.35s;">
-        <div class="faq-q">My parish is not on Parish Yetu. What can I do?</div>
-        <div class="faq-a">Parish administrators can <a href="/register-parish">register the parish on Parish Yetu</a>. If you are a parishioner, you can <a href="/register#request">tell us about your parish</a>.</div>
-      </div>
-      <div class="faq-item" style="animation-delay:0.45s;">
-        <div class="faq-q">Is Parish Yetu a church management system for parishes?</div>
-        <div class="faq-a">Yes. Parish Yetu is a Catholic parish management system. It brings members, families, Small Christian Communities (Jumuiya), ministries, the Mass schedule, events, announcements, intentions and sacramental records together in one place for the parish office.</div>
-      </div>
+    <div class="faqcols">
+    <div class="faqcol stg">
+      <details class="fq" name="faq" open>
+      <summary><span class="qn">01</span><span class="qt">What is Parish Yetu?</span><span class="qi" aria-hidden="true"></span></summary>
+      <div class="qa">Parish Yetu (“Our Parish” in Swahili) is an online home for Catholic parishes. Parishioners use it to find their church, read the homilies shared by their priest, see Mass times and events, send prayer intentions, request pastoral care and view their own sacramental records. Parishes use it to manage their church community.</div>
+    </details>
+      <details class="fq" name="faq">
+      <summary><span class="qn">02</span><span class="qt">How do I find my Catholic parish on Parish Yetu?</span><span class="qi" aria-hidden="true"></span></summary>
+      <div class="qa">Use the <a href="#find">church directory</a> above. Search by the name of your parish, your diocese or your town, then choose your church and select <em>Join this church</em>.</div>
+    </details>
+      <details class="fq" name="faq">
+      <summary><span class="qn">03</span><span class="qt">How do I join my church on Parish Yetu?</span><span class="qi" aria-hidden="true"></span></summary>
+      <div class="qa">Find your church, then <a href="/register">create your account</a> with your name, email address, phone number and a password. As soon as you register you are a member of your church, and your parish office is told that you have joined.</div>
+    </details>
+      <details class="fq" name="faq">
+      <summary><span class="qn">04</span><span class="qt">Can I see Mass times and parish events?</span><span class="qi" aria-hidden="true"></span></summary>
+      <div class="qa">Yes. Once you have joined your church you can see its Mass schedule and upcoming parish events, and register for the events you wish to attend.</div>
+    </details>
+    </div>
+    <div class="faqcol stg">
+      <details class="fq" name="faq">
+      <summary><span class="qn">05</span><span class="qt">Are my prayer requests private?</span><span class="qi" aria-hidden="true"></span></summary>
+      <div class="qa">Yes. You can offer a Mass intention or ask your parish to pray with you, and prayer requests stay private.</div>
+    </details>
+      <details class="fq" name="faq">
+      <summary><span class="qn">06</span><span class="qt">Can I get my baptism, confirmation or marriage certificate?</span><span class="qi" aria-hidden="true"></span></summary>
+      <div class="qa">You can view your own baptism, confirmation and marriage records in Parish Yetu and request certificates from your parish.</div>
+    </details>
+      <details class="fq" name="faq">
+      <summary><span class="qn">07</span><span class="qt">My parish is not on Parish Yetu. What can I do?</span><span class="qi" aria-hidden="true"></span></summary>
+      <div class="qa">Parish administrators can <a href="/register-parish">register the parish on Parish Yetu</a>. If you are a parishioner, you can <a href="/register#request">tell us about your parish</a>.</div>
+    </details>
+      <details class="fq" name="faq">
+      <summary><span class="qn">08</span><span class="qt">Is Parish Yetu a church management system for parishes?</span><span class="qi" aria-hidden="true"></span></summary>
+      <div class="qa">Yes. Parish Yetu is a Catholic parish management system. It brings members, families, Small Christian Communities (Jumuiya), ministries, the Mass schedule, events, announcements, intentions and sacramental records together in one place for the parish office.</div>
+    </details>
+    </div>
     </div>
   </div>
 </div></section>
@@ -709,11 +781,33 @@ footer.f a:hover{color:var(--gold)}
 </script>
 
 <script>
-// Scroll animations
-window.addEventListener('DOMContentLoaded', function(){
-  document.documentElement.classList.add('js');
-  setTimeout(function(){ document.querySelectorAll('.rv').forEach(function(e){ e.classList.add('on'); }); }, 120);
-});
+/* Scroll reveal: sections slide in when they enter and slide out when they leave.
+   Content stays visible unless the observer is running, so nothing can get stuck hidden. */
+(function(){
+  function init(){
+    if(!('IntersectionObserver' in window)) return;
+    var els = [].slice.call(document.querySelectorAll('.rv,.stg'));
+    els.forEach(function(e){
+      if(e.classList.contains('stg')) [].forEach.call(e.children, function(c, i){ c.style.setProperty('--i', i); });
+    });
+    var timers = new WeakMap();
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(en){
+        var e = en.target;
+        if(en.isIntersecting){
+          e.classList.add('on');
+          if(e.classList.contains('stg')) timers.set(e, setTimeout(function(){ e.classList.add('done'); }, 1400));
+        } else {
+          e.classList.remove('on','done');
+          clearTimeout(timers.get(e));
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+    document.documentElement.classList.add('js');
+    els.forEach(function(e){ io.observe(e); });
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
 
 (async function(){
   var tries = 0;

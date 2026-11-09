@@ -88,215 +88,34 @@
 </script>
 
 <style>
-:root{
-  --bur:#6E1725;--bur2:#5A111D;--bur3:#8A2434;--gold:#C9A227;--gold2:#A98A1B;
-  --ivory:#F7F3E8;--obs:#111315;--navy:#182A3A;--green:#1E6B4F;
-  --ink:#23262A;--grey:#8B8A84;
-}
+:root{--bur:#6E1725;--gold:#C9A227}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{
-  font-family:'Quicksand',system-ui,sans-serif;font-weight:500;color:var(--ink);
-  background:radial-gradient(circle at 50% 40%, #8A2434 0%, #6E1725 45%, #3D0D15 100%);
-  background-color:#6E1725;
-  display:grid;place-items:center;min-height:100vh;overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;
-}
-.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-
-/* Background floating dots */
-body::before{
-  content:"";position:fixed;inset:0;pointer-events:none;
-  background:radial-gradient(ellipse at 50% 50%, rgba(201,162,39,.18) 0%, transparent 55%),
-             radial-gradient(ellipse at 50% 100%, rgba(0,0,0,.55) 0%, transparent 60%);
-}
-body::after{
-  content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
-  background-image:
-    radial-gradient(1.5px 1.5px at 20% 30%, rgba(255,230,170,.7) 50%, transparent 51%),
-    radial-gradient(1px 1px at 70% 60%, rgba(255,230,170,.55) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 45% 80%, rgba(255,230,170,.5) 50%, transparent 51%),
-    radial-gradient(1px 1px at 85% 25%, rgba(255,230,170,.6) 50%, transparent 51%),
-    radial-gradient(1px 1px at 12% 75%, rgba(255,230,170,.4) 50%, transparent 51%);
-  animation:float 12s ease-in-out infinite;
-}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
-
-.stage{position:relative;z-index:2;text-align:center;padding:100px 24px 40px;max-width:720px;width:100%;animation:rise 1s cubic-bezier(.16,1,.3,1) both}
-.dotgrid{position:fixed;inset:0;pointer-events:none;z-index:1;background-image:radial-gradient(rgba(201,162,39,.12) 1px,transparent 1px);background-size:22px 22px;opacity:.6}
-@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
-
-/* Icons (Candle, Bible, Fire) */
-.icons{display:flex;justify-content:center;align-items:flex-end;gap:clamp(20px,5vw,54px);margin-bottom:34px}
-.ico{position:relative;display:flex;flex-direction:column;align-items:center}
-
-/* Candle */
-.candle .wax{width:16px;height:64px;border-radius:6px 6px 3px 3px;background:linear-gradient(180deg,#FBF6E4 0%,#EFE6C8 55%,#D9CDA6 100%);box-shadow:inset -4px 0 0 rgba(0,0,0,.08),0 6px 18px rgba(0,0,0,.35);position:relative}
-.candle .wax::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:20px;height:8px;border-radius:50%;background:#FBF6E4;box-shadow:0 2px 4px rgba(0,0,0,.15)}
-.candle .holder{width:44px;height:10px;border-radius:4px;margin-top:2px;background:linear-gradient(180deg,var(--gold) 0%,var(--gold2) 100%);box-shadow:0 4px 10px rgba(0,0,0,.4)}
-.candle .flame{position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:14px;height:26px;background:radial-gradient(circle at 50% 70%, #FFF3B0 0%, #FFC850 40%, #FF8A1E 70%, rgba(255,80,0,0) 100%);border-radius:50% 50% 45% 45%/60% 60% 40% 40%;filter:blur(.4px);animation:flicker 1.4s ease-in-out infinite;transform-origin:50% 100%}
-.candle .flame::before{content:"";position:absolute;inset:35% 35% 15% 35%;background:radial-gradient(circle,#FFFFFF 0%,#FFE89A 60%,transparent 100%);border-radius:50%;filter:blur(1px)}
-.candle .halo{position:absolute;top:-46px;left:50%;transform:translateX(-50%);width:80px;height:80px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,190,80,.35) 0%,transparent 60%);animation:halo 2.4s ease-in-out infinite}
-@keyframes flicker{0%,100%{transform:translateX(-50%) scale(1) rotate(-1deg)}25%{transform:translateX(-50%) scale(1.06,.96) rotate(2deg)}50%{transform:translateX(-50%) scale(.96,1.05) rotate(-2deg)}75%{transform:translateX(-50%) scale(1.03,.98) rotate(1deg)}}
-@keyframes halo{0%,100%{opacity:.55;transform:translateX(-50%) scale(1)}50%{opacity:.9;transform:translateX(-50%) scale(1.15)}}
-
-/* Bible */
-.bible{position:relative;perspective:600px}
-.bible .book{width:74px;height:56px;position:relative;transform:rotateX(8deg) rotateZ(-2deg);animation:book 4s ease-in-out infinite}
-.bible .cover{position:absolute;inset:0;border-radius:4px 8px 8px 4px;background:linear-gradient(135deg,#7A1B29 0%,#5A111D 100%);box-shadow:inset 0 0 0 2px var(--gold),0 8px 20px rgba(0,0,0,.5)}
-.bible .pages{position:absolute;top:5px;bottom:5px;right:4px;width:6px;background:repeating-linear-gradient(180deg,#FBF6E4 0 1px,#E8DFC2 1px 2px);border-radius:0 4px 4px 0}
-.bible .cross{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:14px;height:26px}
-.bible .cross::before,.bible .cross::after{content:"";position:absolute;background:var(--gold);border-radius:1px;box-shadow:0 0 6px rgba(201,162,39,.7)}
-.bible .cross::before{left:50%;top:0;bottom:0;width:3px;transform:translateX(-50%)}
-.bible .cross::after{top:50%;left:0;right:0;height:3px;transform:translateY(-50%)}
-@keyframes book{0%,100%{transform:rotateX(8deg) rotateZ(-2deg) translateY(0)}50%{transform:rotateX(8deg) rotateZ(-2deg) translateY(-4px)}}
-
-/* Fire */
-.fire{width:60px;height:70px;position:relative}
-.fire i{position:absolute;bottom:0;left:50%;transform:translateX(-50%);border-radius:50% 50% 30% 30%/70% 70% 30% 30%;filter:blur(.6px)}
-.fire i:nth-child(1){width:44px;height:60px;background:radial-gradient(circle at 50% 75%, #FFE9A6 0%, #FFB43A 40%, #E85A0E 75%, rgba(180,40,0,0) 100%);animation:fire 1.3s ease-in-out infinite}
-.fire i:nth-child(2){width:26px;height:40px;background:radial-gradient(circle at 50% 75%, #FFFFFF 0%, #FFDD70 50%, #FF8A1E 85%, transparent 100%);animation:fire 1.3s ease-in-out infinite reverse}
-.fire i:nth-child(3){width:12px;height:20px;background:radial-gradient(circle,#FFFFFF 0%,#FFF3B0 70%,transparent 100%);animation:fire 1s ease-in-out infinite}
-@keyframes fire{0%,100%{transform:translateX(-50%) scale(1,1) skewX(0deg)}25%{transform:translateX(-50%) scale(.94,1.08) skewX(4deg)}50%{transform:translateX(-50%) scale(1.06,.94) skewX(-3deg)}75%{transform:translateX(-50%) scale(.97,1.05) skewX(2deg)}}
-
-/* Brand & Text */
-.brand{margin-bottom:20px;animation:fade 1s ease .2s both}
-.pyw{display:inline-flex;align-items:baseline;padding:10px 22px 12px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(201,162,39,.35);line-height:1;color:#FFF7E6;animation:logoPulse 3s ease-in-out infinite}
-.pyw b{font-size:clamp(32px,5vw,44px);font-weight:800}
-.pyw i{font-style:normal;font-size:clamp(12px,1.8vw,15px);font-weight:800;letter-spacing:.03em;margin-left:1px}
-.pyw i:first-of-type{margin-right:10px}
-.pyw .y{color:var(--gold)}
-@keyframes logoPulse{0%,100%{box-shadow:0 8px 24px rgba(201,162,39,.18),0 0 0 6px rgba(201,162,39,.08)}50%{box-shadow:0 8px 32px rgba(201,162,39,.35),0 0 0 10px rgba(201,162,39,.14)}}
-.spin{width:14px;height:14px;border:2px solid rgba(201,162,39,.3);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
+body{font-family:'Quicksand',system-ui,sans-serif;font-weight:500;background:var(--bur);color:#FFF7E6;display:grid;place-items:center;min-height:100vh;-webkit-font-smoothing:antialiased}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.stage{text-align:center;padding:24px;animation:fade .8s ease both}
+.logo{display:inline-flex;align-items:baseline;line-height:1;color:#FFF7E6}
+.logo b{font-size:clamp(34px,6vw,48px);font-weight:800}
+.logo i{font-style:normal;font-size:clamp(13px,2vw,16px);font-weight:800;letter-spacing:.03em;margin-left:1px}
+.logo i:first-of-type{margin-right:10px}
+.logo .y{color:var(--gold)}
+.spin{display:block;width:20px;height:20px;margin:28px auto 0;border:2px solid rgba(255,255,255,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+.fallback{margin-top:26px;font-size:13px;color:#C9A9A2}
+.fallback a{color:var(--gold);font-weight:700;text-decoration:none}
+.fallback a:hover{text-decoration:underline}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-.title{font-size:clamp(24px,4.2vw,40px);font-weight:800;line-height:1.15;color:#FFF7E6;letter-spacing:-.01em;text-shadow:0 4px 24px rgba(0,0,0,.4),0 0 40px rgba(201,162,39,.25);animation:fade 1s ease .35s both}
-.title span.g{color:var(--gold)}
-.sub{margin-top:14px;font-size:clamp(13px,1.6vw,15px);font-weight:600;color:#E8CFC9;letter-spacing:.02em;animation:fade 1s ease .5s both}
-@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-
-.div{display:flex;align-items:center;justify-content:center;gap:12px;margin:26px auto 22px;max-width:340px;animation:fade 1s ease .6s both}
-.div i{height:1px;flex:1;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.div b{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold);animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:.7}}
-
-.loader{display:inline-flex;align-items:center;gap:12px;padding:10px 20px;border-radius:99px;background:rgba(255,255,255,.06);border:1px solid rgba(201,162,39,.35);backdrop-filter:blur(8px);animation:fade 1s ease .75s both}
-.loader .dots{display:flex;gap:5px}
-.loader .dots i{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:dot 1.4s ease-in-out infinite}
-.loader .dots i:nth-child(2){animation-delay:.2s;background:#E5C55A}
-.loader .dots i:nth-child(3){animation-delay:.4s;background:#FFE9A6}
-@keyframes dot{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-6px);opacity:1}}
-.loader span{font-size:12.5px;font-weight:700;color:#F3E6E8;letter-spacing:.06em}
-
-.fallback{margin-top:28px;font-size:12px;color:#B8A6A9;animation:fade 1s ease 1s both}
-.fallback a{color:var(--gold);font-weight:700;text-decoration:none;border-bottom:1px solid transparent;transition:border-color .2s}
-.fallback a:hover{border-bottom-color:var(--gold)}
-.fallback nav{margin-top:10px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-
-@media (max-width:520px){
-  .icons{gap:22px}
-  .candle .wax{height:52px;width:14px}
-  .candle .flame{width:12px;height:22px;top:-26px}
-  .bible .book{width:60px;height:46px}
-  .fire{width:48px;height:56px}
-  .fire i:nth-child(1){width:36px;height:48px}
-  .fire i:nth-child(2){width:22px;height:32px}
-}
-
-/* ===== header + hamburger ===== */
-.top{position:fixed;top:0;left:0;right:0;z-index:20;height:68px;display:flex;align-items:center;gap:20px;padding:0 28px;background:rgba(40,8,15,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(201,162,39,.2);animation:fade .8s ease both}
-.tlogo{display:inline-flex;align-items:baseline;line-height:1;padding:7px 13px 8px;border-radius:11px;background:var(--bur);border:1px solid rgba(201,162,39,.4);color:#fff;text-decoration:none;animation:logoPulse 3s ease-in-out infinite}
-.tlogo b{font-size:22px;font-weight:800}.tlogo i{font-style:normal;font-size:10px;font-weight:800;letter-spacing:.03em;margin-left:1px}
-.tlogo i:first-of-type{margin-right:6px}.tlogo .y{color:var(--gold)}.tlogo .y+i{color:#F3E2A6}
-.tnav{display:flex;align-items:center;gap:22px;margin-left:auto}
-.tnav nav{display:flex;gap:4px}
-.tnav nav a{position:relative;color:#EBD3CD;font-weight:700;font-size:14px;padding:8px 10px;text-decoration:none;transition:color .2s}
-.tnav nav a:hover{color:#fff}
-.tnav nav a::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:2px;border-radius:2px;background:var(--gold);transform:scaleX(0);transition:transform .3s cubic-bezier(.16,1,.3,1)}
-.tnav nav a:hover::after{transform:scaleX(1)}
-.tbtns{display:flex;gap:10px}
-.tbtn{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 16px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;color:#fff;border:1px solid rgba(231,201,195,.55);transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s,background .2s}
-.tbtn:hover{background:rgba(255,255,255,.08)}
-.tbtn.g{background:var(--gold);border-color:var(--gold);color:#111315}
-.tbtn.g:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.3);background:var(--gold)}
-.burger{display:none;margin-left:auto;width:44px;height:44px;border-radius:10px;border:1px solid rgba(231,201,195,.45);background:rgba(255,255,255,.07);cursor:pointer;position:relative;flex:none}
-.burger span{position:absolute;left:12px;right:12px;height:2px;border-radius:2px;background:#FFF7E6;transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .2s}
-.burger span:nth-child(1){top:15px}.burger span:nth-child(2){top:21px}.burger span:nth-child(3){top:27px}
-.top.open .burger span:nth-child(1){transform:translateY(6px) rotate(45deg)}
-.top.open .burger span:nth-child(2){opacity:0}
-.top.open .burger span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-@keyframes logoPulse{0%,100%{box-shadow:0 8px 24px rgba(201,162,39,.18),0 0 0 6px rgba(201,162,39,.08)}50%{box-shadow:0 8px 32px rgba(201,162,39,.35),0 0 0 10px rgba(201,162,39,.14)}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-
-@media (max-width:860px){
-  .top{padding:0 18px}
-  .burger{display:block}
-  .tnav{position:absolute;top:68px;left:0;right:0;margin:0;flex-direction:column;align-items:stretch;gap:10px;padding:10px 18px 20px;background:#3D0D15;border-bottom:1px solid rgba(201,162,39,.25);box-shadow:0 18px 30px rgba(0,0,0,.35);opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .3s,transform .35s cubic-bezier(.16,1,.3,1),visibility 0s linear .35s}
-  .top.open .tnav{opacity:1;visibility:visible;transform:none;transition:opacity .3s,transform .35s cubic-bezier(.16,1,.3,1)}
-  .tnav nav{flex-direction:column;gap:0}
-  .tnav nav a{padding:14px 10px;font-size:15px;border-bottom:1px solid rgba(231,201,195,.14)}
-  .tnav nav a::after{display:none}
-  .tbtns{flex-direction:column;margin-top:6px}
-  .tbtn{height:48px;font-size:15px}
-  .top.open .tnav nav a,.top.open .tbtn{animation:fadeIn .4s cubic-bezier(.16,1,.3,1) both}
-  .fallback nav{display:none}
-}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head><body>
-
-<header class="top" id="top">
-  <a class="tlogo" href="/home" aria-label="Parish Yetu home"><span aria-hidden="true" style="display:contents"><b>P</b><i>arish</i><b class="y">Y</b><i>etu</i></span></a>
-  <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="tnav"><span></span><span></span><span></span></button>
-  <div class="tnav" id="tnav">
-    <nav aria-label="Main"><a href="/home#find">Find your church</a><a href="/home#services">Member services</a><a href="/home#join">How to join</a><a href="/home#faq">FAQ</a></nav>
-    <div class="tbtns"><a class="tbtn" href="/login">Sign in</a><a class="tbtn g" href="/register">Join your church</a></div>
-  </div>
-</header>
-<div class="dotgrid" aria-hidden="true"></div>
 <main class="stage">
-
-  <div class="icons" aria-hidden="true">
-    <div class="ico candle"><div class="halo"></div><div class="flame"></div><div class="wax"></div><div class="holder"></div></div>
-    <div class="ico bible"><div class="book"><div class="cover"></div><div class="pages"></div><div class="cross"></div></div></div>
-    <div class="ico fire"><i></i><i></i><i></i></div>
-  </div>
-
-  <p class="brand" aria-hidden="true"><span class="pyw"><b>P</b><i>arish</i><b class="y">Y</b><i>etu</i></span></p>
-  <h1 class="title"><span class="sr">Parish Yetu: </span>Catholic Church Management <span class="g">System</span></h1>
-  <p class="sub">Entering a place of worship, order &amp; stewardship</p>
-
-  <div class="div" aria-hidden="true"><i></i><b></b><i></i></div>
-
-  <div class="loader" role="status" aria-live="polite">
-    <span class="spin" aria-hidden="true"></span><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
-    <span>PREPARING PARISH YETU…</span>
-  </div>
-
-  <div class="fallback">
-    <p>Not redirected? <a href="https://parishyetu.church/home">Continue to Parish Yetu →</a></p>
-    <nav aria-label="Quick links">
-      <a href="/home#find">Find your Catholic parish</a>
-      <a href="/register">Join your church</a>
-      <a href="/register-parish">Register a parish</a>
-      <a href="/login">Sign in</a>
-    </nav>
-  </div>
-
+  <h1 class="sr">Parish Yetu: Catholic Church Management System</h1>
+  <span class="logo" aria-hidden="true"><b>P</b><i>arish</i><b class="y">Y</b><i>etu</i></span>
+  <span class="spin" role="status" aria-label="Loading Parish Yetu"></span>
+  <p class="fallback">Not redirected? <a href="https://parishyetu.church/home">Continue to Parish Yetu</a></p>
 </main>
-
 <script>
-  // Fast redirect for real visitors; keeps any ?q= search and #hash.
-  // Opening the menu cancels it so people can pick where to go.
-  var go = setTimeout(function(){ location.replace('/home' + location.search + location.hash); }, 1200);
-  (function(){
-    var top = document.getElementById('top'), b = document.getElementById('burger');
-    function set(open){ top.classList.toggle('open', open); b.setAttribute('aria-expanded', open ? 'true' : 'false'); b.setAttribute('aria-label', open ? 'Close menu' : 'Open menu'); if(open) clearTimeout(go); }
-    b.addEventListener('click', function(){ set(!top.classList.contains('open')); });
-    document.getElementById('tnav').addEventListener('mouseenter', function(){ clearTimeout(go); });
-    document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && top.classList.contains('open')){ set(false); b.focus(); } });
-    document.addEventListener('click', function(e){ if(top.classList.contains('open') && !top.contains(e.target)) set(false); });
-    window.addEventListener('resize', function(){ if(window.innerWidth > 860) set(false); });
-  })();
+  // Fast redirect; keeps any ?q= search and #hash.
+  setTimeout(function(){ location.replace('/home' + location.search + location.hash); }, 800);
 </script>
 </body></html>

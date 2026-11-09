@@ -283,6 +283,15 @@ body{background:var(--ivory)}
     try {
       const s = await Auth.login(em, pw, rm);
 
+      // --- SUPER ADMIN FIX ---
+      // If they selected Platform Admin, skip the parish check and let them in.
+      if (chosen.key === 'super') {
+        UI.toast('Welcome, Platform Administrator');
+        setTimeout(() => location.href = '/super-admin', 450);
+        return;
+      }
+      // -----------------------
+
       if (s.role === 'parishioner') {
         await FB.auth.signOut();
         show('This account is a parishioner account. Use the member sign-in instead.');

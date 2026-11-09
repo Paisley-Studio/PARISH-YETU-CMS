@@ -24,10 +24,6 @@
 <meta name="language" content="English">
 <meta name="geo.region" content="KE">
 <meta name="geo.placename" content="Kenya">
-<!-- Paste your verification codes after adding the site in Google Search Console and Bing Webmaster Tools:
-<meta name="google-site-verification" content="YOUR_GOOGLE_CODE">
-<meta name="msvalidate.01" content="YOUR_BING_CODE">
--->
 
 <link rel="canonical" href="https://parishyetu.church/home">
 <link rel="alternate" hreflang="en-KE" href="https://parishyetu.church/home">
@@ -54,7 +50,7 @@
 <meta name="twitter:image" content="https://parishyetu.church/og-image.png">
 <meta name="twitter:image:alt" content="Parish Yetu – the Catholic parish app">
 
-<!-- ================= ICONS (Google needs a real, crawlable favicon file) ================= -->
+<!-- ================= ICONS ================= -->
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -80,14 +76,7 @@
       "name": "Parish Yetu",
       "alternateName": ["ParishYetu", "Parish Yetu CMS", "Parish Yetu Church Management System", "parishyetu.church"],
       "url": "https://parishyetu.church/",
-      "logo": {
-        "@type": "ImageObject",
-        "@id": "https://parishyetu.church/#logo",
-        "url": "https://parishyetu.church/logo.png",
-        "width": 512,
-        "height": 512,
-        "caption": "Parish Yetu"
-      },
+      "logo": { "@type": "ImageObject", "@id": "https://parishyetu.church/#logo", "url": "https://parishyetu.church/logo.png", "width": 512, "height": 512, "caption": "Parish Yetu" },
       "image": { "@id": "https://parishyetu.church/#logo" },
       "description": "Parish Yetu is a Catholic parish app and church management system. Parishioners find their church, see Mass times, read homilies, send prayer intentions and stay connected; parishes manage members, families, Small Christian Communities and sacramental records.",
       "slogan": "Grow in Faith. Stay Connected to Your Church.",
@@ -103,11 +92,7 @@
       "description": "Find your Catholic parish and stay connected to your church.",
       "inLanguage": "en-KE",
       "publisher": { "@id": "https://parishyetu.church/#organization" },
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": { "@type": "EntryPoint", "urlTemplate": "https://parishyetu.church/home?q={search_term_string}#find" },
-        "query-input": "required name=search_term_string"
-      }
+      "potentialAction": { "@type": "SearchAction", "target": { "@type": "EntryPoint", "urlTemplate": "https://parishyetu.church/home?q={search_term_string}#find" }, "query-input": "required name=search_term_string" }
     },
     {
       "@type": "WebPage",
@@ -125,9 +110,7 @@
     {
       "@type": "BreadcrumbList",
       "@id": "https://parishyetu.church/home#breadcrumb",
-      "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Parish Yetu", "item": "https://parishyetu.church/home" }
-      ]
+      "itemListElement": [ { "@type": "ListItem", "position": 1, "name": "Parish Yetu", "item": "https://parishyetu.church/home" } ]
     },
     {
       "@type": "WebApplication",
@@ -140,37 +123,20 @@
       "browserRequirements": "Requires JavaScript",
       "inLanguage": "en-KE",
       "publisher": { "@id": "https://parishyetu.church/#organization" },
-      "featureList": [
-        "Catholic church directory searchable by parish, diocese or town",
-        "Mass schedule and parish events with registration",
-        "Sermons and homilies with Scripture readings",
-        "Mass intentions and private prayer requests",
-        "Pastoral care and home visit requests",
-        "Personal baptism, confirmation and marriage records with certificate requests",
-        "Parish announcements and reminders",
-        "Family, Small Christian Community (SCC) and ministry membership"
-      ]
+      "featureList": ["Catholic church directory searchable by parish, diocese or town", "Mass schedule and parish events with registration", "Sermons and homilies with Scripture readings", "Mass intentions and private prayer requests", "Pastoral care and home visit requests", "Personal baptism, confirmation and marriage records with certificate requests", "Parish announcements and reminders", "Family, Small Christian Community (SCC) and ministry membership"]
     },
     {
       "@type": "FAQPage",
       "@id": "https://parishyetu.church/home#faq",
       "mainEntity": [
-        { "@type": "Question", "name": "What is Parish Yetu?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Parish Yetu (\"Our Parish\" in Swahili) is an online home for Catholic parishes. Parishioners use it to find their church, read the homilies shared by their priest, see Mass times and events, send prayer intentions, request pastoral care and view their own sacramental records. Parishes use it to manage their church community." } },
-        { "@type": "Question", "name": "How do I find my Catholic parish on Parish Yetu?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Use the church directory on the Parish Yetu home page. Search by the name of your parish, your diocese or your town, then choose your church and select Join this church." } },
-        { "@type": "Question", "name": "How do I join my church on Parish Yetu?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Find your church, create your account with your name, email address, phone number and a password, and you are in. As soon as you register you are a member of your church, and your parish office is told that you have joined." } },
-        { "@type": "Question", "name": "Can I see Mass times and parish events?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Once you have joined your church you can see its Mass schedule and upcoming parish events, and register for the events you wish to attend." } },
-        { "@type": "Question", "name": "Are my prayer requests private?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. You can offer a Mass intention or ask your parish to pray with you, and prayer requests stay private." } },
-        { "@type": "Question", "name": "Can I get my baptism, confirmation or marriage certificate?",
-          "acceptedAnswer": { "@type": "Answer", "text": "You can view your own baptism, confirmation and marriage records in Parish Yetu and request certificates from your parish." } },
-        { "@type": "Question", "name": "My parish is not on Parish Yetu. What can I do?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Parish administrators can register the parish on Parish Yetu at parishyetu.church/register-parish. If you are a parishioner, you can tell us about your parish from the registration page." } },
-        { "@type": "Question", "name": "Is Parish Yetu a church management system for parishes?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Parish Yetu is a Catholic parish management system. It brings members, families, Small Christian Communities (Jumuiya), ministries, the Mass schedule, events, announcements, intentions and sacramental records together in one place for the parish office." } }
+        { "@type": "Question", "name": "What is Parish Yetu?", "acceptedAnswer": { "@type": "Answer", "text": "Parish Yetu (\"Our Parish\" in Swahili) is an online home for Catholic parishes. Parishioners use it to find their church, read the homilies shared by their priest, see Mass times and events, send prayer intentions, request pastoral care and view their own sacramental records. Parishes use it to manage their church community." } },
+        { "@type": "Question", "name": "How do I find my Catholic parish on Parish Yetu?", "acceptedAnswer": { "@type": "Answer", "text": "Use the church directory on the Parish Yetu home page. Search by the name of your parish, your diocese or your town, then choose your church and select Join this church." } },
+        { "@type": "Question", "name": "How do I join my church on Parish Yetu?", "acceptedAnswer": { "@type": "Answer", "text": "Find your church, create your account with your name, email address, phone number and a password, and you are in. As soon as you register you are a member of your church, and your parish office is told that you have joined." } },
+        { "@type": "Question", "name": "Can I see Mass times and parish events?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Once you have joined your church you can see its Mass schedule and upcoming parish events, and register for the events you wish to attend." } },
+        { "@type": "Question", "name": "Are my prayer requests private?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. You can offer a Mass intention or ask your parish to pray with you, and prayer requests stay private." } },
+        { "@type": "Question", "name": "Can I get my baptism, confirmation or marriage certificate?", "acceptedAnswer": { "@type": "Answer", "text": "You can view your own baptism, confirmation and marriage records in Parish Yetu and request certificates from your parish." } },
+        { "@type": "Question", "name": "My parish is not on Parish Yetu. What can I do?", "acceptedAnswer": { "@type": "Answer", "text": "Parish administrators can register the parish on Parish Yetu at parishyetu.church/register-parish. If you are a parishioner, you can tell us about your parish from the registration page." } },
+        { "@type": "Question", "name": "Is Parish Yetu a church management system for parishes?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Parish Yetu is a Catholic parish management system. It brings members, families, Small Christian Communities (Jumuiya), ministries, the Mass schedule, events, announcements, intentions and sacramental records together in one place for the parish office." } }
       ]
     }
   ]
@@ -209,44 +175,12 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stro
 .bd::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .bd.g{background:var(--green-t);color:var(--green)}.bd.y{background:var(--gold-t);color:#7a6210}.bd.r{background:var(--red-t);color:var(--red)}.bd.b{background:var(--navy-t);color:var(--navy)}.bd.p{background:var(--bur-t);color:var(--bur)}
 
-/* shared UI used by core.js (modal / drawer / toast / menu / forms) */
+/* shared UI */
 .inp,.sel,.ta{height:38px;border:1px solid #D9D5C9;border-radius:9px;padding:0 12px;background:#fff;width:100%}
 .ta{height:auto;padding:10px 12px;min-height:80px;resize:vertical}
 .inp:focus,.sel:focus,.ta:focus{outline:2px solid var(--gold);outline-offset:0;border-color:var(--gold)}
 .empty{padding:44px 20px;text-align:center;color:var(--grey);font-weight:600}
 .empty b{display:block;color:var(--obs);font-size:15px;margin-bottom:4px}
-.modal{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:16px;background:rgba(17,19,21,.55);animation:fade .18s ease both}
-.mbox{background:#fff;border-radius:14px;width:min(560px,100%);max-height:92vh;display:flex;flex-direction:column;box-shadow:var(--sh2);animation:pop .22s ease both}
-.mbox.lg{width:min(860px,100%)}.mbox.sm{width:min(420px,100%)}
-.mh{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
-.mh h3{font-size:18px}
-.mb{padding:20px 22px;overflow:auto}
-.mf{padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;background:#FBF9F3;border-radius:0 0 14px 14px;flex-wrap:wrap}
-@keyframes fade{from{opacity:0}to{opacity:1}}@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
-@keyframes pgin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:#fff;z-index:95;box-shadow:var(--sh2);display:flex;flex-direction:column;animation:slide .28s cubic-bezier(.2,.8,.2,1) both}
-@keyframes slide{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
-.dscrim{position:fixed;inset:0;background:rgba(17,19,21,.45);z-index:94;animation:fade .2s both}
-.drawer .mb{flex:1}
-.toasts{position:fixed;right:20px;bottom:20px;z-index:200;display:flex;flex-direction:column;gap:10px}
-.toast{background:var(--obs);color:#fff;border-radius:10px;padding:13px 18px;font-weight:700;box-shadow:var(--sh2);display:flex;gap:10px;align-items:center;max-width:380px;animation:tin .3s ease both;border-left:4px solid var(--gold)}
-.toast.ok{border-left-color:#3DAA80}.toast.err{border-left-color:#E5645B}
-@keyframes tin{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
-.menu{position:absolute;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh2);min-width:170px;z-index:120;padding:6px;animation:fade .12s both}
-.menu button,.menu a{display:block;width:100%;text-align:left;border:0;background:none;padding:8px 12px;border-radius:7px;cursor:pointer;font-weight:600}
-.menu button:hover,.menu a:hover{background:var(--gold-t)}.menu .dng{color:var(--red)}
-.menu hr{border:0;border-top:1px solid var(--line);margin:5px 0}
-.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.fg .f{display:flex;flex-direction:column;gap:5px}.fg .f.w{grid-column:1/-1}
-.fg label{font-weight:700;font-size:12.5px;color:#55585c}
-.fg .err{color:var(--red);font-size:12px;font-weight:600;display:none}.fg .f.bad .err{display:block}.fg .f.bad .inp,.fg .f.bad .sel{border-color:var(--red)}
-.chk{display:flex;gap:8px;align-items:center;font-weight:600}.chk input{accent-color:var(--bur);width:16px;height:16px}
-.alert{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--gold-t);border:1px solid #E5D48E;font-weight:600}
-.alert.lock{background:var(--bur-t);border-color:#DDB6BC;color:var(--bur2)}
-.alert.red{background:var(--red-t);border-color:#E6B8B4}
-.mini{font-size:12px;color:var(--grey);font-weight:600}
-.flex{display:flex;gap:10px;align-items:center}.sp{flex:1}
-@media (max-width:760px){.fg{grid-template-columns:1fr}}
 
 /* ===== landing ===== */
 .wrap{max-width:1200px;margin:0 auto;padding:0 28px}
@@ -256,6 +190,8 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stro
 .nv .wrap{display:flex;align-items:center;gap:28px;height:68px}
 .lg{display:flex;gap:11px;align-items:center;font-weight:800;letter-spacing:.06em;font-size:17px;color:var(--bur)}
 .nv nav{display:flex;gap:6px;margin-left:auto}.nv nav a{padding:8px 13px;border-radius:8px;font-weight:700;color:#4a4d52}.nv nav a:hover{background:var(--gold-t);color:var(--bur)}
+
+/* ===== HERO ===== */
 .hero{background:var(--bur);color:#fff;position:relative;overflow:hidden}
 .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center;min-height:640px;position:relative;z-index:2;padding-top:60px;padding-bottom:140px}
 .hero h1{font-size:clamp(36px,5.2vw,68px);font-weight:800;line-height:1.02;letter-spacing:-.02em;color:#fff}
@@ -264,119 +200,32 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stro
 .hero .cta{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap}
 .hero .btn{height:52px;padding:0 26px;font-size:15px;border-radius:11px}
 .hero .btn.o{background:transparent;border:2px solid #E7C9C3;color:#fff}.hero .btn.o:hover{background:#fff;color:var(--bur)}
+
+/* skyline scene */
 .sil{position:absolute;left:0;right:0;bottom:0;z-index:1;display:block;width:100%;height:150px}
-.strip{background:var(--obs);color:#fff}
-.strip .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding-top:26px;padding-bottom:26px}
-.strip b{font-size:28px;font-weight:800;display:block;color:var(--gold)}.strip span{color:#C9C6BD;font-weight:600;font-size:13px}
-section.s{padding:92px 0}
-section.s h2{font-size:clamp(28px,3.6vw,44px);font-weight:800;letter-spacing:-.015em;max-width:760px;line-height:1.1}
-section.s .lead{font-size:17px;color:#55585c;max-width:640px;margin-top:14px;line-height:1.65}
-.sac{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:42px}
-.sc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px;transition:border-color .2s,transform .2s}
-.sc:hover{border-color:var(--gold);transform:translateY(-3px)}
-.sc svg{margin-bottom:12px}.sc h3{font-size:17px;margin-bottom:5px}.sc p{color:#5d6065;font-size:13.5px}
-.cta2{background:var(--obs);color:#fff;text-align:center;padding:110px 0;position:relative;overflow:hidden}
-.cta2 h2{color:#fff;font-size:clamp(34px,5vw,64px);font-weight:800;letter-spacing:-.02em;margin:0 auto}
-.cta2 p{color:#C9C6BD;font-size:17px;margin:16px auto 32px;max-width:540px}
-.cta2 .btn{height:56px;padding:0 34px;font-size:16px;border-radius:12px}
-footer.f{background:var(--obs);color:#8f8d86;padding:26px 0;border-top:1px solid #23262A;font-weight:600;font-size:13px}
-footer.f .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between;align-items:center}
-footer.f nav{display:flex;gap:18px;flex-wrap:wrap}
-footer.f a:hover{color:var(--gold)}
-.js .rv{opacity:0;transform:translateY(18px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}.js .rv.on{opacity:1;transform:none}
-.cfind{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
-.cfind .inp{flex:1 1 320px;height:52px;font-size:16px}
-.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
-.cc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:4px}
-.cc:hover{border-color:var(--gold)}.cc h3{font-size:16px}.cc small{color:var(--grey);font-weight:600}.cc .btn{margin-top:12px;align-self:flex-start}
-.cmsg{margin-top:22px;color:#5d6065;font-weight:600}
-.stn{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:42px}
-.stn .sc b.num{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--bur);color:#fff;margin-bottom:12px}
-/* new: about / parishes / FAQ */
-.about{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start}
-.about p{color:#4a4d52;font-size:16px;line-height:1.75;margin-top:14px}
-.about ul{list-style:none;display:grid;gap:10px}
-.about li{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 16px;font-weight:600;color:#4a4d52}
-.about li b{color:var(--bur)}
-.faq{max-width:860px;margin-top:36px;display:grid;gap:10px}
-.faq details{background:#fff;border:1px solid var(--line);border-radius:12px;padding:0 20px}
-.faq details[open]{border-color:var(--gold)}
-.faq summary{cursor:pointer;list-style:none;padding:18px 0;font-weight:800;font-size:16px;color:var(--obs);display:flex;justify-content:space-between;gap:12px}
-.faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:"+";color:var(--gold);font-size:22px;line-height:1}
-.faq details[open] summary::after{content:"–"}
-.faq details p{padding:0 0 18px;color:#4a4d52;font-size:15px;line-height:1.7}
-.faq a,.about a.tl{color:var(--bur);font-weight:800}
-@media(max-width:980px){.hero .wrap,.about{grid-template-columns:1fr}.rosebox{width:300px;margin-top:6px}.sac{grid-template-columns:repeat(2,1fr)}.nv nav{display:none}.nv .btn{margin-left:auto}.strip .wrap{grid-template-columns:1fr 1fr}.hero .wrap{min-height:0;padding-bottom:120px}.cgrid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:760px){.stn{grid-template-columns:1fr}}
-@media(max-width:560px){.sac,.cgrid{grid-template-columns:1fr}section.s{padding:64px 0}.wrap{padding:0 18px}}
-@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}}
-
-/* ===== page loader — bubbles ===== */
-#cms-load{position:fixed;inset:0;z-index:9999;background:var(--ivory);display:grid;place-items:center;transition:opacity .45s ease,visibility .45s ease}
-#cms-load.hide{opacity:0;visibility:hidden;pointer-events:none}
-#cms-load .orbit{position:relative;width:140px;height:140px;display:grid;place-items:center}
-#cms-load .orbit b{font-family:'Quicksand',system-ui,sans-serif;font-size:22px;font-weight:800;letter-spacing:.14em;color:var(--bur);animation:cmsbubbletext 2.4s ease-in-out infinite}
-#cms-load .orbit i{position:absolute;top:50%;left:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--bur);box-shadow:0 0 0 3px rgba(110,23,37,.08),0 4px 12px rgba(110,23,37,.25);transform-origin:0 0;animation:cmsorbit 2.4s linear infinite}
-#cms-load .orbit i:nth-child(1){background:var(--bur);animation-delay:0s}
-#cms-load .orbit i:nth-child(2){background:var(--gold);animation-delay:-.4s;width:11px;height:11px;margin:-5.5px 0 0 -5.5px}
-#cms-load .orbit i:nth-child(3){background:var(--navy);animation-delay:-.8s;width:9px;height:9px;margin:-4.5px 0 0 -4.5px}
-#cms-load .orbit i:nth-child(4){background:var(--green);animation-delay:-1.2s;width:12px;height:12px;margin:-6px 0 0 -6px}
-#cms-load .orbit i:nth-child(5){background:var(--bur3);animation-delay:-1.6s;width:10px;height:10px;margin:-5px 0 0 -5px}
-#cms-load .orbit i:nth-child(6){background:var(--gold2);animation-delay:-2s;width:13px;height:13px;margin:-6.5px 0 0 -6.5px}
-#cms-load .tag{position:absolute;bottom:36px;left:0;right:0;text-align:center;font-weight:700;font-size:12px;color:var(--grey);letter-spacing:.08em}
-@keyframes cmsorbit{
-  0%   {transform:rotate(0deg)   translateX(64px) rotate(0deg)   scale(1)}
-  50%  {transform:rotate(180deg) translateX(64px) rotate(-180deg) scale(1.25)}
-  100% {transform:rotate(360deg) translateX(64px) rotate(-360deg) scale(1)}
-}
-@keyframes cmsbubbletext{0%,100%{transform:scale(1);opacity:.95}50%{transform:scale(1.08);opacity:1}}
-@media (prefers-reduced-motion:reduce){#cms-load .orbit i,#cms-load .orbit b{animation:none}}
-
-/* ===== Motion kit, borrowed from Studio Desk: rise, logoPulse, shakeErr, spin, fadeIn, scaleIn, hover lift, dot grid ===== */
-@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-@keyframes scaleIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
-@keyframes popWord{from{transform:scale(.55)}to{transform:scale(1)}}
-@keyframes logoPulse{0%,100%{box-shadow:0 6px 18px rgba(110,23,37,.28),0 0 0 4px rgba(201,162,39,.14)}50%{box-shadow:0 8px 26px rgba(110,23,37,.42),0 0 0 8px rgba(201,162,39,.22)}}
-@keyframes shakeErr{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes draw{to{stroke-dashoffset:0}}
-
-/* wordmark: P·arish Y·etu */
-.pym{display:inline-flex;align-items:baseline;background:var(--bur);color:#fff;border-radius:11px;padding:7px 13px 8px;line-height:1;white-space:nowrap;animation:logoPulse 3s ease-in-out infinite}
-.pym b{font-size:24px;font-weight:800;letter-spacing:-.01em}
-.pym i{font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.03em;margin-left:1px}
-.pym i:first-of-type{margin-right:6px}
-.pym .y{color:var(--gold)}
-.pym .y+i{color:#F3E2A6}
-#cms-load .orbit b.pyl{display:flex;align-items:baseline;font-size:22px;letter-spacing:0}
-#cms-load .pyl small{font-size:9px;font-weight:800;letter-spacing:.03em}
-#cms-load .pyl small:first-of-type{margin-right:4px}
-#cms-load .pyl .y{color:var(--gold2)}
-
-/* lifts, focus glow, shake, spinner */
-.btn{transition:background .2s,border-color .2s,color .2s,transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s}
-.btn.p:hover,.btn.g:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(110,23,37,.28)}
-.sc:hover,.cc:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(110,23,37,.10);border-color:var(--gold)}
-.cc{transition:transform .3s,box-shadow .3s,border-color .3s;animation:rise .55s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i,0) * 45ms)}
-.cfind .inp:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 4px rgba(201,162,39,.2)}
-.inp.shake{animation:shakeErr .4s ease}
-.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(110,23,37,.2);border-top-color:var(--bur);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:8px}
-.nv nav a{position:relative}
-.nv nav a::after{content:"";position:absolute;left:13px;right:13px;bottom:3px;height:2px;border-radius:2px;background:var(--gold);transform:scaleX(0);transition:transform .3s cubic-bezier(.16,1,.3,1)}
-.nv nav a:hover::after{transform:scaleX(1)}
-.faq details{position:relative;transition:border-color .25s}
-.faq details[open] p{animation:fadeIn .35s ease}
-.faq details[open]::before{content:"";position:absolute;top:-1px;left:20%;right:20%;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.about li{transition:transform .3s cubic-bezier(.16,1,.3,1),border-color .3s}.about li:hover{transform:translateX(4px);border-color:var(--gold)}
-
-/* hero: dot grid + breathing glow */
-.hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(201,162,39,.13) 1px,transparent 1px);background-size:22px 22px;opacity:.6;pointer-events:none;z-index:0}
-.hero::after{content:"";position:absolute;width:900px;height:900px;left:50%;top:40%;border-radius:50%;background:radial-gradient(circle,rgba(201,162,39,.16),transparent 60%);transform:translate(-50%,-50%);animation:breathe 10s ease-in-out infinite;pointer-events:none;z-index:0}
-@keyframes breathe{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-32%,-56%) scale(1.12)}}
-.cta2::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(201,162,39,.10) 1px,transparent 1px);background-size:22px 22px;pointer-events:none}
-.cta2 .wrap{position:relative}
+.scene{position:absolute;left:0;right:0;bottom:0;height:240px;z-index:1;pointer-events:none;overflow:hidden}
+.sil .win{fill:#F2C14E;animation:flick 6s ease-in-out infinite}
+.sil .win:nth-of-type(2n){animation-duration:8s;animation-delay:-2s}
+.sil .win:nth-of-type(3n){animation-duration:11s;animation-delay:-5s}
+.sil .door{fill:#F2C14E;animation:glow 4s ease-in-out infinite}
+@keyframes flick{0%,100%{opacity:.55}40%{opacity:.2}55%{opacity:.62}72%{opacity:.34}}
+@keyframes glow{0%,100%{opacity:.45}50%{opacity:.9}}
+.w{position:absolute;left:0;right:0;bottom:31px;height:0;animation:walk var(--d,34s) linear infinite;animation-delay:var(--dl,0s)}
+.w .f{position:absolute;bottom:0;left:-14px;line-height:0}
+.w.r .f{transform:scaleX(-1)}
+.pp{display:block;fill:#111315;filter:drop-shadow(0 0 1.2px rgba(242,193,78,.6));animation:bob .36s ease-in-out infinite alternate}
+.pp .leg{transform-box:fill-box;transform-origin:50% 0;animation:leg .72s ease-in-out infinite alternate}
+.pp .leg.b{animation-direction:alternate-reverse}
+@keyframes walk{0%{transform:translateX(var(--a));opacity:0}5%{opacity:1}90%{opacity:1}100%{transform:translateX(var(--b));opacity:0}}
+@keyframes bob{to{transform:translateY(-1px)}}
+@keyframes leg{from{transform:rotate(-20deg)}to{transform:rotate(20deg)}}
+.fly{position:absolute;left:0;right:0;top:var(--t,24px);animation:fly var(--d,30s) linear infinite;animation-delay:var(--dl,0s)}
+.fly .bob2{position:absolute;left:-50px;animation:soar 3.4s ease-in-out infinite alternate}
+.dv{display:block;fill:#111315;filter:drop-shadow(0 0 1.5px rgba(242,193,78,.55))}
+.dv .wg{transform-box:fill-box;transform-origin:50% 100%;animation:flap .34s ease-in-out infinite alternate}
+@keyframes fly{from{transform:translateX(0)}to{transform:translateX(calc(100% + 100px))}}
+@keyframes soar{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(26px) rotate(5deg)}}
+@keyframes flap{to{transform:scaleY(-.5)}}
 
 /* hero slider */
 .slides{display:grid}
@@ -428,33 +277,129 @@ footer.f a:hover{color:var(--gold)}
 .rcap b{color:var(--wc,#fff);font-weight:800;letter-spacing:.08em}
 .rcap small{color:#C9A9A2;font-size:12.5px;margin-left:8px}
 
-/* skyline scene: people walking to church, doves, flickering windows */
-.scene{position:absolute;left:0;right:0;bottom:0;height:240px;z-index:1;pointer-events:none;overflow:hidden}
-.sil .win{fill:#F2C14E;animation:flick 6s ease-in-out infinite}
-.sil .win:nth-of-type(2n){animation-duration:8s;animation-delay:-2s}
-.sil .win:nth-of-type(3n){animation-duration:11s;animation-delay:-5s}
-.sil .door{fill:#F2C14E;animation:glow 4s ease-in-out infinite}
-@keyframes flick{0%,100%{opacity:.55}40%{opacity:.2}55%{opacity:.62}72%{opacity:.34}}
-@keyframes glow{0%,100%{opacity:.45}50%{opacity:.9}}
-.w{position:absolute;left:0;right:0;bottom:31px;height:0;animation:walk var(--d,34s) linear infinite;animation-delay:var(--dl,0s)}
-.w .f{position:absolute;bottom:0;left:-14px;line-height:0}
-.w.r .f{transform:scaleX(-1)}
-.pp{display:block;fill:#111315;filter:drop-shadow(0 0 1.2px rgba(242,193,78,.6));animation:bob .36s ease-in-out infinite alternate}
-.pp .leg{transform-box:fill-box;transform-origin:50% 0;animation:leg .72s ease-in-out infinite alternate}
-.pp .leg.b{animation-direction:alternate-reverse}
-@keyframes walk{0%{transform:translateX(var(--a));opacity:0}5%{opacity:1}90%{opacity:1}100%{transform:translateX(var(--b));opacity:0}}
-@keyframes bob{to{transform:translateY(-1px)}}
-@keyframes leg{from{transform:rotate(-20deg)}to{transform:rotate(20deg)}}
-.fly{position:absolute;left:0;right:0;top:var(--t,24px);animation:fly var(--d,30s) linear infinite;animation-delay:var(--dl,0s)}
-.fly .bob2{position:absolute;left:-50px;animation:soar 3.4s ease-in-out infinite alternate}
-.dv{display:block;fill:#111315;filter:drop-shadow(0 0 1.5px rgba(242,193,78,.55))}
-.dv .wg{transform-box:fill-box;transform-origin:50% 100%;animation:flap .34s ease-in-out infinite alternate}
-@keyframes fly{from{transform:translateX(0)}to{transform:translateX(calc(100% + 100px))}}
-@keyframes soar{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(26px) rotate(5deg)}}
-@keyframes flap{to{transform:scaleY(-.5)}}
-@media (prefers-reduced-motion:reduce){.scene .w,.scene .fly{display:none}}
+/* ===== SECTIONS (Animations & Redesign added below) ===== */
+.strip{background:var(--obs);color:#fff}
+.strip .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding-top:26px;padding-bottom:26px}
+.strip b{font-size:28px;font-weight:800;display:block;color:var(--gold)}.strip span{color:#C9C6BD;font-weight:600;font-size:13px}
 
-/* ===== responsive header: hamburger menu ===== */
+section.s{padding:92px 0}
+section.s h2{font-size:clamp(28px,3.6vw,44px);font-weight:800;letter-spacing:-.015em;max-width:760px;line-height:1.1}
+section.s .lead{font-size:17px;color:#55585c;max-width:640px;margin-top:14px;line-height:1.65}
+
+/* Cards with animation & hover lift */
+.sac{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:42px}
+.sc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px;transition:transform .4s cubic-bezier(.16,1,.3,1),box-shadow .4s,border-color .4s}
+.sc:hover{border-color:var(--gold);transform:translateY(-6px);box-shadow:0 14px 30px rgba(110,23,37,.10)}
+.sc svg{margin-bottom:12px;transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.sc:hover svg{transform:scale(1.1)}
+.sc h3{font-size:17px;margin-bottom:5px}.sc p{color:#5d6065;font-size:13.5px;line-height:1.5}
+
+.cta2{background:var(--obs);color:#fff;text-align:center;padding:110px 0;position:relative;overflow:hidden}
+.cta2 h2{color:#fff;font-size:clamp(34px,5vw,64px);font-weight:800;letter-spacing:-.02em;margin:0 auto}
+.cta2 p{color:#C9C6BD;font-size:17px;margin:16px auto 32px;max-width:540px}
+.cta2 .btn{height:56px;padding:0 34px;font-size:16px;border-radius:12px}
+footer.f{background:var(--obs);color:#8f8d86;padding:26px 0;border-top:1px solid #23262A;font-weight:600;font-size:13px}
+footer.f .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+footer.f nav{display:flex;gap:18px;flex-wrap:wrap}
+footer.f a:hover{color:var(--gold)}
+
+/* Scroll Reveal Animation */
+.js .rv{opacity:0;transform:translateY(30px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.js .rv.on{opacity:1;transform:none}
+
+.cfind{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+.cfind .inp{flex:1 1 320px;height:52px;font-size:16px}
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+.cc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:4px}
+.cc:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 10px 20px rgba(110,23,37,.08)}
+.cc h3{font-size:16px}.cc small{color:var(--grey);font-weight:600}.cc .btn{margin-top:12px;align-self:flex-start}
+.cmsg{margin-top:22px;color:#5d6065;font-weight:600}
+.stn{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:42px}
+.stn .sc b.num{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--bur);color:#fff;margin-bottom:12px}
+
+.about{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start}
+.about p{color:#4a4d52;font-size:16px;line-height:1.75;margin-top:14px}
+.about ul{list-style:none;display:grid;gap:10px}
+.about li{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 16px;font-weight:600;color:#4a4d52;transition:transform .3s cubic-bezier(.16,1,.3,1),border-color .3s}
+.about li:hover{transform:translateX(4px);border-color:var(--gold)}
+.about li b{color:var(--bur)}
+
+/* ===== FAQ REDESIGN (2 Columns, Centered) ===== */
+.faq-container {
+  max-width: 960px; margin: 42px auto 0;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;
+}
+.faq-item {
+  background: #fff; padding: 24px; border-radius: 16px;
+  border: 1px solid var(--line); box-shadow: 0 4px 12px rgba(0,0,0,.03);
+  transition: transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s, border-color .3s;
+  animation: rise .8s cubic-bezier(.16,1,.3,1) both;
+}
+.faq-item:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(201,162,39,.15); border-color: var(--gold); }
+.faq-q { font-weight: 800; font-size: 17px; color: var(--bur); margin-bottom: 10px; display: flex; gap: 12px; line-height: 1.4; }
+.faq-q::before {
+  content: "?"; display: inline-flex; justify-content: center; align-items: center;
+  width: 26px; height: 26px; background: var(--gold); color: var(--bur);
+  border-radius: 50%; font-size: 15px; flex-shrink: 0; font-weight: 800;
+}
+.faq-a { font-size: 14.5px; color: #5d6065; line-height: 1.65; padding-left: 38px; }
+.faq-a a { color: var(--bur); font-weight: 800; text-decoration: underline; }
+
+/* Responsive */
+@media(max-width:980px){
+  .hero .wrap,.about{grid-template-columns:1fr}
+  .rosebox{width:300px;margin-top:6px}
+  .sac{grid-template-columns:repeat(2,1fr)}
+  .nv nav{display:none}.nv .btn{margin-left:auto}
+  .strip .wrap{grid-template-columns:1fr 1fr}
+  .hero .wrap{min-height:0;padding-bottom:120px}
+  .cgrid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:760px){
+  .stn{grid-template-columns:1fr}
+  .faq-container { grid-template-columns: 1fr; }
+}
+@media(max-width:560px){
+  .sac,.cgrid{grid-template-columns:1fr}section.s{padding:64px 0}.wrap{padding:0 18px}
+}
+
+/* ===== page loader — bubbles ===== */
+#cms-load{position:fixed;inset:0;z-index:9999;background:var(--ivory);display:grid;place-items:center;transition:opacity .45s ease,visibility .45s ease}
+#cms-load.hide{opacity:0;visibility:hidden;pointer-events:none}
+#cms-load .orbit{position:relative;width:140px;height:140px;display:grid;place-items:center}
+#cms-load .orbit b{font-family:'Quicksand',system-ui,sans-serif;font-size:22px;font-weight:800;letter-spacing:.14em;color:var(--bur);animation:cmsbubbletext 2.4s ease-in-out infinite}
+#cms-load .orbit i{position:absolute;top:50%;left:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--bur);box-shadow:0 0 0 3px rgba(110,23,37,.08),0 4px 12px rgba(110,23,37,.25);transform-origin:0 0;animation:cmsorbit 2.4s linear infinite}
+#cms-load .orbit i:nth-child(1){background:var(--bur);animation-delay:0s}
+#cms-load .orbit i:nth-child(2){background:var(--gold);animation-delay:-.4s;width:11px;height:11px;margin:-5.5px 0 0 -5.5px}
+#cms-load .orbit i:nth-child(3){background:var(--navy);animation-delay:-.8s;width:9px;height:9px;margin:-4.5px 0 0 -4.5px}
+#cms-load .orbit i:nth-child(4){background:var(--green);animation-delay:-1.2s;width:12px;height:12px;margin:-6px 0 0 -6px}
+#cms-load .orbit i:nth-child(5){background:var(--bur3);animation-delay:-1.6s;width:10px;height:10px;margin:-5px 0 0 -5px}
+#cms-load .orbit i:nth-child(6){background:var(--gold2);animation-delay:-2s;width:13px;height:13px;margin:-6.5px 0 0 -6.5px}
+#cms-load .tag{position:absolute;bottom:36px;left:0;right:0;text-align:center;font-weight:700;font-size:12px;color:var(--grey);letter-spacing:.08em}
+@keyframes cmsorbit{0%{transform:rotate(0deg) translateX(64px) rotate(0deg) scale(1)}50%{transform:rotate(180deg) translateX(64px) rotate(-180deg) scale(1.25)}100%{transform:rotate(360deg) translateX(64px) rotate(-360deg) scale(1)}}
+@keyframes cmsbubbletext{0%,100%{transform:scale(1);opacity:.95}50%{transform:scale(1.08);opacity:1}}
+@media (prefers-reduced-motion:reduce){#cms-load .orbit i,#cms-load .orbit b{animation:none}}
+
+/* Motion kit */
+@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes popWord{from{transform:scale(.55)}to{transform:scale(1)}}
+@keyframes logoPulse{0%,100%{box-shadow:0 6px 18px rgba(110,23,37,.28),0 0 0 4px rgba(201,162,39,.14)}50%{box-shadow:0 8px 26px rgba(110,23,37,.42),0 0 0 8px rgba(201,162,39,.22)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+.pym{display:inline-flex;align-items:baseline;background:var(--bur);color:#fff;border-radius:11px;padding:7px 13px 8px;line-height:1;white-space:nowrap;animation:logoPulse 3s ease-in-out infinite}
+.pym b{font-size:24px;font-weight:800;letter-spacing:-.01em}
+.pym i{font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.03em;margin-left:1px}
+.pym i:first-of-type{margin-right:6px}
+.pym .y{color:var(--gold)}
+.pym .y+i{color:#F3E2A6}
+#cms-load .orbit b.pyl{display:flex;align-items:baseline;font-size:22px;letter-spacing:0}
+#cms-load .pyl small{font-size:9px;font-weight:800;letter-spacing:.03em}
+#cms-load .pyl small:first-of-type{margin-right:4px}
+#cms-load .pyl .y{color:var(--gold2)}
+
+/* Hamburger menu */
 .nvm{display:flex;align-items:center;gap:28px;margin-left:auto}
 .nvb{display:flex;gap:10px;align-items:center}
 .burger{display:none;margin-left:auto;width:44px;height:44px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;position:relative;flex:none;transition:border-color .2s,background .2s}
@@ -471,7 +416,6 @@ footer.f a:hover{color:var(--gold)}
   .nv.open .nvm{opacity:1;visibility:visible;transform:none;transition:opacity .3s,transform .35s cubic-bezier(.16,1,.3,1)}
   .nv .nvm nav{display:flex;flex-direction:column;gap:2px;margin:0}
   .nv .nvm nav a{padding:13px 12px;font-size:15px;border-bottom:1px solid var(--line);border-radius:0}
-  .nv .nvm nav a::after{display:none}
   .nvb{flex-direction:column;align-items:stretch;gap:10px;margin-top:6px}
   .nv .nvb .btn{margin:0;height:48px;justify-content:center;font-size:15px}
   .nv.open .nvm nav a,.nv.open .nvb .btn{animation:fadeIn .4s cubic-bezier(.16,1,.3,1) both}
@@ -618,6 +562,7 @@ footer.f a:hover{color:var(--gold)}
 
 <div class="strip"><div class="wrap"><div><b>Word</b><span>Receive and reflect on the Scriptures</span></div><div><b>Worship</b><span>Know when and where your parish gathers for Mass</span></div><div><b>Fellowship</b><span>Belong to your family, SCC and parish</span></div><div><b>Service</b><span>Take part in ministries and parish life</span></div></div></div>
 
+<!-- SECTION: FIND -->
 <section class="s" id="find" aria-labelledby="find-title"><div class="wrap rv">
   <h2 id="find-title">Find your Catholic parish</h2>
   <p class="lead">Search the Parish Yetu church directory by the name of your parish, your diocese or your town. Choose your church, and you can join it in a few minutes.</p>
@@ -632,6 +577,7 @@ footer.f a:hover{color:var(--gold)}
   <p class="cmsg">Cannot find your church? Parish administrators can <a href="/register-parish" style="color:var(--bur);font-weight:800">register the parish on Parish Yetu</a>, or <a href="/register#request" style="color:var(--bur);font-weight:800">tell us about it</a>.</p>
 </div></section>
 
+<!-- SECTION: SERVICES -->
 <section class="s" id="services" aria-labelledby="services-title" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap rv">
   <h2 id="services-title">Everything a parishioner needs, in one place</h2>
   <p class="lead">Once you have joined your church on Parish Yetu you can use these services, whenever you need them.</p>
@@ -647,6 +593,7 @@ footer.f a:hover{color:var(--gold)}
   </div>
 </div></section>
 
+<!-- SECTION: JOIN -->
 <section class="s" id="join" aria-labelledby="join-title"><div class="wrap rv">
   <h2 id="join-title">Joining your parish takes three steps</h2>
   <p class="lead">There is nothing to wait for. As soon as you register you are a member of your church, and your parish office is told that you have joined.</p>
@@ -657,6 +604,7 @@ footer.f a:hover{color:var(--gold)}
   </ol>
 </div></section>
 
+<!-- SECTION: ABOUT -->
 <section class="s" id="about" aria-labelledby="about-title" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap rv about">
   <div>
     <h2 id="about-title">Parish Yetu: our parish, online</h2>
@@ -677,21 +625,55 @@ footer.f a:hover{color:var(--gold)}
   </div>
 </div></section>
 
+<!-- SECTION: FAQ (REDESIGNED) -->
 <section class="s" id="faq" aria-labelledby="faq-title"><div class="wrap rv">
   <h2 id="faq-title">Frequently asked questions</h2>
   <p class="lead">Questions parishioners and parish offices often ask about Parish Yetu.</p>
-  <div class="faq">
-    <details open><summary>What is Parish Yetu?</summary><p>Parish Yetu (“Our Parish” in Swahili) is an online home for Catholic parishes. Parishioners use it to find their church, read the homilies shared by their priest, see Mass times and events, send prayer intentions, request pastoral care and view their own sacramental records. Parishes use it to manage their church community.</p></details>
-    <details><summary>How do I find my Catholic parish on Parish Yetu?</summary><p>Use the <a href="#find">church directory</a> above. Search by the name of your parish, your diocese or your town, then choose your church and select <em>Join this church</em>.</p></details>
-    <details><summary>How do I join my church on Parish Yetu?</summary><p>Find your church, then <a href="/register">create your account</a> with your name, email address, phone number and a password. As soon as you register you are a member of your church, and your parish office is told that you have joined.</p></details>
-    <details><summary>Can I see Mass times and parish events?</summary><p>Yes. Once you have joined your church you can see its Mass schedule and upcoming parish events, and register for the events you wish to attend.</p></details>
-    <details><summary>Are my prayer requests private?</summary><p>Yes. You can offer a Mass intention or ask your parish to pray with you, and prayer requests stay private.</p></details>
-    <details><summary>Can I get my baptism, confirmation or marriage certificate?</summary><p>You can view your own baptism, confirmation and marriage records in Parish Yetu and request certificates from your parish.</p></details>
-    <details><summary>My parish is not on Parish Yetu. What can I do?</summary><p>Parish administrators can <a href="/register-parish">register the parish on Parish Yetu</a>. If you are a parishioner, you can <a href="/register#request">tell us about your parish</a>.</p></details>
-    <details><summary>Is Parish Yetu a church management system for parishes?</summary><p>Yes. Parish Yetu is a Catholic parish management system. It brings members, families, Small Christian Communities (Jumuiya), ministries, the Mass schedule, events, announcements, intentions and sacramental records together in one place for the parish office.</p></details>
+  
+  <div class="faq-container">
+    <!-- Column 1 -->
+    <div class="faq-column">
+      <div class="faq-item" style="animation-delay:0.1s;">
+        <div class="faq-q">What is Parish Yetu?</div>
+        <div class="faq-a">Parish Yetu (“Our Parish” in Swahili) is an online home for Catholic parishes. Parishioners use it to find their church, read the homilies shared by their priest, see Mass times and events, send prayer intentions, request pastoral care and view their own sacramental records. Parishes use it to manage their church community.</div>
+      </div>
+      <div class="faq-item" style="animation-delay:0.2s;">
+        <div class="faq-q">How do I find my Catholic parish on Parish Yetu?</div>
+        <div class="faq-a">Use the <a href="#find">church directory</a> above. Search by the name of your parish, your diocese or your town, then choose your church and select <em>Join this church</em>.</div>
+      </div>
+      <div class="faq-item" style="animation-delay:0.3s;">
+        <div class="faq-q">How do I join my church on Parish Yetu?</div>
+        <div class="faq-a">Find your church, then <a href="/register">create your account</a> with your name, email address, phone number and a password. As soon as you register you are a member of your church, and your parish office is told that you have joined.</div>
+      </div>
+      <div class="faq-item" style="animation-delay:0.4s;">
+        <div class="faq-q">Can I see Mass times and parish events?</div>
+        <div class="faq-a">Yes. Once you have joined your church you can see its Mass schedule and upcoming parish events, and register for the events you wish to attend.</div>
+      </div>
+    </div>
+
+    <!-- Column 2 -->
+    <div class="faq-column">
+      <div class="faq-item" style="animation-delay:0.15s;">
+        <div class="faq-q">Are my prayer requests private?</div>
+        <div class="faq-a">Yes. You can offer a Mass intention or ask your parish to pray with you, and prayer requests stay private.</div>
+      </div>
+      <div class="faq-item" style="animation-delay:0.25s;">
+        <div class="faq-q">Can I get my baptism, confirmation or marriage certificate?</div>
+        <div class="faq-a">You can view your own baptism, confirmation and marriage records in Parish Yetu and request certificates from your parish.</div>
+      </div>
+      <div class="faq-item" style="animation-delay:0.35s;">
+        <div class="faq-q">My parish is not on Parish Yetu. What can I do?</div>
+        <div class="faq-a">Parish administrators can <a href="/register-parish">register the parish on Parish Yetu</a>. If you are a parishioner, you can <a href="/register#request">tell us about your parish</a>.</div>
+      </div>
+      <div class="faq-item" style="animation-delay:0.45s;">
+        <div class="faq-q">Is Parish Yetu a church management system for parishes?</div>
+        <div class="faq-a">Yes. Parish Yetu is a Catholic parish management system. It brings members, families, Small Christian Communities (Jumuiya), ministries, the Mass schedule, events, announcements, intentions and sacramental records together in one place for the parish office.</div>
+      </div>
+    </div>
   </div>
 </div></section>
 
+<!-- SECTION: CTA -->
 <section class="cta2" aria-labelledby="cta-title"><div class="wrap rv">
   <h2 id="cta-title">Your parish family is waiting for you.</h2>
   <p>Join your church on Parish Yetu today, or sign in to continue where you left off.</p>
@@ -721,14 +703,13 @@ footer.f a:hover{color:var(--gold)}
     }, wait);
   }
   window.PageLoader = { done: finish };
-  // Reveal the page as soon as the HTML is ready (good for users, Core Web Vitals and Googlebot).
-  // The church directory shows its own "Loading churches…" message while it fetches.
   if (document.readyState !== 'loading') finish(); else document.addEventListener('DOMContentLoaded', finish);
   setTimeout(finish, 2500);
 })();
 </script>
 
 <script>
+// Scroll animations
 window.addEventListener('DOMContentLoaded', function(){
   document.documentElement.classList.add('js');
   setTimeout(function(){ document.querySelectorAll('.rv').forEach(function(e){ e.classList.add('on'); }); }, 120);
@@ -747,14 +728,13 @@ window.addEventListener('DOMContentLoaded', function(){
   const msg  = document.getElementById('cm');
   const q    = document.getElementById('q');
   const form = document.getElementById('findform');
-  form.addEventListener('submit', e => e.preventDefault());
+  if(form) form.addEventListener('submit', e => e.preventDefault());
 
-  // Support search links like parishyetu.church/home?q=Nairobi (matches the WebSite SearchAction schema)
   const pre = new URLSearchParams(location.search).get('q');
-  if (pre) { q.value = pre; document.getElementById('find').scrollIntoView(); }
+  if (pre && q) { q.value = pre; document.getElementById('find').scrollIntoView(); }
 
   if (!window.FB || !FB.ok) {
-    msg.textContent = 'The church directory is not available yet. The platform has not been connected to its database.';
+    if(msg) msg.textContent = 'The church directory is not available yet. The platform has not been connected to its database.';
     if (window.PageLoader) PageLoader.done();
     return;
   }
@@ -762,12 +742,11 @@ window.addEventListener('DOMContentLoaded', function(){
   let all = [];
   try { all = await Dir.load(); }
   catch (e) {
-    msg.textContent = 'The church directory could not be loaded. Please try again later.';
+    if(msg) msg.textContent = 'The church directory could not be loaded. Please try again later.';
     if (window.PageLoader) PageLoader.done();
     return;
   }
 
-  // Structured data: list every church as a schema.org CatholicChurch so search engines understand the directory.
   try {
     const ld = {
       "@context": "https://schema.org",
@@ -781,17 +760,9 @@ window.addEventListener('DOMContentLoaded', function(){
         "item": {
           "@type": "CatholicChurch",
           "name": c.name,
-          "url": (c.slug && c.websitePublished)
-            ? "https://parishyetu.church/" + encodeURIComponent(c.slug)
-            : "https://parishyetu.church/register?church=" + encodeURIComponent(c.id),
+          "url": (c.slug && c.websitePublished) ? "https://parishyetu.church/" + encodeURIComponent(c.slug) : "https://parishyetu.church/register?church=" + encodeURIComponent(c.id),
           "telephone": c.phone || undefined,
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": c.address || undefined,
-            "addressLocality": c.town || undefined,
-            "addressRegion": c.county || undefined,
-            "addressCountry": "KE"
-          },
+          "address": { "@type": "PostalAddress", "streetAddress": c.address || undefined, "addressLocality": c.town || undefined, "addressRegion": c.county || undefined, "addressCountry": "KE" },
           "containedInPlace": c.dioceseName ? { "@type": "Place", "name": c.dioceseName } : undefined
         }
       }))
@@ -803,24 +774,25 @@ window.addEventListener('DOMContentLoaded', function(){
   } catch (e) {}
 
   const draw = () => {
+    if(!grid) return;
     const r = Dir.search(all, q.value);
     const shown = r.slice(0, q.value.trim() ? 30 : 6);
     grid.innerHTML = shown.map((c, i) =>
       `<article class="cc" style="--i:${i}"><h3>${esc(c.name)}</h3><small>${esc([c.town, c.county].filter(Boolean).join(', '))}</small><small>${esc(c.dioceseName || '')}${c.deanery ? ' · ' + esc(c.deanery) : ''}</small>${c.address ? `<small>${esc(c.address)}</small>` : ''}${c.phone ? `<small>${esc(c.phone)}</small>` : ''}${c.slug&&c.websitePublished?`<a class="btn sm" href="/${encodeURIComponent(c.slug)}" title="${esc(c.name)} website">Visit website</a> `:''}<a class="btn p sm" href="/register?church=${encodeURIComponent(c.id)}" title="Join ${esc(c.name)} on Parish Yetu">Join this church</a></article>`
     ).join('');
-    msg.textContent = !all.length ? 'No churches have been registered on the platform yet.'
+    if(msg) msg.textContent = !all.length ? 'No churches have been registered on the platform yet.'
       : !r.length ? 'No church matches your search.'
-      : (r.length > shown.length
-          ? 'Showing ' + shown.length + ' of ' + r.length + ' churches. Type more to narrow the list.'
-          : r.length + (r.length === 1 ? ' church found.' : ' churches found.'));
+      : (r.length > shown.length ? 'Showing ' + shown.length + ' of ' + r.length + ' churches. Type more to narrow the list.' : r.length + (r.length === 1 ? ' church found.' : ' churches found.'));
   };
   let wasEmpty = false;
-  q.oninput = () => {
-    draw();
-    const empty = !!q.value.trim() && !Dir.search(all, q.value).length;
-    if (empty && !wasEmpty) { q.classList.remove('shake'); void q.offsetWidth; q.classList.add('shake'); }
-    wasEmpty = empty;
-  };
+  if(q) {
+    q.oninput = () => {
+      draw();
+      const empty = !!q.value.trim() && !Dir.search(all, q.value).length;
+      if (empty && !wasEmpty) { q.classList.remove('shake'); void q.offsetWidth; q.classList.add('shake'); }
+      wasEmpty = empty;
+    };
+  }
   draw();
 
   document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
@@ -833,7 +805,7 @@ window.addEventListener('DOMContentLoaded', function(){
 </script>
 
 <script>
-/* Hero slider: fades between 3 slides; the gold bar in the active dot is the timer. Pauses on hover/focus. */
+/* Hero slider */
 (function(){
   var s = document.getElementById('heroSlider'); if(!s) return;
   var sl = [].slice.call(s.querySelectorAll('.slide')), ds = [].slice.call(s.querySelectorAll('.dot')), i = 0;
@@ -851,7 +823,7 @@ window.addEventListener('DOMContentLoaded', function(){
   s.addEventListener('touchend', function(e){ if(x0 === null) return; var dx = e.changedTouches[0].clientX - x0; if(Math.abs(dx) > 50) go(i + (dx < 0 ? 1 : -1)); x0 = null; });
 })();
 
-/* Rose window: spins slowly firing darts from the centre, locks onto a petal, shoots an arrow and reveals a word. */
+/* Rose window */
 (function(){
   var box = document.getElementById('rosebox'), svg = document.getElementById('rose'); if(!svg) return;
   var $ = function(q){ return svg.querySelector(q); };

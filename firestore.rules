@@ -8,6 +8,9 @@ service cloud.firestore {
 
     // ---------- auth helpers ----------
     function signedIn() { return request.auth != null; }
+    
+    // Check if the user has the custom claim set in Firebase Auth
+    function isPlatformSuper() { return signedIn() && request.auth.token.superAdmin == true; }
 
     function myProfile() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
@@ -20,7 +23,8 @@ service cloud.firestore {
     function myScc()      { return signedIn() ? myProfile().get('sccId', '')        : ''; }
 
     function active()    { return signedIn() && myStatus() == 'active'; }
-    function isSuper()   { return active() && myRole() == 'super'; }
+    function isSuper()   { return isPlatformSuper() || (active() && myRole() == 'super'); }
+    
     // A suspended or rejected parish loses access for all of its staff and members at once.
     function parishLive(pid) { return get(/databases/$(database)/documents/parishes/$(pid)).data.get('status', 'active') == 'active'; }
     function inParish(pid) { return active() && myParish() == pid && parishLive(pid); }
@@ -46,11 +50,13 @@ service cloud.firestore {
 
     // ---------- accounts ----------
     match /users/{uid} {
+      // Platform Super Admins can read their own profile, OR any user's profile
       allow get: if signedIn() && (request.auth.uid == uid || isSuper()
                     || (active() && myRole() in ['priest', 'admin'] && resource.data.parishId == myParish()));
       allow list: if isSuper()
                     || (active() && myRole() in ['priest', 'admin'] && resource.data.parishId == myParish());
-      allow create: if signedIn() && request.auth.uid == uid
+      // Platform Super Admins bypass the create restrictions
+      allow create: if isSuper() || (signedIn() && request.auth.uid == uid
         && request.resource.data.keys().hasOnly(['name','email','phone','role','status','parishId','dioceseId','deanery','organization','title','personId','createdAt'])
         && request.resource.data.role == 'parishioner'
         && request.resource.data.status == 'active'
@@ -61,14 +67,14 @@ service cloud.firestore {
         && request.resource.data.createdAt == request.time
         && exists(/databases/$(database)/documents/churchDirectory/$(request.resource.data.parishId))
         && get(/databases/$(database)/documents/churchDirectory/$(request.resource.data.parishId)).data.status == 'active'
-        && get(/databases/$(database)/documents/churchDirectory/$(request.resource.data.parishId)).data.dioceseId == request.resource.data.dioceseId;
+        && get(/databases/$(database)/documents/churchDirectory/$(request.resource.data.parishId)).data.dioceseId == request.resource.data.dioceseId);
       allow update: if isSuper()
         || (active() && request.auth.uid == uid && changed(['name', 'phone', 'updatedAt']))
         || (staffOf(resource.data.get('parishId', 'none'), ['priest', 'admin']) && request.auth.uid != uid
             && changed(['status', 'role', 'title', 'sccId', 'updatedAt'])
             && resource.data.role in ['priest', 'admin', 'secretary', 'finance', 'scc', 'parishioner']
             && request.resource.data.role in ['priest', 'admin', 'secretary', 'finance', 'scc', 'parishioner']);
-      allow delete: if false;
+      allow delete: if isSuper();
     }
 
     // ---------- public church directory ----------
@@ -80,32 +86,31 @@ service cloud.firestore {
             && request.resource.data.get('websitePublished', false) is bool);
     }
 
-    // Official diocesan directory: public (needed by the church registration wizard). Platform admin writes.
-    // Proposed dioceses never land here directly; they wait in dioceseProposals until approved.
+    // Official diocesan directory
     match /dioceses/{did} {
       allow read: if true;
       allow write: if isSuper();
     }
     match /dioceseProposals/{id} {
       allow read, update: if isSuper();
-      allow create, delete: if false;          // created only by the registerParish Cloud Function
+      allow create, delete: if false;
     }
 
-    // Public web address -> parish id. Written by the backend / platform admin only, so a parish
-    // can never claim another parish's address.
+    // Public web address -> parish id
     match /slugs/{slug} {
       allow read: if true;
       allow write: if isSuper();
     }
-    // Self-service registration tracking (written by the Cloud Function only).
+    
     match /registrations/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isSuper());
-      allow write: if false;
+      allow write: if isSuper();
     }
+    
     match /parishKeys/{key} {
-      allow read, write: if false;
+      allow read, write: if isSuper();
     }
-    // Platform-level audit trail (approvals, suspensions, reassignments, slug changes).
+    
     match /platformAudit/{id} {
       allow read, create: if isSuper();
       allow update, delete: if false;
@@ -140,8 +145,7 @@ service cloud.firestore {
         || (dioceseScope(pid) && changed(['reportStatus', 'reportComment', 'updatedAt'])
             && request.resource.data.reportStatus in ['Under Review', 'Returned', 'Approved', 'Locked']);
 
-      // Public website content. 'site' is what visitors see once published (and the parish is verified
-      // and active); 'draft' is the working copy used for previews. Only explicitly public fields live here.
+      // Public website content
       match /public/{docId} {
         allow read: if (docId == 'site' && resource.data.get('published', false) == true && directoryLive(pid))
           || isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'finance', 'scc']);
@@ -290,9 +294,6 @@ service cloud.firestore {
         allow delete: if isSuper() || staffOf(pid, ['priest', 'admin', 'finance']);
       }
 
-      /* DOCUMENTS — finance sees all. Finance may only write financial-flagged docs.
-         A document is "financial" when its `kind` field is 'financial'.
-         Priest/admin/secretary may write any document. */
       match /documents/{id} {
         allow read: if isSuper() || staffOf(pid, ['priest', 'admin', 'secretary', 'finance']);
         allow create: if sameId(id) && (

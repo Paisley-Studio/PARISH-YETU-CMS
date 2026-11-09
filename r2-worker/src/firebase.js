@@ -78,7 +78,7 @@ export async function accessToken(env) {
   const now = Math.floor(Date.now() / 1000);
   if (saToken && now < saExpiry - 120) return saToken;
   if (!env.FIREBASE_CLIENT_EMAIL || !env.FIREBASE_PRIVATE_KEY) throw new Error('Backend credentials are not configured');
-  const pem = String(env.FIREBASE_PRIVATE_KEY).replace(/\\n/g, '\n').replace(/-----[^-]+-----/g, '').replace(/\s+/g, '');
+  const pem = String(env.FIREBASE_PRIVATE_KEY).replace(/-----[^-]+-----/g, '').replace(/[^A-Za-z0-9+/=]/g, '');
   const der = Uint8Array.from(atob(pem), c => c.charCodeAt(0));
   const key = await crypto.subtle.importKey('pkcs8', der, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['sign']);
   const unsigned = strToB64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' })) + '.' +

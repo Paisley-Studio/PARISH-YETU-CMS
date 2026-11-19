@@ -16,6 +16,8 @@ const sum=(a,f)=>a.reduce((s,x)=>s+(+(f?f(x):x)||0),0);
 const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 const ICONS={
+ eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+ eyeoff:'<path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-2.9 3.9M6.6 6.6C3.7 8.5 2 12 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18"/>',
  dash:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
  people:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><circle cx="17.5" cy="9" r="2.6"/><path d="M17 14.5c2.6.1 4.2 1.7 4.6 4.5"/>',
  liturgy:'<path d="M8 3h8l-1 7a3 3 0 0 1-6 0z"/><path d="M12 13v5M8 21h8"/>',
@@ -682,6 +684,7 @@ const App={
   }
   if(![].concat(cfg.mod).some(can)){view.innerHTML=`<div class="card"><div class="skel"><div style="max-width:420px">${ic('lock')}<h3 style="margin:10px 0 6px">Access restricted</h3><p style="color:var(--grey)">Your role (${esc(u.roleLabel)}) does not include the ${esc(cfg.title)} module. Open your workspace to continue.</p><a class="btn p mt" href="${u.landing}">Go to my dashboard</a></div></div></div>`;return}
   try{cfg.render(view,u)}catch(err){console.error(err);view.innerHTML=`<div class="alert red">This view could not be displayed: ${esc(err.message)}</div>`}
+  Setup.remind(u);
   UI.countUp(view);
   if(cfg.onHash)cfg.onHash()}
 };
@@ -795,3 +798,27 @@ Site.uploadImage=async(file,kind,parishId)=>{
  if(!up.ok)throw new Error('The image could not be uploaded ('+up.status+').');
  return j.publicUrl;
 };
+
+
+/* ---------- one-time parish setup reminder (parish administrator and priest only) ----------
+ * Until the officials are added on /setup, approved parishes see this once per session; "Later" closes it. */
+const Setup={remind(u){try{
+ if(!u||!['admin','priest'].includes(u.role)||u.impersonatedBy)return;
+ const p=DB.load().parish;if(!p||!p.id||p.id!==u.parishId||p.setupComplete===true||p.verificationStatus==='pending'||(p.status&&p.status!=='active'))return;
+ const k='parishos.setupLater.'+p.id;if(sessionStorage.getItem(k))return;
+ UI.modal({title:'Set up your parish officials',size:'sm',body:`<p style="margin-bottom:10px">${esc(p.name)} is approved. Add the Parish Priest, Finance Officer, Secretary and other heads so each can sign in with their own account.</p><p class="mini">This is done once. You can close this and come back any time at <b>/setup</b>.</p>`,
+  buttons:[{label:'Later',fn:()=>{try{sessionStorage.setItem(k,'1')}catch(e){}}},{label:'Start setup',cls:'p',fn:()=>{location.href='/setup?parish='+encodeURIComponent(p.id)}}]});
+}catch(e){console.warn('setup reminder',e)}}};
+
+/* ---------- show / hide password (eye) on every password field, on every page ---------- */
+(function(){if(typeof document==='undefined'||window.__pwEye)return;window.__pwEye=true;
+ const css=document.createElement('style');css.textContent='.pw-wrap{position:relative;display:block;width:100%}.pw-wrap>input{width:100%;padding-right:46px!important}.pw-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;display:grid;place-items:center;border:0;border-radius:8px;background:transparent;color:#8B8A84;cursor:pointer}.pw-eye:hover,.pw-eye[aria-pressed="true"]{color:#6E1725;background:#F3E6E8}.pw-eye svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}';
+ const svg=n=>'<svg viewBox="0 0 24 24" aria-hidden="true">'+ICONS[n]+'</svg>';
+ const show=(b,on)=>{const i=b.parentElement.querySelector('input');if(!i)return;i.type=on?'text':'password';b.setAttribute('aria-pressed',String(on));b.setAttribute('aria-label',on?'Hide password':'Show password');b.title=on?'Hide password':'Show password';b.innerHTML=svg(on?'eyeoff':'eye');clearTimeout(b._t);if(on)b._t=setTimeout(()=>b.isConnected&&show(b,false),20000)};
+ const wrap=i=>{if(i.dataset.pwEye||i.closest('.pw-wrap'))return;i.dataset.pwEye='1';const w=document.createElement('span');w.className='pw-wrap';i.parentNode.insertBefore(w,i);w.appendChild(i);const b=document.createElement('button');b.type='button';b.className='pw-eye';b.setAttribute('data-pw-toggle','');w.appendChild(b);show(b,false)};
+ const scan=r=>{(r.querySelectorAll?r.querySelectorAll('input[type="password"]'):[]).forEach(wrap);if(r.matches&&r.matches('input[type="password"]'))wrap(r)};
+ const init=()=>{document.head.appendChild(css);scan(document);new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>n.nodeType===1&&scan(n)))).observe(document.body,{childList:true,subtree:true})};
+ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-pw-toggle]');if(!b)return;e.preventDefault();show(b,b.getAttribute('aria-pressed')!=='true');const i=b.parentElement.querySelector('input');if(i)i.focus()});
+ document.addEventListener('submit',e=>{e.target.querySelectorAll&&e.target.querySelectorAll('[data-pw-toggle][aria-pressed="true"]').forEach(b=>show(b,false))},true);
+ if(document.body)init();else document.addEventListener('DOMContentLoaded',init);
+})();

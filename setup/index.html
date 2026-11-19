@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Parish setup · Parish Yetu</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bur:#6E1725;--bur2:#5A111D;--gold:#C9A227;--ivory:#F7F3E8;--obs:#111315;--line:#E8E5DD;--grey:#8B8A84;--ink:#23262A;--green:#1E6B4F;--red:#B3261E;--bur-t:#F3E6E8;--green-t:#E1EFE9;--red-t:#F8E3E1;--gold-t:#F6EFD3}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Quicksand',system-ui,sans-serif;font-weight:500;color:var(--ink);background:var(--ivory);font-size:14.5px;line-height:1.5;min-height:100vh}
+button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+a{color:var(--bur);font-weight:700;text-decoration:none}
+h1,h2,h3{color:var(--obs);line-height:1.2}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.top{background:var(--bur);color:#fff;padding:14px 20px;display:flex;align-items:center;gap:10px}
+.top b{letter-spacing:.06em}.top small{display:block;opacity:.75;font-size:12px}
+.wrap{max-width:860px;margin:0 auto;padding:28px 16px 60px}
+.steps{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.steps span{flex:1;min-width:120px;padding:8px 10px;border-radius:8px;background:#fff;border:1px solid var(--line);font-size:12.5px;font-weight:700;color:var(--grey)}
+.steps span.on{border-color:var(--bur);color:var(--bur);background:var(--bur-t)}.steps span.ok{color:var(--green);border-color:#bfdccf;background:var(--green-t)}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px;box-shadow:0 4px 14px rgba(17,19,21,.04)}
+.card h2{font-size:21px;margin-bottom:6px}.lead{color:#5d6065;margin-bottom:18px}
+.fl{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}.fl label{font-weight:700;font-size:13px}
+.inp{width:100%;padding:11px 12px;border:1px solid #d8d4c8;border-radius:9px;background:#fff}.inp:focus{border-color:var(--bur);outline:none;box-shadow:0 0 0 3px var(--bur-t)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}@media(max-width:640px){.grid{grid-template-columns:1fr}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 18px;border-radius:9px;border:1px solid #d8d4c8;background:#fff;font-weight:700;cursor:pointer}
+.btn.p{background:var(--bur);border-color:var(--bur);color:#fff}.btn.p:hover{background:var(--bur2)}.btn:disabled{opacity:.6;cursor:wait}
+.btn.sm{padding:6px 11px;font-size:13px}.btn.ghost{border-color:transparent;color:var(--red)}
+.row{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-top:20px}
+.msg{display:none;padding:11px 13px;border-radius:9px;margin-bottom:14px;font-weight:600}.msg.on{display:block}
+.msg.err{background:var(--red-t);color:var(--red)}.msg.ok{background:var(--green-t);color:var(--green)}.msg.warn{background:var(--gold-t);color:#5E4A0B}
+.status{border:1px solid var(--line);border-radius:10px;padding:14px;margin:4px 0 6px;display:none}.status.on{display:block}
+.status li{list-style:none;padding:3px 0;font-weight:600}.y{color:var(--green)}.n{color:var(--red)}
+.off{border:1px solid var(--line);border-radius:10px;padding:16px 16px 4px;margin-bottom:14px;position:relative}
+.off h3{font-size:15px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mini{font-size:12.5px;color:var(--grey)}
+table{width:100%;border-collapse:collapse;margin:10px 0}td,th{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);font-size:13.5px}th{color:var(--grey);font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+.hide{display:none!important}
+</style></head><body>
+<header class="top"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2h4v7h7v4h-7v9h-4v-9H3V9h7z" fill="#C9A227"/></svg><div><b>PARISH YETU</b><small>One-time parish setup</small></div></header>
+<main class="wrap">
+ <div class="steps" aria-hidden="true"><span id="s1">1 · Find your parish</span><span id="s2">2 · Confirm you're in charge</span><span id="s3">3 · Add officials</span><span id="s4">4 · Done</span></div>
+ <div class="card">
+  <div class="msg" id="msg" role="alert"></div>
+
+  <section id="v1">
+   <h2>Find your parish</h2>
+   <p class="lead">Choose your diocese, then your parish. Only approved parishes in approved dioceses can be set up.</p>
+   <div class="fl"><label for="dio">Diocese</label><select class="inp" id="dio"><option value="">Loading…</option></select></div>
+   <div class="fl"><label for="par">Parish</label><select class="inp" id="par" disabled><option value="">Choose a diocese first</option></select></div>
+   <p class="mini">Parish not listed? It has not been approved yet. Approval usually follows registration at <a href="/register-parish">/register-parish</a>.</p>
+   <div class="status" id="st"></div>
+   <div class="row"><a href="/admin">Already set up? Sign in</a><button class="btn p" id="go1" disabled>Continue</button></div>
+  </section>
+
+  <section id="v2" class="hide">
+   <h2>Confirm you're in charge of <span id="pn2"></span></h2>
+   <p class="lead">Sign in with the <b>Parish Administrator</b> account that registered this parish, or the <b>Parish Priest</b> account. Accounts from other parishes are refused.</p>
+   <form id="f2" novalidate>
+    <div class="fl"><label for="em">Email</label><input class="inp" id="em" type="email" autocomplete="username" required></div>
+    <div class="fl"><label for="pw">Password</label><input class="inp" id="pw" type="password" autocomplete="current-password" required></div>
+    <div class="row"><button type="button" class="btn" id="back2">Back</button><button class="btn p" id="go2">Sign in and continue</button></div>
+   </form>
+  </section>
+
+  <section id="v3" class="hide">
+   <h2>Add the officials of <span id="pn3"></span></h2>
+   <p class="lead">Create a sign-in for each official. Each person needs their own email. Share the passwords privately; they can change them later with "Forgot password".</p>
+   <form id="f3" novalidate autocomplete="off"><div id="offs"></div>
+    <button type="button" class="btn sm" id="add">+ Add another official / head</button>
+    <div class="row"><button type="button" class="btn" id="out3">Sign out</button><button class="btn p" id="go3">Create accounts and finish setup</button></div>
+   </form>
+  </section>
+
+  <section id="v4" class="hide">
+   <h2>Setup complete</h2>
+   <p class="lead">These officials can now sign in at <b><span id="adm"></span></b> with the email and password you set. This setup cannot be run again; later changes go through Settings → Users.</p>
+   <table><thead><tr><th>Name</th><th>Office</th><th>Email</th></tr></thead><tbody id="done"></tbody></table>
+   <div class="row"><span></span><a class="btn p" href="/dashboard">Go to dashboard</a></div>
+  </section>
+ </div>
+</main>
+
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>window.PARISHOS_PUBLIC=true</script>
+<script defer src="/js/firebase-config.js"></script>
+<script defer src="/js/firebase-init.js"></script>
+<script defer src="/js/core.js"></script>
+<script defer>
+(function(){
+'use strict';
+const q=s=>document.querySelector(s),qa=s=>Array.from(document.querySelectorAll(s));
+const ROLES=[['priest','Parish Priest'],['admin','Assistant Administrator'],['secretary','Parish Secretary'],['finance','Finance Officer'],['scc','SCC / Ministry Head']];
+const DEFAULTS=[['priest','Parish Priest'],['finance','Finance Officer'],['secretary','Parish Secretary']];
+let dioceses=[],parishes=[],P=null,n=0;
+const h=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function say(t,k){const m=q('#msg');m.textContent=t||'';m.className='msg'+(t?' on '+(k||'err'):'');if(t)m.scrollIntoView({block:'nearest',behavior:'smooth'})}
+function step(i){[1,2,3,4].forEach(k=>{q('#v'+k).classList.toggle('hide',k!==i);q('#s'+k).className=k<i?'ok':k===i?'on':''});say('')}
+const busy=(b,on,t)=>{b.disabled=on;if(on){b.dataset.t=b.textContent;b.textContent=t||'Please wait…'}else if(b.dataset.t)b.textContent=b.dataset.t};
+
+let tries=0;(function wait(){if(typeof Boot!=='undefined'&&Boot.ready)return run();if(++tries>200)return say('The page could not load. Refresh to try again.');setTimeout(wait,50)})();
+
+async function run(){
+ await Boot.ready;
+ if(!window.FB||!FB.ok)return say('The service is temporarily unavailable. Please try again shortly.');
+ try{
+  const [ds,list]=await Promise.all([FB.db.collection('dioceses').limit(500).get(),Dir.load()]);
+  dioceses=ds.docs.map(d=>({...d.data(),id:d.id})).filter(d=>(d.status||'active')==='active').sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  parishes=list;
+ }catch(e){console.error(e);return say('Could not load the parish list. Check your connection and refresh.')}
+ const ids=new Set(dioceses.map(d=>d.id));
+ const hasNone=parishes.some(p=>!p.dioceseId);
+ q('#dio').innerHTML='<option value="">Choose your diocese</option>'+dioceses.map(d=>`<option value="${h(d.id)}">${h(d.name)}</option>`).join('')+(hasNone?'<option value="_none">Not under a diocese</option>':'');
+ q('#dio').onchange=fillParishes;q('#par').onchange=check;
+ const want=new URLSearchParams(location.search).get('parish');
+ const pre=want&&parishes.find(p=>p.id===want);
+ if(pre){q('#dio').value=pre.dioceseId&&ids.has(pre.dioceseId)?pre.dioceseId:(pre.dioceseId?'':'_none');fillParishes();q('#par').value=pre.id;check()}
+ q('#go1').onclick=next1;
+ q('#back2').onclick=()=>step(1);
+ q('#f2').onsubmit=e=>{e.preventDefault();signIn()};
+ q('#add').onclick=()=>addOff('secretary','');
+ q('#f3').onsubmit=e=>{e.preventDefault();finish()};
+ q('#out3').onclick=async()=>{await Auth.logout().catch(()=>{});step(1)};
+ step(1);
+}
+function fillParishes(){
+ const d=q('#dio').value,sel=q('#par');
+ const ok=new Set(dioceses.map(x=>x.id));
+ const list=parishes.filter(p=>d==='_none'?!p.dioceseId:(d&&p.dioceseId===d&&ok.has(d)));
+ sel.disabled=!d;sel.innerHTML=!d?'<option value="">Choose a diocese first</option>':list.length?'<option value="">Choose your parish</option>'+list.map(p=>`<option value="${h(p.id)}">${h(p.name)}${p.town?' — '+h(p.town):''}</option>`).join(''):'<option value="">No approved parishes in this diocese yet</option>';
+ check();
+}
+function check(){
+ const id=q('#par').value,st=q('#st');P=parishes.find(p=>p.id===id)||null;q('#go1').disabled=true;
+ if(!P){st.className='status';return}
+ const dio=dioceses.find(d=>d.id===P.dioceseId);const done=P.setupComplete===true;
+ st.innerHTML=`<ul><li class="y">✓ Parish approved: ${h(P.name)}</li><li class="y">✓ ${P.dioceseId?'Diocese approved: '+h(dio?dio.name:P.dioceseName||''):'No diocese required'}</li><li class="${done?'n':'y'}">${done?'✗ Setup already completed — officials sign in at <a href="/admin">/admin</a>':'✓ Ready for setup'}</li></ul>`;
+ st.className='status on';q('#go1').disabled=done;
+}
+function next1(){
+ if(!P||P.setupComplete===true)return;
+ q('#pn2').textContent=q('#pn3').textContent=P.name;
+ const u=Auth.user();
+ if(u&&u.parishId===P.id&&['admin','priest'].includes(u.role))return toOfficials(u);
+ step(2);
+ if(u)say('You are signed in as '+u.name+' ('+u.roleLabel+'), which is not the administrator or priest of '+P.name+'. Sign in with the right account below.','warn');
+}
+async function signIn(){
+ const em=q('#em').value.trim(),pw=q('#pw').value,b=q('#go2');
+ if(!em||!pw)return say('Enter your email and password.');
+ busy(b,true,'Signing in…');
+ try{
+  if(Auth.user())await Auth.logout().catch(()=>{});
+  const u=await Auth.login(em,pw,true);
+  if(u.parishId!==P.id||!['admin','priest'].includes(u.role)){await Auth.logout().catch(()=>{});return say('This account is not the Parish Administrator or Parish Priest of '+P.name+'. Use the account that registered this parish.')}
+  q('#pw').value='';toOfficials(u);
+ }catch(e){say(/wrong-password|invalid-credential|user-not-found|invalid-login/.test(e.code||'')?'Wrong email or password.':(e.message||'Could not sign in.'))}
+ finally{busy(b,false)}
+}
+function toOfficials(u){
+ step(3);q('#offs').innerHTML='';n=0;
+ DEFAULTS.filter(([r])=>!(r===u.role)).forEach(([r,t])=>addOff(r,t));
+}
+function addOff(role,title){
+ const i=n++,el=document.createElement('div');el.className='off';el.dataset.i=i;
+ el.innerHTML=`<h3><span>Official</span><button type="button" class="btn sm ghost" data-rm>Remove</button></h3>
+ <div class="grid">
+  <div class="fl"><label>Role (what they can access)</label><select class="inp" data-k="role">${ROLES.map(([v,l])=>`<option value="${v}" ${v===role?'selected':''}>${l}</option>`).join('')}</select></div>
+  <div class="fl"><label>Office / title shown</label><input class="inp" data-k="title" maxlength="80" placeholder="e.g. Head of Catechesis" value="${h(title)}"></div>
+  <div class="fl"><label>Full name</label><input class="inp" data-k="name" maxlength="120" autocomplete="off"></div>
+  <div class="fl"><label>Phone (optional)</label><input class="inp" data-k="phone" maxlength="24" inputmode="tel" autocomplete="off"></div>
+  <div class="fl"><label>Email (their sign-in)</label><input class="inp" data-k="email" type="email" maxlength="160" autocomplete="off"></div>
+  <div class="fl"><label>Password (min. 8 characters)</label><input class="inp" data-k="password" type="password" maxlength="128" autocomplete="new-password"></div>
+ </div>`;
+ const sel=el.querySelector('[data-k=role]'),tt=el.querySelector('[data-k=title]');
+ sel.onchange=()=>{if(!tt.value||ROLES.some(([,l])=>l===tt.value)||DEFAULTS.some(([,l])=>l===tt.value))tt.value=(ROLES.find(([v])=>v===sel.value)||[])[1]||''};
+ el.querySelector('[data-rm]').onclick=()=>el.remove();
+ q('#offs').appendChild(el);
+}
+async function finish(){
+ const rows=qa('#offs .off').map(el=>{const o={};el.querySelectorAll('[data-k]').forEach(x=>o[x.dataset.k]=x.value.trim?x.value.trim():x.value);o.password=el.querySelector('[data-k=password]').value;return o}).filter(o=>o.name||o.email||o.password);
+ if(!rows.length)return say('Add at least one official.');
+ for(const o of rows){
+  if(o.name.length<3)return say('Enter the full name of every official.');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(o.email))return say('Enter a valid email for '+o.name+'.');
+  if(o.password.length<8)return say('The password for '+o.name+' must be at least 8 characters.');
+ }
+ const em=rows.map(o=>o.email.toLowerCase());if(new Set(em).size!==em.length)return say('Each official needs a different email.');
+ if(rows.filter(o=>o.role==='priest').length>1)return say('Only one Parish Priest can be added.');
+ const b=q('#go3');busy(b,true,'Creating accounts…');
+ try{
+  const tok=await FB.auth.currentUser.getIdToken(true);
+  const r=await fetch(FB.api+'/api/setup-parish',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tok},body:JSON.stringify({parishId:P.id,officials:rows})});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok)return say(j.error||('Setup failed ('+r.status+'). Nothing was saved.'));
+  P.setupComplete=true;
+  q('#adm').textContent=location.host+'/admin';
+  q('#done').innerHTML=(j.officials||[]).map(o=>`<tr><td>${h(o.name)}</td><td>${h(o.title)}</td><td>${h(o.email)}</td></tr>`).join('');
+  qa('#offs input[type=password]').forEach(x=>x.value='');
+  step(4);say('All officials were created. They can sign in now.','ok');
+ }catch(e){console.error(e);say('Could not reach the setup service. Check your connection; nothing was saved.')}
+ finally{busy(b,false)}
+}
+})();
+</script>
+</body></html>

@@ -1,6 +1,7 @@
 /* PARISH YETU - Cloudflare Worker: the platform's trusted backend.
  *
  *   POST /api/register-parish   self-service church registration and provisioning   (provision.js)
+ *   POST /api/setup-parish      one-time parish setup: admin/priest adds the parish officials (setup.js)
  *   POST /api/platform/*        super admin: approve / reject / request info / suspend / restore, support sessions (platform.js)
  *   POST /presign-upload        parish documents -> R2 (existing)
  *   POST /presign-download      parish documents <- R2 (existing)
@@ -15,6 +16,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { verifyIdToken, getDoc } from './firebase.js';
 import { registerParish, ApiError } from './provision.js';
 import { parishAction, impersonate } from './platform.js';
+import { setupParish } from './setup.js';
 
 /* ---------- CORS: ALLOWED_ORIGIN may list several origins, comma separated ---------- */
 function allowedOrigin(env, request) {
@@ -80,6 +82,15 @@ export default {
         if (e instanceof ApiError) return json(env, request, e.status, { error: e.message, code: e.code, field: e.field || '' });
         console.error('register-parish', e && e.message);
         return json(env, request, 500, { error: 'The registration service is temporarily unavailable. Please try again.' });
+      }
+    }
+
+    if (url.pathname === '/api/setup-parish') {
+      try { return json(env, request, 200, await setupParish(env, user, body)); }
+      catch (e) {
+        if (e instanceof ApiError) return json(env, request, e.status, { error: e.message, code: e.code, field: e.field || '' });
+        console.error('setup-parish', e && e.message);
+        return json(env, request, 500, { error: 'The setup service is temporarily unavailable. Nothing was saved; please try again.' });
       }
     }
 

@@ -325,3 +325,30 @@ test('platform: support session signs in as parish staff, is audited', async () 
   assert.equal((await get('parishes/' + josephPid, j.idToken)).status, 200, 'sees what the admin sees');
   assert.ok((await list('platformAudit')).some(a => a.action === 'support.impersonation-started' && a.targetUid === joseph.uid && a.reason === 'Cannot see Mass schedule'));
 });
+
+test('setup: only the approved parish\'s own admin creates its officials, once', async () => {
+  const pid = 'setup-test-parish', did = 'setup-test-dio';
+  await put('dioceses/' + did, { name: 'Setup Test Diocese', status: 'active' });
+  await put('parishes/' + pid, { name: 'Setup Test Parish', dioceseId: did, status: 'active', verificationStatus: 'pending' });
+  await put('churchDirectory/' + pid, { name: 'Setup Test Parish', dioceseId: did, status: 'pending' });
+  const adm = await signUp('setup-admin@test.test'), other = await signUp('setup-other@test.test');
+  await put('users/' + adm.uid, { name: 'Setup Admin', email: adm.email, role: 'admin', status: 'active', parishId: pid });
+  await put('users/' + other.uid, { name: 'Other Admin', email: other.email, role: 'admin', status: 'active', parishId: 'some-other-parish' });
+  const offs = [{ role: 'priest', name: 'Fr. John Doe', email: 'setup-priest@test.test', password: 'Priest123!' }, { role: 'finance', name: 'Jane Fin', email: 'setup-fin@test.test', password: 'Finance123!' }];
+
+  assert.equal((await api('/api/setup-parish', { parishId: pid, officials: offs }, adm.token)).body.code, 'not-approved', 'pending parish refused');
+  await patch('parishes/' + pid, { verificationStatus: 'verified' });
+  assert.equal((await api('/api/setup-parish', { parishId: pid, officials: offs }, other.token)).status, 403, 'another parish admin refused');
+  assert.equal((await api('/api/setup-parish', { parishId: pid, officials: [{ ...offs[0], password: 'short' }] }, adm.token)).status, 400, 'weak password refused');
+
+  const ok = await api('/api/setup-parish', { parishId: pid, officials: offs }, adm.token);
+  assert.equal(ok.status, 200, JSON.stringify(ok.body));
+  assert.equal(ok.body.officials.length, 2);
+  const signIn = await fetch(AUTH + '/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=fake', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'setup-priest@test.test', password: 'Priest123!', returnSecureToken: true }) });
+  const pj = await signIn.json(); assert.ok(pj.localId, 'priest can sign in');
+  const prof = (await get('users/' + pj.localId)).data;
+  assert.equal(prof.role, 'priest'); assert.equal(prof.parishId, pid); assert.equal(prof.status, 'active');
+  assert.equal((await get('parishes/' + pid)).data.setupComplete, true);
+  assert.equal((await get('parishes/' + pid)).data.priest, 'Fr. John Doe');
+  assert.equal((await api('/api/setup-parish', { parishId: pid, officials: [{ role: 'secretary', name: 'Late Sec', email: 'setup-sec@test.test', password: 'Secret123!' }] }, adm.token)).body.code, 'already-done', 'runs only once');
+});

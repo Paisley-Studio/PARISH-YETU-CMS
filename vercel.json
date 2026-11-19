@@ -147,7 +147,7 @@
   "rewrites": [
     {
       "source": "/:slug",
-      "destination": "/parish-home/index.html"
+      "destination": "/parish-home"
     }
   ],
   "headers": [

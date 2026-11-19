@@ -193,3 +193,20 @@ export async function setClaims(env, uid, claims) {
   const r = await fetch(itBase(env) + '/accounts:update', { method: 'POST', headers: { Authorization: 'Bearer ' + await accessToken(env), 'Content-Type': 'application/json' }, body: JSON.stringify({ localId: uid, customAttributes: JSON.stringify(claims) }) });
   if (!r.ok) throw new Error('Setting account claims failed (' + r.status + ')');
 }
+
+/* Admin account management (service account). Used by the one-time parish setup (setup.js). */
+export async function lookupEmails(env, emails) {
+  if (!emails.length) return [];
+  const r = await fetch(itBase(env) + '/accounts:lookup', { method: 'POST', headers: { Authorization: 'Bearer ' + await accessToken(env), 'Content-Type': 'application/json' }, body: JSON.stringify({ email: emails }) });
+  if (!r.ok) throw new Error('Account lookup failed (' + r.status + ')');
+  return ((await r.json()).users || []).map(u => String(u.email || '').toLowerCase());
+}
+export async function createAuthUser(env, { email, password, displayName }) {
+  const r = await fetch(itBase(env) + '/accounts', { method: 'POST', headers: { Authorization: 'Bearer ' + await accessToken(env), 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password, displayName, emailVerified: false, disabled: false }) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.localId) { const e = new Error((j.error && j.error.message) || ('Account creation failed (' + r.status + ')')); e.authCode = j.error && j.error.message; throw e; }
+  return j.localId;
+}
+export async function deleteAuthUser(env, uid) {
+  await fetch(itBase(env) + '/accounts:delete', { method: 'POST', headers: { Authorization: 'Bearer ' + await accessToken(env), 'Content-Type': 'application/json' }, body: JSON.stringify({ localId: uid }) }).catch(() => {});
+}

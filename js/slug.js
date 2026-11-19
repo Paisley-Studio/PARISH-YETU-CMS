@@ -18,7 +18,7 @@
     // application pages (each lives at /{name})
     'accounting', 'assets', 'catechesis', 'communications', 'diocese', 'documents', 'events', 'families', 'finance',
     'governance', 'masses', 'ministries', 'parishioners', 'pastoral', 'platform', 'projects', 'reports', 'sacraments',
-    'scc', 'sermons', 'website'
+    'scc', 'sermons', 'setup', 'website'
   ];
 
   function fold(s) {

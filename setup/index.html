@@ -58,8 +58,26 @@ table{width:100%;border-collapse:collapse;margin:10px 0}td,th{text-align:left;pa
    <form id="f2" novalidate>
     <div class="fl"><label for="em">Email</label><input class="inp" id="em" type="email" autocomplete="username" required></div>
     <div class="fl"><label for="pw">Password</label><input class="inp" id="pw" type="password" autocomplete="current-password" required></div>
+    <a href="#" id="fg">Forgot password?</a>
     <div class="row"><button type="button" class="btn" id="back2">Back</button><button class="btn p" id="go2">Sign in and continue</button></div>
    </form>
+   <div id="rs" class="hide">
+    <div id="rs1">
+     <p class="lead">Enter the email of the Administrator or Priest account. We'll email you a link to choose a new password. Your place in the setup is kept.</p>
+     <div class="fl"><label for="rem">Email</label><input class="inp" id="rem" type="email" autocomplete="username"></div>
+     <div class="row"><button type="button" class="btn" id="rsback">Back to sign in</button><button type="button" class="btn p" id="rsgo">Send reset link</button></div>
+    </div>
+    <div id="rs2" class="hide">
+     <p class="lead">A reset link is on its way to <b id="rsto"></b> (check spam too). What to do next:</p>
+     <ol style="margin:0 0 16px 20px;line-height:1.9">
+      <li>Open the email and click the reset link.</li>
+      <li>Choose your new password and save it.</li>
+      <li>Tap <b>Continue</b> on that page, or come back to this tab.</li>
+      <li>Sign in below with your new password to continue the setup of <b class="pnx"></b>.</li>
+     </ol>
+     <div class="row"><button type="button" class="btn" id="rsagain">Resend link</button><button type="button" class="btn p" id="rsdone">I've set a new password — sign in</button></div>
+    </div>
+   </div>
   </section>
 
   <section id="v3" class="hide">
@@ -93,7 +111,7 @@ table{width:100%;border-collapse:collapse;margin:10px 0}td,th{text-align:left;pa
 const q=s=>document.querySelector(s),qa=s=>Array.from(document.querySelectorAll(s));
 const ROLES=[['priest','Parish Priest'],['admin','Assistant Administrator'],['secretary','Parish Secretary'],['finance','Finance Officer'],['scc','SCC / Ministry Head']];
 const DEFAULTS=[['priest','Parish Priest'],['finance','Finance Officer'],['secretary','Parish Secretary']];
-let dioceses=[],parishes=[],P=null,n=0;
+let dioceses=[],parishes=[],P=null,n=0,resumeEmail='';const RESUME='parishos.setupResume';
 const h=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function say(t,k){const m=q('#msg');m.textContent=t||'';m.className='msg'+(t?' on '+(k||'err'):'');if(t)m.scrollIntoView({block:'nearest',behavior:'smooth'})}
 function step(i){[1,2,3,4].forEach(k=>{q('#v'+k).classList.toggle('hide',k!==i);q('#s'+k).className=k<i?'ok':k===i?'on':''});say('')}
@@ -116,13 +134,37 @@ async function run(){
  const want=new URLSearchParams(location.search).get('parish');
  const pre=want&&parishes.find(p=>p.id===want);
  if(pre){q('#dio').value=pre.dioceseId&&ids.has(pre.dioceseId)?pre.dioceseId:(pre.dioceseId?'':'_none');fillParishes();q('#par').value=pre.id;check()}
+ /* Coming back after a password reset (from the email's Continue button, or this browser remembered): resume at sign in. */
+ const sp=new URLSearchParams(location.search);let saved=null;try{saved=JSON.parse(localStorage.getItem(RESUME)||'null')}catch(e){}
+ const back=pre&&(sp.get('resume')==='1'||(saved&&saved.parish===pre.id));
  q('#go1').onclick=next1;
  q('#back2').onclick=()=>step(1);
+ q('#fg').onclick=e=>{e.preventDefault();showReset(1)};
+ q('#rsback').onclick=()=>showReset(0);
+ q('#rsgo').onclick=()=>sendReset(q('#rsgo'));
+ q('#rsagain').onclick=()=>sendReset(q('#rsagain'));
+ q('#rsdone').onclick=()=>{showReset(0);q('#em').value=resumeEmail||q('#em').value;q('#pw').focus();say('Sign in with your new password to continue.','ok')};
  q('#f2').onsubmit=e=>{e.preventDefault();signIn()};
  q('#add').onclick=()=>addOff('secretary','');
  q('#f3').onsubmit=e=>{e.preventDefault();finish()};
  q('#out3').onclick=async()=>{await Auth.logout().catch(()=>{});step(1)};
  step(1);
+ if(back&&P&&P.setupComplete!==true){resumeEmail=sp.get('email')||(saved&&saved.email)||'';next1();if(q('#v2').classList.contains('hide'))return;q('#em').value=resumeEmail;say('Welcome back. Sign in with your new password to continue setting up '+P.name+'.','ok');q(resumeEmail?'#pw':'#em').focus()}
+}
+function showReset(on){q('#f2').classList.toggle('hide',!!on);q('#rs').classList.toggle('hide',!on);q('#rs1').classList.remove('hide');q('#rs2').classList.add('hide');say('');if(on){q('#rem').value=q('#em').value.trim();q('#rem').focus()}}
+async function sendReset(b){
+ const em=(q('#rem').value||resumeEmail).trim();
+ if(!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(em))return say('Enter a valid email address.');
+ busy(b,true,'Sending…');
+ const url=location.origin+'/setup?parish='+encodeURIComponent(P.id)+'&email='+encodeURIComponent(em)+'&resume=1';
+ try{
+  try{await FB.auth.sendPasswordResetEmail(em,{url})}
+  catch(e){if(/continue-uri|unauthorized-domain/.test(e.code||''))await FB.auth.sendPasswordResetEmail(em);else throw e} // domain not whitelisted for Continue: plain link still works
+  resumeEmail=em;try{localStorage.setItem(RESUME,JSON.stringify({parish:P.id,email:em}))}catch(e){}
+  q('#rsto').textContent=em;qa('.pnx').forEach(x=>x.textContent=P.name);
+  q('#rs1').classList.add('hide');q('#rs2').classList.remove('hide');say('');
+ }catch(e){say(/invalid-email/.test(e.code||'')?'Enter a valid email address.':/too-many/.test(e.code||'')?'Too many attempts. Wait a few minutes and try again.':'Could not send the reset link. Check your connection and try again.')}
+ finally{busy(b,false)}
 }
 function fillParishes(){
  const d=q('#dio').value,sel=q('#par');
@@ -143,7 +185,7 @@ function next1(){
  q('#pn2').textContent=q('#pn3').textContent=P.name;
  const u=Auth.user();
  if(u&&u.parishId===P.id&&['admin','priest'].includes(u.role))return toOfficials(u);
- step(2);
+ step(2);showReset(0);
  if(u)say('You are signed in as '+u.name+' ('+u.roleLabel+'), which is not the administrator or priest of '+P.name+'. Sign in with the right account below.','warn');
 }
 async function signIn(){
@@ -154,7 +196,7 @@ async function signIn(){
   if(Auth.user())await Auth.logout().catch(()=>{});
   const u=await Auth.login(em,pw,true);
   if(u.parishId!==P.id||!['admin','priest'].includes(u.role)){await Auth.logout().catch(()=>{});return say('This account is not the Parish Administrator or Parish Priest of '+P.name+'. Use the account that registered this parish.')}
-  q('#pw').value='';toOfficials(u);
+  q('#pw').value='';try{localStorage.removeItem(RESUME)}catch(e){}toOfficials(u);
  }catch(e){say(/wrong-password|invalid-credential|user-not-found|invalid-login/.test(e.code||'')?'Wrong email or password.':(e.message||'Could not sign in.'))}
  finally{busy(b,false)}
 }
